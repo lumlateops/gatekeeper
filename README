@@ -1,0 +1,1 @@
+This repository will contain the rest api service layer and the mid-tier logic for serving front end requests. It will communicate with the frontend via rest calls and with the backend service through aynchronous messaging. Right now I plan to code this layer in python. 
