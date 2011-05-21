@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1337c867-4472-44da-9811-ee00c9515f6e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/aolHandler.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/msnHandler.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/yahooHandler.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
     </list>
     <ignored path="gatekeeper.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,19 +26,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="hello.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/sandbox/hello.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="39" selection-start="224" selection-end="236" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="defaultBroker.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="defaultBroker.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="69" selection-start="873" selection-end="873" vertical-scroll-proportion="0.39384118">
+            <state line="6" column="19" selection-start="109" selection-end="109" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -54,7 +38,16 @@
       <file leaf-file-name="gmailHandler.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="21" selection-start="380" selection-end="380" vertical-scroll-proportion="0.0">
+            <state line="20" column="43" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.21880065">
               <folding />
             </state>
           </provider>
@@ -79,8 +72,9 @@
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/aolHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/yahooHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" />
-        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py" />
       </list>
     </option>
   </component>
@@ -305,7 +299,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1272" y="-805" width="1296" height="813" extended-state="6" />
+    <frame x="-8" y="-5" width="1296" height="813" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -358,13 +352,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/sandbox/hello.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="39" selection-start="224" selection-end="236" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/msnHandler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="25" selection-start="250" selection-end="250" vertical-scroll-proportion="0.2917342">
@@ -386,16 +373,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/sandbox/hello.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="21" selection-start="380" selection-end="380" vertical-scroll-proportion="0.0">
+        <state line="15" column="39" selection-start="224" selection-end="236" vertical-scroll-proportion="0.36466774">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="69" selection-start="873" selection-end="873" vertical-scroll-proportion="0.39384118">
+        <state line="6" column="19" selection-start="109" selection-end="109" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="43" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.21880065">
           <folding />
         </state>
       </provider>
