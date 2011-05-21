@@ -9,4 +9,12 @@ __author__ = 'prachi'
 
 # Handles the complete flow for Gmail
 class GmailHandler:
+
     # Stores the auth token in the database
+    def getAuthToken(self, email):
+        return 'done'
+
+    # Just a stupid test
+    def test(self):
+        return 'hello gmail'
+

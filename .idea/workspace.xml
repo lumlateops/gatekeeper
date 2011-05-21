@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1337c867-4472-44da-9811-ee00c9515f6e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/aolHandler.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/msnHandler.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/yahooHandler.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/__init__.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/__init__.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="gatekeeper.iws" />
@@ -38,19 +42,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="defaultBroker.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py">
+      <file leaf-file-name="defaultBroker.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="10" selection-start="34" selection-end="34" vertical-scroll-proportion="0.0">
+            <state line="30" column="69" selection-start="873" selection-end="873" vertical-scroll-proportion="0.39384118">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gmailHandler.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py">
+      <file leaf-file-name="gmailHandler.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.048622366">
+            <state line="14" column="21" selection-start="380" selection-end="380" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -71,7 +75,12 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/msnHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/aolHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/yahooHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
       </list>
     </option>
   </component>
@@ -186,66 +195,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deallr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="requestBroker" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deallr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gatekeeper" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="emailHandler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -253,8 +202,30 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="recentsLimit" value="5" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.defaultBroker">
+    <configuration default="false" name="defaultBroker" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <module name="gatekeeper" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <method />
+    </configuration>
     <configuration default="true" type="PythonUnitTestConfigurationType" factoryName="Python's unittest">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -302,7 +273,9 @@
       <option name="PATTERN" value="" />
       <method />
     </configuration>
-    <list size="0" />
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Python.defaultBroker" />
+    </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration" maxAnnotateRevisions="500">
@@ -320,6 +293,7 @@
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
     <option name="FORCE_UPDATE" value="false" />
+    <configuration useDefault="true">$USER_HOME$/.subversion_IDEA</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
   </component>
   <component name="TaskManager">
@@ -331,15 +305,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1272" y="-5" width="1296" height="813" extended-state="6" />
+    <frame x="1272" y="-805" width="1296" height="813" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24940239" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.212749" sideWeight="0.60030866" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39969134" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -391,16 +365,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py">
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/msnHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="10" selection-start="34" selection-end="34" vertical-scroll-proportion="0.0">
+        <state line="12" column="25" selection-start="250" selection-end="250" vertical-scroll-proportion="0.2917342">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py">
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/aolHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.048622366">
+        <state line="3" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.07293355">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/yahooHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="27" selection-start="256" selection-end="256" vertical-scroll-proportion="0.2917342">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="21" selection-start="380" selection-end="380" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="69" selection-start="873" selection-end="873" vertical-scroll-proportion="0.39384118">
           <folding />
         </state>
       </provider>
