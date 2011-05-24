@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1337c867-4472-44da-9811-ee00c9515f6e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/JtvClient.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/oauth.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" afterPath="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
     </list>
     <ignored path="gatekeeper.iws" />
@@ -29,25 +32,43 @@
       <file leaf-file-name="defaultBroker.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="19" selection-start="109" selection-end="109" vertical-scroll-proportion="0.0">
+            <state line="10" column="22" selection-start="160" selection-end="181" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gmailHandler.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="gmailHandler.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="43" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0">
+            <state line="22" column="20" selection-start="509" selection-end="509" vertical-scroll-proportion="0.3922204">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="JtvClient.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/JtvClient.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="62" column="34" selection-start="3153" selection-end="3153" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="oauth.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/oauth.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="175" column="63" selection-start="5268" selection-end="5268" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.21880065">
+            <state line="14" column="24" selection-start="388" selection-end="388" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -72,9 +93,12 @@
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/aolHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/yahooHandler.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler/gmailHandler.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/client.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/oauth.py" />
+        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/JtvClient.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
         <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py" />
-        <option value="$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py" />
       </list>
     </option>
   </component>
@@ -104,6 +128,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
@@ -191,7 +216,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -203,7 +227,7 @@
       <recent name="$PROJECT_DIR$/src/com/deallr/gatekeeper/emailHandler" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.defaultBroker">
+  <component name="RunManager" selected="Python.oauth">
     <configuration default="false" name="defaultBroker" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -211,10 +235,26 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/com/deallr/gatekeeper" />
       <option name="IS_MODULE_SDK" value="true" />
       <module name="gatekeeper" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/requestBroker/defaultBroker.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="oauth" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/com/deallr/gatekeeper" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <module name="gatekeeper" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/com/deallr/gatekeeper/oauth.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PyDebugRunner" />
       <ConfigurationWrapper RunnerId="PyDebugRunner" />
@@ -267,8 +307,9 @@
       <option name="PATTERN" value="" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="Python.defaultBroker" />
+      <item index="1" class="java.lang.String" itemvalue="Python.oauth" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
@@ -299,21 +340,21 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-5" width="1296" height="813" extended-state="6" />
+    <frame x="-1" y="-5" width="1282" height="806" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287037" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5648148" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.212749" sideWeight="0.60030866" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22390439" sideWeight="0.6712963" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39969134" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -354,49 +395,53 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/msnHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="25" selection-start="250" selection-end="250" vertical-scroll-proportion="0.2917342">
-          <folding />
-        </state>
+        <state line="12" column="25" selection-start="250" selection-end="250" vertical-scroll-proportion="0.2917342" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/aolHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.07293355">
-          <folding />
-        </state>
+        <state line="3" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.07293355" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/yahooHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="27" selection-start="256" selection-end="256" vertical-scroll-proportion="0.2917342">
-          <folding />
-        </state>
+        <state line="12" column="27" selection-start="256" selection-end="256" vertical-scroll-proportion="0.2917342" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/sandbox/hello.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="39" selection-start="224" selection-end="236" vertical-scroll-proportion="0.36466774">
+        <state line="15" column="39" selection-start="224" selection-end="236" vertical-scroll-proportion="0.36466774" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="24" selection-start="388" selection-end="388" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/JtvClient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="62" column="34" selection-start="3153" selection-end="3153" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/oauth.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="175" column="63" selection-start="5268" selection-end="5268" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/defaultBroker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="19" selection-start="109" selection-end="109" vertical-scroll-proportion="0.0">
+        <state line="10" column="22" selection-start="160" selection-end="181" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/gmailHandler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="43" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/deallr/gatekeeper/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.21880065">
+        <state line="22" column="20" selection-start="509" selection-end="509" vertical-scroll-proportion="0.3922204">
           <folding />
         </state>
       </provider>
