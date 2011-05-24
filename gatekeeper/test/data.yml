@@ -1,0 +1,55 @@
+# you describe your data using the YAML notation here
+# and then load them using Fixtures.load("data.yml")
+
+# User(bob):
+#   email: bob@gmail.com
+#   password: secret
+#   fullname: Bob
+
+ServiceProvider(GOOGLEMAIL):
+	name: Google
+	active: y
+	website: http://gmail.com
+	protocol: OAUTH
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
+	
+ServiceProvider(YAHOOMAIL):
+	name: Yahoo
+	active: y
+	website: http://mail.yahoo.com
+	protocol: OAUTH
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
+	
+ServiceProvider(AOLMAIL):
+	name: AOL
+	active: y
+	website: http://webmail.aol.com
+	protocol: OPENAUTH
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
+
+ServiceProvider(MSNMAIL):
+	name: MSN
+	active: y
+	website: http://mail.live.com
+	protocol: DELEGATEDAUTH
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
+	
+ServiceProvider(FACEBOOK):
+	name: Facebook
+	active: n
+	website: http://facebook.com
+ 	protocol: OAUTH2
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
+	
+ServiceProvider(TWITTER):
+	name: Twitter
+	active: n
+	website: http://twitter.com
+	protocol: OAUTH
+	created_at: 2011-05-14t21:59:43
+	updated_at: 2011-05-14t21:59:43
