@@ -1,4 +1,28 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
-#{welcome /}
+<h1>Gatekeeper</h1>
+
+#{if providers.size() > 1}
+    <div class="older-posts">
+        <h3>Providers <span class="from">from this blog</span></h3>
+    
+        #{list items:providers, as:'provider'}
+            <div class="post">
+                <h2 class="post-title">
+                    active:<a href="#">${provider.active}</a>
+                </h2>
+                <div class="post-metadata">
+                    <span class="post-author">
+                        protocol:${provider.protocol}
+                    </span>
+                </div>
+            </div>
+        #{/list}
+#{/if}
+    
+#{else}
+    <div class="empty">
+        There is currently nothing to read here.
+    </div>
+#{/else}
