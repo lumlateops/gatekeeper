@@ -14,4 +14,10 @@ public class Application extends Controller
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		render(providers);
 	}
+	
+	public static void add()
+	{
+		List<ServiceProvider> providers = ServiceProvider.findAll();
+		render(providers);
+	}
 }

@@ -15,13 +15,14 @@ public class BasicTest extends UnitTest
 	@Test
 	public void createAndRetrieveAccount() 
 	{
-		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL.toString(), 
+		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL.toString(),"deallr.com",
+				"f_yk4d2GkQljJ38JQrcRJBPr", 
 				true, "http://gmail.com", AuthProtocols.OAUTH.toString(), 
 				new Date(System.currentTimeMillis()), 
 				new Date(System.currentTimeMillis())).save();
 		
 	    // Create a new user email account and save it
-		new Account("bob", "bob@gmail.com", provider, "token", true, "",
+		new Account("bob", "bob@gmail.com", provider, "token", "secret" ,true, "",
 					new Date(System.currentTimeMillis()), 
 					new Date(System.currentTimeMillis()), 
 					new Date(System.currentTimeMillis()), 
@@ -37,7 +38,8 @@ public class BasicTest extends UnitTest
 	@Test
 	public void createAndRetrieveProvider()
 	{
-		new ServiceProvider(EmailProviders.GMAIL.toString(), true, 
+		new ServiceProvider(EmailProviders.GMAIL.toString(), "deallr.com",
+				"f_yk4d2GkQljJ38JQrcRJBPr", true, 
 							"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 							new Date(System.currentTimeMillis()), 
 							new Date(System.currentTimeMillis())).save();
@@ -56,5 +58,13 @@ public class BasicTest extends UnitTest
 	    // Count things
 	    assertEquals(0, Account.count());
 	    assertEquals(6, ServiceProvider.count());
+	    
+	    List<ServiceProvider> providers = ServiceProvider.findAll();
+	    assertEquals(6, providers.size());
+	    for (ServiceProvider sp : providers)
+			{
+				assertNotNull(sp);
+				assertNotNull(sp.name);
+			}
 	}
 }

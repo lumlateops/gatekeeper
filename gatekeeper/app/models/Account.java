@@ -13,6 +13,7 @@ public class Account extends Model
 	public String		userId;
 	public String		email;
 	public String		dllr_auth_token;
+	public String		dllr_token_secret;
 	public boolean	active;
 	public String		last_error;
 	public Date			last_confirmed_at;
@@ -24,13 +25,14 @@ public class Account extends Model
 	ServiceProvider	provider;
 
 	public Account(String userId, String userEmail, ServiceProvider provider,
-			String dllrAuthToken, boolean active, String lastError,
+			String dllrAuthToken, String dllrTokenSecret, boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
 	{
 		this.userId = userId;
 		this.email = userEmail;
 		this.provider = provider;
 		this.dllr_auth_token = dllrAuthToken;
+		this.dllr_token_secret = dllrTokenSecret;
 		this.active = active;
 		this.last_error = lastError;
 		this.last_confirmed_at = lastConfirmedAt;

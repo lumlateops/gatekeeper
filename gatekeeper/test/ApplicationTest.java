@@ -14,4 +14,12 @@ public class ApplicationTest extends FunctionalTest {
         assertCharset("utf-8", response);
     }
     
+    @Test
+    public void testThatAddPageWorks() {
+        Response response = GET("/add");
+        assertIsOk(response);
+        assertContentType("text/html", response);
+        assertCharset("utf-8", response);
+    }
+    
 }

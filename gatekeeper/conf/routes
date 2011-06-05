@@ -5,6 +5,9 @@
 # Home page
 GET     /                                       Application.index
 
+# Add account
+GET     /add                                    Application.add
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
