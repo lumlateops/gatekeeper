@@ -2,6 +2,8 @@ package controllers;
 
 import java.util.List;
 
+import bl.googleAuth.GmailProvider;
+
 import play.data.validation.Required;
 import play.mvc.Controller;
 
@@ -27,26 +29,18 @@ public class Application extends Controller
 																	  @Required(message="Email is required") String email)
 	{
 		//Validate input
-		//Check if we have the account already
-		List<Account> accounts = Account.find("email", email).fetch();
     
-		//account exists, check if its still valid
-		if(accounts != null && accounts.size() == 1)
-    {
-    	
-    }
-		//Account not present or invalid, then get a new one and store it
-		else
-		{
-    	authorizeAndStoreAccount(provider, email);
-    }
-	}
-	
-	private static void authorizeAndStoreAccount(String provider, String email)
-	{
 		// Go to correct provider
 		if(provider != null && EmailProviders.GMAIL.toString().equals(provider))
 		{
+			//Check if account exists and is still valid
+			boolean isAuthorized = GmailProvider.isAccountAuthorized(email);
+			
+			//Account not present or invalid, then get a new one and store it
+			if(!isAuthorized)
+			{
+				String message = GmailProvider.authorizeAccount(email);
+			}
 		}
 	}
 }
