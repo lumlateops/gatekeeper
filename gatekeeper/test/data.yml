@@ -1,59 +1,61 @@
-ServiceProvider(GMAILM):
-name: Gmail
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: true
-website: http://gmail.com
-protocol: OAUTH
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
+# Test data
 
-ServiceProvider(YAHOOMAIL):
-name: Yahoo
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: true
-website: http://mail.yahoo.com
-protocol: OAUTH
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
-
-ServiceProvider(AOLMAIL):
-name: AOL
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: true
-website: http://webmail.aol.com
-protocol: OPENAUTH
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
-
-ServiceProvider(MSNMAIL):
-name: MSN
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: true
-website: http://mail.live.com
-protocol: DELEGATEDAUTH
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
-
+ServiceProvider(GMAIL):
+    name:             GMAIL
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://gmail.com
+    protocol:         OAUTH
+    created_at:       2009-06-14
+    updated_at:       2009-06-14    
+    
+ServiceProvider(YAHOO):
+    name:             Yahoo
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://mail.yahoo.com
+    protocol:         OAUTH
+    created_at:       2009-06-14
+    updated_at:       2009-06-14    
+    
+ServiceProvider(AOL):
+    name:             AOL
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://webmail.aol.com
+    protocol:         OPENAUTH
+    created_at:       2009-06-14
+    updated_at:       2009-06-14    
+    
+ServiceProvider(MSN):
+    name:             MSN
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://mail.live.com
+    protocol:         DELEGATEDAUTH
+    created_at:       2009-06-14
+    updated_at:       2009-06-14    
+    
 ServiceProvider(FACEBOOK):
-name: Facebook
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: false
-website: http://facebook.com
-protocol: OAUTH2
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
-
+    name:             Facebook
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://facebook.com
+    protocol:         OAUTH2
+    created_at:       2009-06-14
+    updated_at:       2009-06-14    
+    
 ServiceProvider(TWITTER):
-name: Twitter
-consumerKey: deallr.com
-consumerSecret: f_yk4d2GkQljJ38JQrcRJBPr
-active: false
-website: http://twitter.com
-protocol: OAUTH
-created_at: 2011-05-14t21:59:43
-updated_at: 2011-05-14t21:59:43
+    name:             Twitter
+    consumerKey:      deallr.com
+    consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    active:           true
+    website:          http://twitter.com
+    protocol:         OAUTH
+    created_at:       2009-06-14
+    updated_at:       2009-06-14

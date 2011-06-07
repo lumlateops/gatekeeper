@@ -1,4 +1,4 @@
-package googleAuth;
+package bl.googleAuth;
 
 import com.google.gdata.client.GoogleService;
 import com.google.gdata.client.Service;

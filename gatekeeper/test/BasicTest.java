@@ -1,6 +1,5 @@
 import org.junit.*;
 
-import java.sql.Date;
 import java.util.*;
 import play.test.*;
 import models.*;
@@ -15,9 +14,9 @@ public class BasicTest extends UnitTest
 	@Test
 	public void createAndRetrieveAccount() 
 	{
-		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL.toString(),"deallr.com",
-				"f_yk4d2GkQljJ38JQrcRJBPr", 
-				true, "http://gmail.com", AuthProtocols.OAUTH.toString(), 
+		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL
+				.toString(), "deallr.com", "f_yk4d2GkQljJ38JQrcRJBPr", true,
+				"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 				new Date(System.currentTimeMillis()), 
 				new Date(System.currentTimeMillis())).save();
 		
@@ -52,7 +51,8 @@ public class BasicTest extends UnitTest
 	}
 	
 	@Test
-	public void fullTest() {
+	public void fullTest() 
+	{
 	    Fixtures.loadModels("data.yml");
 	 
 	    // Count things
@@ -65,6 +65,15 @@ public class BasicTest extends UnitTest
 			{
 				assertNotNull(sp);
 				assertNotNull(sp.name);
+				assertNotNull(sp.consumerKey);
+				assertNotNull(sp.consumerSecret);
+				assertNotNull(sp.protocol);
+				assertNotNull(sp.website);
+				assertNotNull(sp.active);
+				assertNotNull(sp.created_at);
+				assertNotNull(sp.updated_at);
 			}
+	    
+	    Fixtures.deleteAll();
 	}
 }
