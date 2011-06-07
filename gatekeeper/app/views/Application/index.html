@@ -5,20 +5,30 @@
 
 #{if providers.size() > 1}
     <div class="older-posts">
-        <h3>Providers <span class="from">from this blog</span></h3>
+        <h3>Registered Providers</h3>
     
-        #{list items:providers, as:'provider'}
             <div class="post">
-                <h2 class="post-title">
-                    active:<a href="#">${provider.active}</a>
-                </h2>
-                <div class="post-metadata">
-                    <span class="post-author">
-                        protocol:${provider.protocol}
-                    </span>
-                </div>
-            </div>
+                <table border="1">
+                	<tr>
+                		<th>Provider</th>
+                		<th>Active</th>
+                		<th>Website</th>
+                		<th>Protocol</th>
+                		<th>Created On</th>
+                		<th>Modified On</th>
+                	</tr>
+        #{list items:providers, as:'provider'}
+                	<tr>
+                		<td>${provider.name}</td>
+                		<td>${provider.active}</td>
+                		<td>${provider.website}</td>
+                		<td>${provider.protocol}</td>
+                		<td>${provider.created_at}</td>
+                		<td>${provider.updated_at}</td>
+                	</tr>
         #{/list}
+        </table>
+            </div>
 #{/if}
     
 #{else}
