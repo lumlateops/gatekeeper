@@ -22,6 +22,11 @@ class GoogleProvider
 	private static final String	ACCESS_TOKEN		= "1/p5OBp4-ycxTuNtHue5agDUtYsHPulNEHB0MfY_t4Ozo";
 	private static final String	TOKEN_SECRET		= "YZol8hF8NHLHMtUVb_qpBswM";
 
+	public static void authorizeAccount(String email)
+	{
+		
+	}
+	
 	public static void main(String[] args) throws Exception
 	{
 

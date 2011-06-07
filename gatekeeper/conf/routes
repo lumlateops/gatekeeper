@@ -6,7 +6,7 @@
 GET     /                                       Application.index
 
 # Add account
-GET     /add                                    Application.add
+GET     /authorize/{provider}/{email}           Application.authorizeEmail
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

@@ -6,12 +6,14 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import play.data.validation.Email;
 import play.db.jpa.Model;
 
 @Entity
 public class Account extends Model
 {
 	public String		userId;
+	@Email
 	public String		email;
 	public String		dllr_auth_token;
 	public String		dllr_token_secret;

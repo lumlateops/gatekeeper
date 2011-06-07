@@ -1,6 +1,7 @@
 import org.junit.*;
 
 import java.util.*;
+
 import play.test.*;
 import models.*;
 
@@ -56,7 +57,7 @@ public class BasicTest extends UnitTest
 	    Fixtures.loadModels("data.yml");
 	 
 	    // Count things
-	    assertEquals(0, Account.count());
+	    assertEquals(1, Account.count());
 	    assertEquals(6, ServiceProvider.count());
 	    
 	    List<ServiceProvider> providers = ServiceProvider.findAll();
@@ -73,6 +74,9 @@ public class BasicTest extends UnitTest
 				assertNotNull(sp.created_at);
 				assertNotNull(sp.updated_at);
 			}
+	    
+	    List<Account> accounts = Account.find("email", "lumlateops@gmail.com").fetch();
+	    assertEquals(1, accounts.size());
 	    
 	    Fixtures.deleteAll();
 	}
