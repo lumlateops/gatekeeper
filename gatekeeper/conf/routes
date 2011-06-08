@@ -3,16 +3,16 @@
 # ~~~~
 
 # Home page
-GET     /                                       Application.index
+GET     /                                       		Application.index
 
 # Add account
-GET     /authorize/{provider}/{email}           Application.authorizeEmail
+GET     /authorize/{userId}/{provider}/{email}          Application.authorizeEmail
 
 # Ignore favicon requests
-GET     /favicon.ico                            404
+GET     /favicon.ico                            		404
 
 # Map static resources from the /app/public folder to the /public path
-GET     /public/                                staticDir:public
+GET     /public/                                		staticDir:public
 
 # Catch all
-*       /{controller}/{action}                  {controller}.{action}
+*       /{controller}/{action}                  		{controller}.{action}

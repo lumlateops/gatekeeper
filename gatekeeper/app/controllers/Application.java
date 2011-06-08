@@ -2,8 +2,14 @@ package controllers;
 
 import java.util.List;
 
+import com.google.gdata.client.authn.oauth.OAuthException;
+
+import jsonModels.Message;
+
+import bl.googleAuth.AuthPayLoad;
 import bl.googleAuth.GmailProvider;
 
+import play.Logger;
 import play.data.validation.Required;
 import play.mvc.Controller;
 
@@ -25,22 +31,47 @@ public class Application extends Controller
 	 * If not it gets the request token for the address.
 	 * @param author
 	 */
-	public static void authorizeEmail(@Required(message="Email provider is required") String provider,
+	public static void authorizeEmail(@Required(message="UserId is required") String userId,
+																		@Required(message="Email provider is required") String provider,
 																	  @Required(message="Email is required") String email)
 	{
-		//Validate input
+		String returnMessage = "";
+    Logger.debug("Authorize Email Called:" + userId + "/" + provider + "/" + email);
+    
+    //TODO: Validate input
     
 		// Go to correct provider
-		if(provider != null && EmailProviders.GMAIL.toString().equals(provider))
+		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 		{
+			Logger.debug("AE: Provider is Gmail");
+			
 			//Check if account exists and is still valid
 			boolean isAuthorized = GmailProvider.isAccountAuthorized(email);
+			
+			Logger.debug("AE: isAuthorized: " + isAuthorized);
 			
 			//Account not present or invalid, then get a new one and store it
 			if(!isAuthorized)
 			{
-				String message = GmailProvider.authorizeAccount(email);
+				try
+				{
+					AuthPayLoad authPayLoad = GmailProvider.authorizeAccount(userId, email);
+					redirect(authPayLoad.getRedirectUrl());
+					Logger.info("Back from redirect");
+					
+					//Upgrade to access token and store the account
+					GmailProvider.upgradeToken(userId, email, authPayLoad);
+				}
+				catch (OAuthException e)
+				{
+					returnMessage = e.getMessage() + e.getCause();
+				}
+			}
+			else
+			{
+				returnMessage = "Account registered and authorized already";
 			}
 		}
+		renderJSON(new Message(true, returnMessage));
 	}
 }

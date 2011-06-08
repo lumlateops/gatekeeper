@@ -15,18 +15,16 @@ public class BasicTest extends UnitTest
 	@Test
 	public void createAndRetrieveAccount() 
 	{
+		Date currentDate = new Date(System.currentTimeMillis());
 		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL
 				.toString(), "deallr.com", "f_yk4d2GkQljJ38JQrcRJBPr", true,
 				"http://gmail.com", AuthProtocols.OAUTH.toString(), 
-				new Date(System.currentTimeMillis()), 
-				new Date(System.currentTimeMillis())).save();
+				currentDate, 
+				currentDate).save();
 		
-	    // Create a new user email account and save it
+	  // Create a new user email account and save it
 		new Account("bob", "bob@gmail.com", provider, "token", "secret" ,true, "",
-					new Date(System.currentTimeMillis()), 
-					new Date(System.currentTimeMillis()), 
-					new Date(System.currentTimeMillis()), 
-					new Date(System.currentTimeMillis())).save();
+					currentDate, currentDate, currentDate, currentDate).save();
 	    
 	    Account account = Account.find("byEmail", "bob@gmail.com").first();
 	    
