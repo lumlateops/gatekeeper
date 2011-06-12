@@ -5,8 +5,16 @@
 # Home page
 GET     /                                       		Application.index
 
+# List all providers
+GET /providers/fullList									Application.listProviders
+
 # Add account
 GET     /authorize/{userId}/{provider}/{email}          Application.authorizeEmail
+
+# Upgrade token
+# oauth_token=4%2FOlxepGuUkPerjcmjp8axuS_ybk4O
+GET		/upgrade/{userId}/{provider}/{email}/{oauth_token}			Application.upgradeToken
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            		404

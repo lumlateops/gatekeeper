@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import play.Logger;
 import play.data.validation.Email;
 import play.db.jpa.Model;
 
@@ -31,6 +32,8 @@ public class Account extends Model
 			String dllrAuthToken, String dllrTokenSecret, boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
 	{
+		Logger.info("Account constructor called");
+		
 		this.userId = userId;
 		this.email = userEmail;
 		this.provider = provider;

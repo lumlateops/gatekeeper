@@ -25,6 +25,14 @@ public class Application extends Controller
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		render(providers);
 	}
+	/**
+	 * Returns a list of the providers supported by the system
+	 */
+	public static void listAllProviders()
+	{
+		List<ServiceProvider> providers = ServiceProvider.findAll();
+		renderJSON(providers);
+	}
 	
 	/**
 	 * Checks to see if the email address is authorized already.
@@ -56,11 +64,8 @@ public class Application extends Controller
 				try
 				{
 					AuthPayLoad authPayLoad = GmailProvider.authorizeAccount(userId, email);
+					Logger.info(authPayLoad.getRedirectUrl());
 					redirect(authPayLoad.getRedirectUrl());
-					Logger.info("Back from redirect");
-					
-					//Upgrade to access token and store the account
-					GmailProvider.upgradeToken(userId, email, authPayLoad);
 				}
 				catch (OAuthException e)
 				{
@@ -71,6 +76,23 @@ public class Application extends Controller
 			{
 				returnMessage = "Account registered and authorized already";
 			}
+		}
+		renderJSON(new Message(true, returnMessage));
+	}
+	
+	public static void upgradeToken(@Required(message="UserId is required") String userId,
+																	@Required(message="Email provider is required") String provider,
+																	@Required(message="Email is required") String email,
+																	String requestToken)
+	{
+		String returnMessage = "Token upgraded successfully";
+		Logger.info(requestToken);
+    
+		// Go to correct provider
+		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		{
+			//Upgrade to access token and store the account
+			returnMessage = GmailProvider.upgradeToken(userId, email, requestToken);
 		}
 		renderJSON(new Message(true, returnMessage));
 	}

@@ -4,6 +4,7 @@ ServiceProvider(GMAIL):
     name:             GMAIL
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          https://www.google.com/images/logos/mail_logo.png
     active:           true
     website:          http://gmail.com
     protocol:         OAUTH
@@ -14,6 +15,7 @@ ServiceProvider(YAHOO):
     name:             Yahoo
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          http://l.yimg.com/a/i/us/pim/dclient/cg570/img/md5/509840ceb0dd52f5f024dba77099b4b0_1.gif
     active:           true
     website:          http://mail.yahoo.com
     protocol:         OAUTH
@@ -24,6 +26,7 @@ ServiceProvider(AOL):
     name:             AOL
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          
     active:           true
     website:          http://webmail.aol.com
     protocol:         OPENAUTH
@@ -34,6 +37,7 @@ ServiceProvider(MSN):
     name:             MSN
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          https://secure.shared.live.com/~Live.SiteContent.ID.HMCustomization/~1.0.24/~/~/~/~/mai/images/hotmail.png
     active:           true
     website:          http://mail.live.com
     protocol:         DELEGATEDAUTH
@@ -44,6 +48,7 @@ ServiceProvider(FACEBOOK):
     name:             Facebook
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          
     active:           true
     website:          http://facebook.com
     protocol:         OAUTH2
@@ -54,6 +59,7 @@ ServiceProvider(TWITTER):
     name:             Twitter
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
+    logoUrl:          
     active:           true
     website:          http://twitter.com
     protocol:         OAUTH

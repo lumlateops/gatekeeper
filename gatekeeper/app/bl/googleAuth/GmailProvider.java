@@ -17,6 +17,7 @@ import models.ServiceProvider;
 
 public class GmailProvider
 {
+	//TODO Add scopt to the DB as well
 	private static final String	SCOPE	= "https://mail.google.com/mail/feed/atom/";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
@@ -54,11 +55,15 @@ public class GmailProvider
 	 */
 	public static AuthPayLoad authorizeAccount(String userId, String email) throws OAuthException
 	{
-		//TODO: redirect user to the authorization url
-		GoogleOAuthParameters oauthParameters = setAuthParams();
+		GoogleOAuthParameters oauthParameters = getAuthParams();
 		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
+
+		//http://localhost:9000/upgrade/prachi/gmail/praachee@gmail.com
+		oauthParameters.setOAuthCallback("http://localhost:9000/upgrade/" + userId + "/gmail/" + email);
+		
+		Logger.info(requestUrl);
 		
 		return new AuthPayLoad(requestUrl, oauthHelper, oauthParameters);
 	}
@@ -70,13 +75,13 @@ public class GmailProvider
 	 * @param authPayLoad
 	 * @return
 	 */
-	public static String upgradeToken(String userId, String email, AuthPayLoad authPayLoad)
+	public static String upgradeToken(String userId, String email, String requestToken)
 	{
 		String returnMessage = "Successfully upgraded token";
 		try
 		{
-			GoogleOAuthParameters oauthParameters = authPayLoad.getOauthParameters();
-			GoogleOAuthHelper oauthHelper = authPayLoad.getOauthHelper();
+			GoogleOAuthParameters oauthParameters = getAuthParams();
+			GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 			
 			String token = oauthHelper.getAccessToken(oauthParameters);
 			String tokenSecret = oauthParameters.getOAuthTokenSecret();
@@ -88,7 +93,7 @@ public class GmailProvider
 			new Account(userId, email, gmailProvider, token, tokenSecret, true, "", 
 									current, null, current, current).save();
 			
-			Logger.info("Account upgraded, number of accounts in database: "+Account.findAll().size());
+			Logger.info("Account upgraded, number of accounts in database: " + Account.findAll().size());
 			
 		}
 		catch (OAuthException e)
@@ -110,7 +115,7 @@ public class GmailProvider
 		try
 		{
 			//Revoke token
-			GoogleOAuthParameters oauthParameters = setAuthParams();
+			GoogleOAuthParameters oauthParameters = getAuthParams();
 			GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 			oauthHelper.revokeToken(oauthParameters);
 			//Clean up database
@@ -124,7 +129,7 @@ public class GmailProvider
 		return returnMessage;
 	}
 	
-	private static GoogleOAuthParameters setAuthParams()
+	private static GoogleOAuthParameters getAuthParams()
 	{
 		GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
 		oauthParameters.setScope(SCOPE);
