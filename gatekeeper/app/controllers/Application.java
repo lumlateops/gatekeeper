@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gdata.client.authn.oauth.OAuthException;
@@ -25,6 +26,7 @@ public class Application extends Controller
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		render(providers);
 	}
+	
 	/**
 	 * Returns a list of the providers supported by the system
 	 */
@@ -32,6 +34,23 @@ public class Application extends Controller
 	{
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		renderJSON(providers);
+	}
+	
+	/**
+	 * Returns a list active providers supported by the system
+	 */
+	public static void listActiveProviders()
+	{
+		List<ServiceProvider> allProviders = ServiceProvider.findAll();
+		List<ServiceProvider> activeProviders = new ArrayList<ServiceProvider>();
+		for (ServiceProvider serviceProvider : allProviders)
+		{
+			if(serviceProvider.active)
+			{
+				activeProviders.add(serviceProvider);
+			}
+		}
+		renderJSON(activeProviders);
 	}
 	
 	/**
