@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                                       		Application.index
+# GET     /                                       	Application.index
 
 # List all providers
 GET /providers/all									Application.listAllProviders
