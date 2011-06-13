@@ -17,7 +17,7 @@ public class BasicTest extends UnitTest
 	{
 		Date currentDate = new Date(System.currentTimeMillis());
 		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL
-				.toString(), "deallr.com", "f_yk4d2GkQljJ38JQrcRJBPr", true,
+				.toString(), "deallr.com", "f_yk4d2GkQljJ38JQrcRJBPr", "logourl" ,true,
 				"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 				currentDate, 
 				currentDate).save();
@@ -37,7 +37,7 @@ public class BasicTest extends UnitTest
 	public void createAndRetrieveProvider()
 	{
 		new ServiceProvider(EmailProviders.GMAIL.toString(), "deallr.com",
-				"f_yk4d2GkQljJ38JQrcRJBPr", true, 
+				"f_yk4d2GkQljJ38JQrcRJBPr", "logourl", true, 
 							"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 							new Date(System.currentTimeMillis()), 
 							new Date(System.currentTimeMillis())).save();

@@ -1,13 +1,16 @@
 package jsonModels;
 
+/**
+ * Just a wrapper object for the response
+ * @author prachi
+ *
+ */
 public class Message
 {
-	boolean isSuccess;
-	String message;
+	Object service;
 	
-	public Message(boolean isSuccess, String message)
+	public Message(Object service)
 	{
-		this.isSuccess = isSuccess;
-		this.message = message;
+		this.service = service;
 	}
 }

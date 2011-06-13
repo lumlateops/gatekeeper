@@ -1,11 +1,18 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gdata.client.authn.oauth.OAuthException;
 
+import jsonModels.Errors;
 import jsonModels.Message;
+import jsonModels.Parameter;
+import jsonModels.Service;
+import jsonModels.Request;
 
 import bl.googleAuth.AuthPayLoad;
 import bl.googleAuth.GmailProvider;
@@ -32,8 +39,11 @@ public class Application extends Controller
 	 */
 	public static void listAllProviders()
 	{
+		Long startTime = System.currentTimeMillis();
 		List<ServiceProvider> providers = ServiceProvider.findAll();
-		renderJSON(providers);
+		Long endTime = System.currentTimeMillis();
+		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
+		renderJSON(new Message(new Service(request, providers)));
 	}
 	
 	/**
@@ -41,6 +51,7 @@ public class Application extends Controller
 	 */
 	public static void listActiveProviders()
 	{
+		Long startTime = System.currentTimeMillis();
 		List<ServiceProvider> allProviders = ServiceProvider.findAll();
 		List<ServiceProvider> activeProviders = new ArrayList<ServiceProvider>();
 		for (ServiceProvider serviceProvider : allProviders)
@@ -50,7 +61,9 @@ public class Application extends Controller
 				activeProviders.add(serviceProvider);
 			}
 		}
-		renderJSON(activeProviders);
+		Long endTime = System.currentTimeMillis();
+		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
+		renderJSON(new Message(new Service(request, activeProviders)));
 	}
 	
 	/**
@@ -62,6 +75,8 @@ public class Application extends Controller
 																		@Required(message="Email provider is required") String provider,
 																	  @Required(message="Email is required") String email)
 	{
+		Long startTime = System.currentTimeMillis();
+		
 		String returnMessage = "";
     Logger.debug("Authorize Email Called:" + userId + "/" + provider + "/" + email);
     
@@ -96,9 +111,25 @@ public class Application extends Controller
 				returnMessage = "Account registered and authorized already";
 			}
 		}
-		renderJSON(new Message(true, returnMessage));
+		
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", userId);
+		parameters.put("provider", provider);
+		parameters.put("email", email);
+		Request request = new Request(Boolean.TRUE, "authorizeEmail", endTime-startTime, parameters);
+		
+		renderJSON(new Message(new Service(request, returnMessage)));
 	}
 	
+	/**
+	 * Upgrades a request token to an access token
+	 * @param userId
+	 * @param provider
+	 * @param email
+	 * @param requestToken
+	 */
 	public static void upgradeToken(@Required(message="UserId is required") String userId,
 																	@Required(message="Email provider is required") String provider,
 																	@Required(message="Email is required") String email,
@@ -113,6 +144,6 @@ public class Application extends Controller
 			//Upgrade to access token and store the account
 			returnMessage = GmailProvider.upgradeToken(userId, email, requestToken);
 		}
-		renderJSON(new Message(true, returnMessage));
+		renderJSON(new Message(returnMessage));
 	}
 }
