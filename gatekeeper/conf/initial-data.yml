@@ -16,7 +16,7 @@ ServiceProvider(YAHOO):
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
     logoUrl:          http://l.yimg.com/a/i/us/pim/dclient/cg570/img/md5/509840ceb0dd52f5f024dba77099b4b0_1.gif
-    active:           true
+    active:           false
     website:          http://mail.yahoo.com
     protocol:         OAUTH
     created_at:       2009-06-14
