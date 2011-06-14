@@ -230,7 +230,7 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void login(@Required(message="Email is required") String email,
+	public static void login(@Required(message="username is required") String username,
 													 @Required(message="Password is required") String password)
 	{
 		Long startTime = System.currentTimeMillis();
@@ -242,7 +242,7 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("email", email);
+		parameters.put("username", username);
 		parameters.put("password", password);
 		Request request = new Request(Boolean.TRUE, "login", endTime-startTime, parameters);
 		renderJSON(new Message(new Service(request, isValid)));

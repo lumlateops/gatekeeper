@@ -6,7 +6,7 @@
 # GET   /                                       							Application.index
 
 # Login
-GET		/login/{email}/{password}											Application.login
+GET		/login/{username}/{password}										Application.login
 
 # List all providers
 GET 	/providers/all														Application.listAllProviders
@@ -15,16 +15,16 @@ GET 	/providers/all														Application.listAllProviders
 GET 	/providers/active													Application.listActiveProviders
 
 # Add account
-GET     account/authorize/{userId}/{provider}/{email}     					Application.authorizeEmail
+GET     /account/authorize/{userId}/{provider}/{email}     					Application.authorizeEmail
 
 # Upgrade token
-GET		account/upgrade/{userId}/{provider}/{email}/{queryString}			Application.upgradeToken
+GET		/account/upgrade/{userId}/{provider}/{email}/{queryString}			Application.upgradeToken
 
 # Check if account is authorized
-GET 	account/verify/userId}/{provider}/{email}							Application.verifyAccount
+GET 	/account/verify/userId}/{provider}/{email}							Application.verifyAccount
 
 # Revoke access token
-POST	account/revoke/{userId}/{password}/{provider}/{email}				Application.revokeAccess
+POST	/account/revoke/{userId}/{password}/{provider}/{email}				Application.revokeAccess
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404
