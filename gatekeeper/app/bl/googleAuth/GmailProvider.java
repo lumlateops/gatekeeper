@@ -17,7 +17,7 @@ import models.ServiceProvider;
 
 public class GmailProvider
 {
-	//TODO Add scopt to the DB as well
+	//TODO Add scope to the DB as well
 	private static final String	SCOPE	= "https://mail.google.com/mail/feed/atom/";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
@@ -31,17 +31,24 @@ public class GmailProvider
 		CONSUMER_SECRET = gmailProvider.consumerSecret;
 	}
 	
-	public static boolean isAccountAuthorized(String email)
+	public static boolean isAccountAuthorized(String userId, String email)
 	{
 		boolean isAuthorized = false;
-		
+
 		//Check if we have the account already
 		List<Account> accounts = Account.find("email", email).fetch();
 		if(accounts != null && accounts.size() == 1)
     {
-			//Do a sample call to check validity
-			// Make an OAuth authorized request to Google
-			isAuthorized = true;
+			Account account = accounts.get(0);
+			
+			// Make sure userId matches
+			if(account.userId.equalsIgnoreCase(userId))
+			{
+				if(account.active)
+				{
+					isAuthorized = true;
+				}
+			}
     }
 		return isAuthorized;
 	}
@@ -53,35 +60,33 @@ public class GmailProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static AuthPayLoad authorizeAccount(String userId, String email) throws OAuthException
+	public static String authorizeAccount(String userId, String email) throws OAuthException
 	{
 		GoogleOAuthParameters oauthParameters = getAuthParams();
+		oauthParameters.setOAuthCallback("http://dev.deallr.com/upgrade/" + userId + "/gmail/" + email);
 		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
-
-		//http://localhost:9000/upgrade/prachi/gmail/praachee@gmail.com
-		oauthParameters.setOAuthCallback("http://localhost:9000/upgrade/" + userId + "/gmail/" + email);
 		
-		Logger.info(requestUrl);
-		
-		return new AuthPayLoad(requestUrl, oauthHelper, oauthParameters);
+		return requestUrl;
 	}
 	
 	/**
 	 * Upgrades the request token to an access token
 	 * @param userId
 	 * @param email
-	 * @param authPayLoad
+	 * @param queryString
 	 * @return
 	 */
-	public static String upgradeToken(String userId, String email, String requestToken)
+	public static String upgradeToken(String userId, String email, String queryString)
 	{
+		Logger.info("upgrade token called");
 		String returnMessage = "Successfully upgraded token";
 		try
 		{
 			GoogleOAuthParameters oauthParameters = getAuthParams();
 			GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+			oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
 			
 			String token = oauthHelper.getAccessToken(oauthParameters);
 			String tokenSecret = oauthParameters.getOAuthTokenSecret();
@@ -108,18 +113,30 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static String revokeAccess(String email)
+	public static String revokeAccess(String userId, String password, String email)
 	{
 		String returnMessage = "Revoked access for " + email;
 		
 		try
 		{
-			//Revoke token
-			GoogleOAuthParameters oauthParameters = getAuthParams();
-			GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-			oauthHelper.revokeToken(oauthParameters);
-			//Clean up database
-			((Account)Account.find("email", email).first()).delete();
+			// TODO: Check user credentials
+			boolean isAuthenticated = false;
+			
+			if(isAuthenticated)
+			{
+				// Revoke token
+				GoogleOAuthParameters oauthParameters = getAuthParams();
+				GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+				oauthHelper.revokeToken(oauthParameters);
+				// Clean up database
+				Account revokedAccount = ((Account)Account.find("email", email).first());
+				revokedAccount.active = false;
+				revokedAccount.save();
+			}
+			else
+			{
+				returnMessage = "Incorrect login";
+			}
 		}
 		catch (OAuthException e)
 		{

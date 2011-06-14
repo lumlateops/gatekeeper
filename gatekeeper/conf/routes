@@ -3,27 +3,34 @@
 # ~~~~
 
 # Home page
-# GET     /                                       	Application.index
+# GET   /                                       							Application.index
+
+# Login
+GET		/login/{email}/{password}											Application.login
 
 # List all providers
-GET /providers/all									Application.listAllProviders
+GET 	/providers/all														Application.listAllProviders
 
 # List active providers
-GET /providers/active								Application.listActiveProviders
+GET 	/providers/active													Application.listActiveProviders
 
 # Add account
-GET     /authorize/{userId}/{provider}/{email}          Application.authorizeEmail
+GET     account/authorize/{userId}/{provider}/{email}     					Application.authorizeEmail
 
 # Upgrade token
-# oauth_token=4%2FOlxepGuUkPerjcmjp8axuS_ybk4O
-GET		/upgrade/{userId}/{provider}/{email}/{oauth_token}			Application.upgradeToken
+GET		account/upgrade/{userId}/{provider}/{email}/{queryString}			Application.upgradeToken
 
+# Check if account is authorized
+GET 	account/verify/userId}/{provider}/{email}							Application.verifyAccount
+
+# Revoke access token
+POST	account/revoke/{userId}/{password}/{provider}/{email}				Application.revokeAccess
 
 # Ignore favicon requests
-GET     /favicon.ico                            		404
+GET     /favicon.ico                            							404
 
 # Map static resources from the /app/public folder to the /public path
-GET     /public/                                		staticDir:public
+GET     /public/                                							staticDir:public
 
 # Catch all
-*       /{controller}/{action}                  		{controller}.{action}
+*       /{controller}/{action}                  							{controller}.{action}

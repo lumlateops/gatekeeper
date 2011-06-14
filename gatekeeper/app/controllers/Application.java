@@ -25,7 +25,12 @@ import models.Account;
 import models.EmailProviders;
 import models.ServiceProvider;
 
-
+/**
+ * The main controller for the application. This is the only controller in the
+ * app for now but it will be split up later on as it gets more complicated.
+ * 
+ * @author prachi
+ */
 public class Application extends Controller
 {
 	public static void index()
@@ -77,6 +82,7 @@ public class Application extends Controller
 	{
 		Long startTime = System.currentTimeMillis();
 		
+		Boolean isSuccess = Boolean.TRUE;
 		String returnMessage = "";
     Logger.debug("Authorize Email Called:" + userId + "/" + provider + "/" + email);
     
@@ -88,7 +94,7 @@ public class Application extends Controller
 			Logger.debug("AE: Provider is Gmail");
 			
 			//Check if account exists and is still valid
-			boolean isAuthorized = GmailProvider.isAccountAuthorized(email);
+			boolean isAuthorized = GmailProvider.isAccountAuthorized(userId, email);
 			
 			Logger.debug("AE: isAuthorized: " + isAuthorized);
 			
@@ -97,12 +103,13 @@ public class Application extends Controller
 			{
 				try
 				{
-					AuthPayLoad authPayLoad = GmailProvider.authorizeAccount(userId, email);
-					Logger.info(authPayLoad.getRedirectUrl());
-					redirect(authPayLoad.getRedirectUrl());
+					String authUrl = GmailProvider.authorizeAccount(userId, email);
+					Logger.info(authUrl);
+					redirect(authUrl);
 				}
 				catch (OAuthException e)
 				{
+					isSuccess = Boolean.FALSE;
 					returnMessage = e.getMessage() + e.getCause();
 				}
 			}
@@ -118,7 +125,7 @@ public class Application extends Controller
 		parameters.put("userId", userId);
 		parameters.put("provider", provider);
 		parameters.put("email", email);
-		Request request = new Request(Boolean.TRUE, "authorizeEmail", endTime-startTime, parameters);
+		Request request = new Request(isSuccess, "authorizeEmail", endTime-startTime, parameters);
 		
 		renderJSON(new Message(new Service(request, returnMessage)));
 	}
@@ -133,17 +140,111 @@ public class Application extends Controller
 	public static void upgradeToken(@Required(message="UserId is required") String userId,
 																	@Required(message="Email provider is required") String provider,
 																	@Required(message="Email is required") String email,
-																	String requestToken)
+																	@Required(message="Query string needed for upgrading")String queryString)
 	{
+		Long startTime = System.currentTimeMillis();
+		
 		String returnMessage = "Token upgraded successfully";
-		Logger.info(requestToken);
     
 		// Go to correct provider
 		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 		{
 			//Upgrade to access token and store the account
-			returnMessage = GmailProvider.upgradeToken(userId, email, requestToken);
+			returnMessage = GmailProvider.upgradeToken(userId, email, queryString);
 		}
-		renderJSON(new Message(returnMessage));
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", userId);
+		parameters.put("provider", provider);
+		parameters.put("email", email);
+		parameters.put("queryString", queryString);
+		Request request = new Request(Boolean.TRUE, "upgradeToken", endTime-startTime, parameters);
+		renderJSON(new Message(new Service(request, returnMessage)));
+	}
+	
+	/**
+	 * Revokes a access token
+	 * @param userId
+	 * @param provider
+	 * @param email
+	 */
+	public static void revokeAccess(@Required(message="UserId is required") String userId,
+																	@Required(message="UserId is required") String password,
+																	@Required(message="Email provider is required") String provider,
+																	@Required(message="Email is required") String email)
+	{
+		Long startTime = System.currentTimeMillis();
+		
+		String returnMessage = "Access revoked successfully";
+    
+		// Go to correct provider
+		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		{
+			//Upgrade to access token and store the account
+			returnMessage = GmailProvider.revokeAccess(userId, password, email);
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", userId);
+		parameters.put("provider", provider);
+		parameters.put("email", email);
+		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
+		renderJSON(new Message(new Service(request, returnMessage)));
+	}
+	
+	/**
+	 * Verifies if we still have access to this account
+	 * @param userId
+	 * @param provider
+	 * @param email
+	 */
+	public static void verifyAccount(@Required(message="UserId is required") String userId,
+																	 @Required(message="Email provider is required") String provider,
+																	 @Required(message="Email is required") String email)
+	{
+		Long startTime = System.currentTimeMillis();
+		
+		boolean isValid = false;
+    
+		// Go to correct provider
+		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		{
+			//Upgrade to access token and store the account
+			isValid = GmailProvider.isAccountAuthorized(userId, email);
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", userId);
+		parameters.put("provider", provider);
+		parameters.put("email", email);
+		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
+		renderJSON(new Message(new Service(request, isValid)));
+	}
+	
+	/**
+	 * Login!
+	 * @param userId
+	 * @param provider
+	 * @param email
+	 */
+	public static void login(@Required(message="Email is required") String email,
+													 @Required(message="Password is required") String password)
+	{
+		Long startTime = System.currentTimeMillis();
+		
+		boolean isValid = false;
+    
+		//TODO Authenticate the user
+		
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("email", email);
+		parameters.put("password", password);
+		Request request = new Request(Boolean.TRUE, "login", endTime-startTime, parameters);
+		renderJSON(new Message(new Service(request, isValid)));
 	}
 }
