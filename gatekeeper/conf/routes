@@ -21,7 +21,7 @@ GET     /account/add/{userId}/{provider}/{email}     						Application.addEmail
 GET     /user/available/{userId}						     				Application.checkUserNameAvailable
 
 # Upgrade token
-GET		/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
+POST	/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
 
 # Check if account is authorized
 GET 	/account/verify/userId}/{provider}/{email}							Application.verifyAccount
