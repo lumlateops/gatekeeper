@@ -63,7 +63,7 @@ public class GmailProvider
 	public static String authorizeAccount(String userId, String email) throws OAuthException
 	{
 		GoogleOAuthParameters oauthParameters = getAuthParams();
-		oauthParameters.setOAuthCallback("http://dev.deallr.com/upgradeEmailToken/" + userId + "/gmail/" + email);
+		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
 		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
