@@ -17,9 +17,6 @@ GET 	/providers/active													Application.listActiveProviders
 # Add account
 GET     /account/authorize/{userId}/{provider}/{email}     					Application.authorizeEmail
 
-# Check username availability
-GET     /user/available/{userId}						     				Application.checkUserNameAvailable
-
 # Upgrade token
 GET		/account/upgrade/{userId}/{provider}/{email}/{queryString}			Application.upgradeToken
 

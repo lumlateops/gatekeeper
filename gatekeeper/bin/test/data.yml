@@ -70,18 +70,4 @@ Account(lumlateops):
     last_confirmed_at:  2009-06-14
     last_error_at:      2009-06-14
     created_at:         2009-06-14
-    updated_at:         2009-06-14    
-    
-UserInfo(ramdev):
-    userId:             ramdev
-    firstName:          ram
-    lastName:    		dev
-    password:  			YZol8hF8NHLHMtUVb_qpBswM
-    active:             true
-    gender:				unknown
-    zipcode:         	12345
-    email:  			ramdev@deallr.com
-    created_at:         2009-06-14
     updated_at:         2009-06-14
-    
-    
