@@ -76,9 +76,9 @@ public class Application extends Controller
 	 * If not it gets the request token for the address.
 	 * @param author
 	 */
-	public static void authorizeEmail(@Required(message="UserId is required") String userId,
-																		@Required(message="Email provider is required") String provider,
-																	  @Required(message="Email is required") String email)
+	public static void addEmail(@Required(message="UserId is required") String userId,
+															@Required(message="Email provider is required") String provider,
+															@Required(message="Email is required") String email)
 	{
 		Long startTime = System.currentTimeMillis();
 		
@@ -125,7 +125,7 @@ public class Application extends Controller
 		parameters.put("userId", userId);
 		parameters.put("provider", provider);
 		parameters.put("email", email);
-		Request request = new Request(isSuccess, "authorizeEmail", endTime-startTime, parameters);
+		Request request = new Request(isSuccess, "addEmail", endTime-startTime, parameters);
 		
 		renderJSON(new Message(new Service(request, returnMessage)));
 	}

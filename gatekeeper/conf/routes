@@ -15,10 +15,10 @@ GET 	/providers/all														Application.listAllProviders
 GET 	/providers/active													Application.listActiveProviders
 
 # Add account
-GET     /account/authorize/{userId}/{provider}/{email}     					Application.authorizeEmail
+GET     /account/add/{userId}/{provider}/{email}     						Application.addEmail
 
 # Upgrade token
-GET		/account/upgrade/{userId}/{provider}/{email}/{queryString}			Application.upgradeToken
+GET		/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
 
 # Check if account is authorized
 GET 	/account/verify/userId}/{provider}/{email}							Application.verifyAccount
