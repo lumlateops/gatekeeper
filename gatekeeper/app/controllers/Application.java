@@ -24,6 +24,7 @@ import play.mvc.Controller;
 import models.Account;
 import models.EmailProviders;
 import models.ServiceProvider;
+import models.UserInfo;
 
 /**
  * The main controller for the application. This is the only controller in the
@@ -247,4 +248,25 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "login", endTime-startTime, parameters);
 		renderJSON(new Message(new Service(request, isValid)));
 	}
+	
+    public static void checkUserNameAvailable(@Required(message="UserName is required") String userId){
+    	Long startTime = System.currentTimeMillis();
+		boolean isValid = false;
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", userId);
+		
+		if(!userId.isEmpty() || !userId.trim().isEmpty())
+		{
+			isValid = true;
+			List<UserInfo> userInfo = UserInfo.find("userId", userId).fetch();
+			Long endTime = System.currentTimeMillis();
+	        if(userInfo.size()>0){
+	        	Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
+	    		renderJSON(new Message(new Service(request, Boolean.FALSE)));
+	        }else{
+	        	Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
+	        	renderJSON(new Message(new Service(request, Boolean.TRUE)));
+	        }
+		}
+    }
 }
