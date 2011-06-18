@@ -15,10 +15,13 @@ GET 	/providers/all														Application.listAllProviders
 GET 	/providers/active													Application.listActiveProviders
 
 # Add account
-GET     /account/add/{userId}/{provider}/{email}     						Application.addEmail
+GET		/account/add/{userId}/{provider}/{email}     						Application.addEmail
+
+# Add user 
+POST		/user/add/{userName}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
 
 # Check username availability
-GET     /user/available/{userId}						     				Application.checkUserNameAvailable
+GET     /user/available/{userName}						     				Application.checkUserNameAvailable
 
 # Upgrade token
 POST	/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
