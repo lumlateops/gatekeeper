@@ -16,6 +16,7 @@ import jsonModels.Message;
 import jsonModels.Parameter;
 import jsonModels.Service;
 import jsonModels.Request;
+import jsonModels.Error;
 
 import bl.googleAuth.AuthPayLoad;
 import bl.googleAuth.GmailProvider;
@@ -241,22 +242,56 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void login(@Required(message="username is required") String username,
-			@Required(message="Password is required") String password)
+	public static void login(@Required(message="username is required") String userName,
+			@Required(message="Password is required") @Password @MinSize(5) String password)
 	{
 		Long startTime = System.currentTimeMillis();
-
 		boolean isValid = false;
-
-		//TODO Authenticate the user
-
-		Long endTime = System.currentTimeMillis();
-
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("username", username);
+		parameters.put("userName", userName);
 		parameters.put("password", password);
-		Request request = new Request(Boolean.TRUE, "login", endTime-startTime, parameters);
-		renderJSON(new Message(new Service(request, isValid)));
+		if(!userName.isEmpty() || !userName.trim().isEmpty())
+		{
+			isValid=true;
+			List<UserInfo> userinfo=null;
+			userinfo=UserInfo.find("userName",userName).fetch(1);
+			if(userinfo.size()>0){
+				if(UserInfo.find("SELECT u FROM UserInfo u where u.password is ?",password).fetch(1).size()>0){
+					Long endTime = System.currentTimeMillis();
+					Request request = new Request(isValid, "login", endTime-startTime, parameters);
+					renderJSON(new Message(new Service(request, Boolean.TRUE)));		
+				}else{
+					Long endTime = System.currentTimeMillis();
+					Request request = new Request(isValid, "login", endTime-startTime, parameters);
+					renderJSON(new Message(new Service(request, Boolean.FALSE)));
+				}
+			}else{
+				userinfo=UserInfo.find("fbEmailAddress",userName).fetch(1);
+				if(userinfo.size()>0){
+					if(UserInfo.find("select u from UserInfo u where u.password is ?",password).fetch().size()>0){
+						Long endTime = System.currentTimeMillis();
+						Request request = new Request(isValid, "login", endTime-startTime, parameters);
+						renderJSON(new Message(new Service(request, Boolean.TRUE)));	
+					}else{
+						Long endTime = System.currentTimeMillis();
+						Request request = new Request(isValid, "login", endTime-startTime, parameters);
+						renderJSON(new Message(new Service(request, Boolean.FALSE)));
+					}
+				}else{
+					isValid = false;
+					Long endTime = System.currentTimeMillis();
+					Request request = new Request(isValid, "login", endTime-startTime, parameters);
+					Error err = new Error("400","User not registered");
+					renderJSON(new Message(new Service(request, err)));	
+				}
+			}			
+		}else{
+			isValid = false;
+			Long endTime = System.currentTimeMillis();
+			Request request = new Request(isValid, "login", endTime-startTime, parameters);
+			Error err = new Error("400","Invalid Request");
+			renderJSON(new Message(new Service(request, err)));
+		}
 	}
 
 	public static void checkUserNameAvailable(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String userName){
@@ -268,7 +303,7 @@ public class Application extends Controller
 		if(!userName.isEmpty() || !userName.trim().isEmpty())
 		{
 			isValid = true;
-			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch();
+			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch(1);
 			Long endTime = System.currentTimeMillis();
 			if(userInfo.size()>0){
 				Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
@@ -277,6 +312,12 @@ public class Application extends Controller
 				Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
 				renderJSON(new Message(new Service(request, Boolean.TRUE)));
 			}
+		}else{
+			isValid = false;
+			Long endTime = System.currentTimeMillis();
+			Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
+			Error err = new Error("400","Invalid Request");
+			renderJSON(new Message(new Service(request, err)));
 		}
 	}
 
@@ -312,17 +353,27 @@ public class Application extends Controller
 				parameters.put("fb_user_id",Long.toString(fbUserId));
 				
 				if(!userName.trim().isEmpty() && !password.trim().isEmpty() && !firstName.trim().isEmpty() && !lastName.trim().isEmpty()){
-					isValid = true;
-					UserInfo newuser=new UserInfo(userName,firstName,lastName,password,1,zipCode,fbEmailAddress,fbUserId,gender,createdAt,updatedAt);
-					newuser.save();
-					Long endTime = System.currentTimeMillis();
-					Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
-					renderJSON(new Message(new Service(request, Boolean.TRUE)));					
+					List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch();
+					if(userInfo.size()>0){
+						isValid = false;
+						Long endTime = System.currentTimeMillis();
+						Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
+						Error err = new Error("406","This username is already registered");
+						renderJSON(new Message(new Service(request, err)));
+					}else{
+						isValid = true;
+						UserInfo newuser=new UserInfo(userName,firstName,lastName,password,1,zipCode,fbEmailAddress,fbUserId,gender,createdAt,updatedAt);
+						newuser.save();
+						Long endTime = System.currentTimeMillis();
+						Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
+						renderJSON(new Message(new Service(request, Boolean.TRUE)));						
+					}
 				}else{
 					isValid = false;
 					Long endTime = System.currentTimeMillis();
 					Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
-					renderJSON(new Message(new Service(request, Boolean.FALSE)));
+					Error err = new Error("400","Invalid Request");
+					renderJSON(new Message(new Service(request, err)));
 				}
 			}
 }

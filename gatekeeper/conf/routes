@@ -23,6 +23,9 @@ POST		/user/add/{userName}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/
 # Check username availability
 GET     /user/available/{userName}						     				Application.checkUserNameAvailable
 
+# Check Authentication
+GET     /user/authenticate/{userName}/{password}						    Application.login
+
 # Upgrade token
 POST	/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
 
