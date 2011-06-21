@@ -38,7 +38,7 @@ public class GmailProvider
 		//Check if we have the account already
 		List<Account> accounts = Account.find("email", email).fetch();
 		if(accounts != null && accounts.size() == 1)
-    {
+		{
 			Account account = accounts.get(0);
 			
 			// Make sure userId matches
@@ -49,7 +49,7 @@ public class GmailProvider
 					isAuthorized = true;
 				}
 			}
-    }
+		}
 		return isAuthorized;
 	}
 	
@@ -68,6 +68,11 @@ public class GmailProvider
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
 		
+		// Store the information, leaving the access token blank
+		Date current = new Date(System.currentTimeMillis());
+		String tokenSecret = oauthParameters.getOAuthTokenSecret();
+		new Account(userId, email, gmailProvider, "", tokenSecret, true, "", 
+								current, null, current, current).save();
 		return requestUrl;
 	}
 	
@@ -84,22 +89,28 @@ public class GmailProvider
 		String returnMessage = "Successfully upgraded token";
 		try
 		{
-			GoogleOAuthParameters oauthParameters = getAuthParams();
-			GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-			oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
-			
-			String token = oauthHelper.getAccessToken(oauthParameters);
-			String tokenSecret = oauthParameters.getOAuthTokenSecret();
-			
-			Logger.info("Number of accounts in database before adding: "+Account.findAll().size());
-			
-			// Store the information
-			Date current = new Date(System.currentTimeMillis());
-			new Account(userId, email, gmailProvider, token, tokenSecret, true, "", 
-									current, null, current, current).save();
-			
-			Logger.info("Account upgraded, number of accounts in database: " + Account.findAll().size());
-			
+			List<Account> accounts = Account.find("email", email).fetch();
+			if(accounts != null && accounts.size() == 1)
+			{
+				Account account = accounts.get(0);
+				
+				// Make sure userId matches
+				if(account.userId.equalsIgnoreCase(userId))
+				{
+					GoogleOAuthParameters oauthParameters = getAuthParams();
+					oauthParameters.setOAuthTokenSecret(account.dllr_token_secret);
+
+					GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+					oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
+
+					String token = oauthHelper.getAccessToken(oauthParameters);
+					
+					account.dllr_auth_token = token;
+					account.save();
+				}
+			}
+//			new Account(userId, email, gmailProvider, token, tokenSecret, true, "", 
+//									current, null, current, current).save();
 		}
 		catch (OAuthException e)
 		{
