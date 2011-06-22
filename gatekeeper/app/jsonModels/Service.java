@@ -30,11 +30,18 @@ public class Service
 {
 	private String version = "1.1";
 	private Request request;
-	private Object response;
+	private Map<String, List<?>> response;
+	private Errors errors;
 	
-	public Service(Request request, Object response)
+	public Service(Request request,Map<String, List<?>> response)
 	{
 		this.request = request;
 		this.response = response;
+	}
+	
+	public Service(Request request, Errors errors)
+	{
+		this.request = request;
+		this.errors = errors;
 	}
 }

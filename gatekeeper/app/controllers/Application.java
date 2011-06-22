@@ -60,7 +60,9 @@ public class Application extends Controller
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		Long endTime = System.currentTimeMillis();
 		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
-		renderJSON(new Message(new Service(request, providers)));
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		response.put("Providers", providers);
+		renderJSON(new Message(new Service(request, response)));
 	}
 
 	/**
@@ -80,7 +82,9 @@ public class Application extends Controller
 		}
 		Long endTime = System.currentTimeMillis();
 		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
-		renderJSON(new Message(new Service(request, activeProviders)));
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		response.put("Providers", activeProviders);
+		renderJSON(new Message(new Service(request, response)));
 	}
 
 	/**
@@ -139,7 +143,7 @@ public class Application extends Controller
 		parameters.put("email", email);
 		Request request = new Request(isSuccess, "addEmail", endTime-startTime, parameters);
 
-		renderJSON(new Message(new Service(request, returnMessage)));
+//		renderJSON(new Message(new Service(request, returnMessage)));
 	}
 
 	/**
@@ -172,7 +176,7 @@ public class Application extends Controller
 		parameters.put("email", email);
 		parameters.put("queryString", queryString);
 		Request request = new Request(Boolean.TRUE, "upgradeToken", endTime-startTime, parameters);
-		renderJSON(new Message(new Service(request, returnMessage)));
+//		renderJSON(new Message(new Service(request, returnMessage)));
 	}
 
 	/**
@@ -203,7 +207,7 @@ public class Application extends Controller
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
-		renderJSON(new Message(new Service(request, returnMessage)));
+//		renderJSON(new Message(new Service(request, returnMessage)));
 	}
 
 	/**
@@ -233,7 +237,7 @@ public class Application extends Controller
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
-		renderJSON(new Message(new Service(request, isValid)));
+//		renderJSON(new Message(new Service(request, isValid)));
 	}
 
 	/**
@@ -259,11 +263,11 @@ public class Application extends Controller
 				if(UserInfo.find("SELECT u FROM UserInfo u where u.password is ?",password).fetch(1).size()>0){
 					Long endTime = System.currentTimeMillis();
 					Request request = new Request(isValid, "login", endTime-startTime, parameters);
-					renderJSON(new Message(new Service(request, Boolean.TRUE)));		
+//					renderJSON(new Message(new Service(request, Boolean.TRUE)));		
 				}else{
 					Long endTime = System.currentTimeMillis();
 					Request request = new Request(isValid, "login", endTime-startTime, parameters);
-					renderJSON(new Message(new Service(request, Boolean.FALSE)));
+//					renderJSON(new Message(new Service(request, Boolean.FALSE)));
 				}
 			}else{
 				userinfo=UserInfo.find("fbEmailAddress",userName).fetch(1);
@@ -271,18 +275,18 @@ public class Application extends Controller
 					if(UserInfo.find("select u from UserInfo u where u.password is ?",password).fetch().size()>0){
 						Long endTime = System.currentTimeMillis();
 						Request request = new Request(isValid, "login", endTime-startTime, parameters);
-						renderJSON(new Message(new Service(request, Boolean.TRUE)));	
+//						renderJSON(new Message(new Service(request, Boolean.TRUE)));	
 					}else{
 						Long endTime = System.currentTimeMillis();
 						Request request = new Request(isValid, "login", endTime-startTime, parameters);
-						renderJSON(new Message(new Service(request, Boolean.FALSE)));
+//						renderJSON(new Message(new Service(request, Boolean.FALSE)));
 					}
 				}else{
 					isValid = false;
 					Long endTime = System.currentTimeMillis();
 					Request request = new Request(isValid, "login", endTime-startTime, parameters);
 					Error err = new Error("400","User not registered");
-					renderJSON(new Message(new Service(request, err)));	
+//					renderJSON(new Message(new Service(request, err)));	
 				}
 			}			
 		}else{
@@ -290,7 +294,7 @@ public class Application extends Controller
 			Long endTime = System.currentTimeMillis();
 			Request request = new Request(isValid, "login", endTime-startTime, parameters);
 			Error err = new Error("400","Invalid Request");
-			renderJSON(new Message(new Service(request, err)));
+//			renderJSON(new Message(new Service(request, err)));
 		}
 	}
 
@@ -307,17 +311,17 @@ public class Application extends Controller
 			Long endTime = System.currentTimeMillis();
 			if(userInfo.size()>0){
 				Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
-				renderJSON(new Message(new Service(request, Boolean.FALSE)));
+//				renderJSON(new Message(new Service(request, Boolean.FALSE)));
 			}else{
 				Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
-				renderJSON(new Message(new Service(request, Boolean.TRUE)));
+//				renderJSON(new Message(new Service(request, Boolean.TRUE)));
 			}
 		}else{
 			isValid = false;
 			Long endTime = System.currentTimeMillis();
 			Request request = new Request(isValid, "checkUserNameAvailable", endTime-startTime, parameters);
 			Error err = new Error("400","Invalid Request");
-			renderJSON(new Message(new Service(request, err)));
+//			renderJSON(new Message(new Service(request, err)));
 		}
 	}
 
@@ -359,21 +363,21 @@ public class Application extends Controller
 						Long endTime = System.currentTimeMillis();
 						Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
 						Error err = new Error("406","This username is already registered");
-						renderJSON(new Message(new Service(request, err)));
+//						renderJSON(new Message(new Service(request, err)));
 					}else{
 						isValid = true;
 						UserInfo newuser=new UserInfo(userName,firstName,lastName,password,1,zipCode,fbEmailAddress,fbUserId,gender,createdAt,updatedAt);
 						newuser.save();
 						Long endTime = System.currentTimeMillis();
 						Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
-						renderJSON(new Message(new Service(request, Boolean.TRUE)));						
+//						renderJSON(new Message(new Service(request, Boolean.TRUE)));						
 					}
 				}else{
 					isValid = false;
 					Long endTime = System.currentTimeMillis();
 					Request request = new Request(isValid, "addUser", endTime-startTime, parameters);
 					Error err = new Error("400","Invalid Request");
-					renderJSON(new Message(new Service(request, err)));
+//					renderJSON(new Message(new Service(request, err)));
 				}
 			}
 }
