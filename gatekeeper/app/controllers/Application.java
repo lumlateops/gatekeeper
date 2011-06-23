@@ -30,7 +30,9 @@ import play.data.validation.Min;
 import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
+import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Scope.Params;
 
 import models.Account;
 import models.EmailProviders;
@@ -45,6 +47,19 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
+	
+	@Before
+	public static void logRequest()
+	{
+		Logger.debug("##############BEGIN REQUEST INFO##############");
+		Map<String, String[]> requestParams = play.mvc.Http.Request.current().params.all();
+		for (String key : requestParams.keySet())
+		{
+			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
+		}
+		Logger.debug("##############END REQUEST INFO##############");
+	}
+	
 	public static void index()
 	{
 		List<ServiceProvider> providers = ServiceProvider.findAll();
@@ -104,6 +119,7 @@ public class Application extends Controller
 
 		//TODO: Validate input
 
+		List<String> authMessage = new ArrayList<String>();
 		// Go to correct provider
 		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 		{
@@ -120,8 +136,8 @@ public class Application extends Controller
 				try
 				{
 					String authUrl = GmailProvider.authorizeAccount(userId, email);
-					Logger.info(authUrl);
-					redirect(authUrl);
+					Logger.debug("Auth url: "+authUrl);
+					authMessage.add(authUrl);
 				}
 				catch (OAuthException e)
 				{
@@ -131,6 +147,7 @@ public class Application extends Controller
 			}
 			else
 			{
+				isSuccess = Boolean.FALSE;
 				returnMessage = "Account registered and authorized already";
 			}
 		}
@@ -143,7 +160,12 @@ public class Application extends Controller
 		parameters.put("email", email);
 		Request request = new Request(isSuccess, "addEmail", endTime-startTime, parameters);
 
-//		renderJSON(new Message(new Service(request, returnMessage)));
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		List<String> message = new ArrayList<String>();
+		message.add(returnMessage);
+		response.put("Message", message);
+		response.put("AuthUrl", authMessage);
+		renderJSON(new Message(new Service(request, response)));
 	}
 
 	/**
@@ -176,6 +198,13 @@ public class Application extends Controller
 		parameters.put("email", email);
 		parameters.put("queryString", queryString);
 		Request request = new Request(Boolean.TRUE, "upgradeToken", endTime-startTime, parameters);
+		
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		List<String> message = new ArrayList<String>();
+		message.add(returnMessage);
+		response.put("Message", message);
+		renderJSON(new Message(new Service(request, response)));
+		
 //		renderJSON(new Message(new Service(request, returnMessage)));
 	}
 

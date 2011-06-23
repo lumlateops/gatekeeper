@@ -69,8 +69,8 @@ ServiceProvider(TWITTER):
 Account(lumlateops):
     userId:             lumlateops
     email:              lumlateops@gmail.com
-    dllr_auth_token:    1/p5OBp4-ycxTuNtHue5agDUtYsHPulNEHB0MfY_t4Ozo
-    dllr_token_secret:  YZol8hF8NHLHMtUVb_qpBswM
+    dllr_auth_token:    
+    dllr_token_secret:  4%2F0qWzPJNa1j5A96URgUsr2LVLqEB2
     active:             true
     last_error:         
     last_confirmed_at:  2009-06-14

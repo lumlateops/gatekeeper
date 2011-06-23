@@ -85,11 +85,11 @@ public class GmailProvider
 	 */
 	public static String upgradeToken(String userId, String email, String queryString)
 	{
-		Logger.info("upgrade token called");
+		Logger.debug("upgrade token called");
 		String returnMessage = "Successfully upgraded token";
 		try
 		{
-			List<Account> accounts = Account.find("email", email).fetch();
+			List<Account> accounts = Account.findAll();
 			if(accounts != null && accounts.size() == 1)
 			{
 				Account account = accounts.get(0);
@@ -106,11 +106,14 @@ public class GmailProvider
 					String token = oauthHelper.getAccessToken(oauthParameters);
 					
 					account.dllr_auth_token = token;
+					Logger.debug("Access Token: "+token);
 					account.save();
 				}
 			}
-//			new Account(userId, email, gmailProvider, token, tokenSecret, true, "", 
-//									current, null, current, current).save();
+			else
+			{
+				returnMessage = "No matching account found";
+			}
 		}
 		catch (OAuthException e)
 		{

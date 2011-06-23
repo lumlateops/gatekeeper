@@ -14,11 +14,9 @@ GET 	/providers/all														Application.listAllProviders
 # List active providers
 GET 	/providers/active													Application.listActiveProviders
 
-# Add account
-GET		/account/add/{userId}/{provider}/{email}     						Application.addEmail
-
 # Add user 
-POST		/user/add/{userName}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
+#POST		/user/add/{userName}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
+POST		/user/add														Application.addUser
 
 # Check username availability
 GET     /user/available/{userName}						     				Application.checkUserNameAvailable
@@ -26,14 +24,17 @@ GET     /user/available/{userName}						     				Application.checkUserNameAvaila
 # Check Authentication
 GET     /user/authenticate/{userName}/{password}						    Application.login
 
-# Upgrade token
-POST	/account/upgradeEmailToken/{userId}/{provider}/{email}/{queryString} Application.upgradeToken
+# Add account /{userId}/{provider}/{email}
+POST		/account/add						     						Application.addEmail
+
+# Upgrade token {userId}/{provider}/{email}/{queryString}
+POST	/account/upgradeEmailToken 											Application.upgradeToken
 
 # Check if account is authorized
 GET 	/account/verify/userId}/{provider}/{email}							Application.verifyAccount
 
-# Revoke access token
-POST	/account/revoke/{userId}/{password}/{provider}/{email}				Application.revokeAccess
+# Revoke access token {userId}/{password}/{provider}/{email}
+POST	/account/revoke/													Application.revokeAccess
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404
