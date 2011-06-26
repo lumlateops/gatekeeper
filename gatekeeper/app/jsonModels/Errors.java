@@ -14,12 +14,18 @@ import java.util.Map;
  * @author prachi
  *
  */
-public class Errors
+public class Errors implements ServiceResponse
 {
 	private List<Error> error;
 
 	public Errors(List<Error> error)
 	{
 		this.error = error;
+	}
+
+	@Override
+	public ServiceResponse getServiceResponse()
+	{
+		return this;
 	}
 }

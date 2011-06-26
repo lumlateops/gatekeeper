@@ -14,9 +14,11 @@ import com.google.gdata.client.authn.oauth.OAuthException;
 import jsonModels.Errors;
 import jsonModels.Message;
 import jsonModels.Parameter;
+import jsonModels.Response;
 import jsonModels.Service;
 import jsonModels.Request;
 import jsonModels.Error;
+import jsonModels.ServiceResponse;
 
 import bl.googleAuth.AuthPayLoad;
 import bl.googleAuth.GmailProvider;
@@ -48,7 +50,6 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
-	
 	@Before
 	public static void logRequest()
 	{
@@ -80,7 +81,7 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		response.put("Providers", providers);
-		renderJSON(new Message(new Service(request, response)));
+		renderJSON(new Message(new Service(request, new Response(response))));
 	}
 
 	/**
@@ -102,7 +103,7 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		response.put("Providers", activeProviders);
-		renderJSON(new Message(new Service(request, response)));
+		renderJSON(new Message(new Service(request, new Response(response))));
 	}
 
 	/**
@@ -122,7 +123,6 @@ public class Application extends Controller
 
 		//TODO: Validate input
 
-		List<String> authMessage = new ArrayList<String>();
 		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		List<Error> error = new ArrayList<Error>();
 		
@@ -143,11 +143,8 @@ public class Application extends Controller
 				{
 					String authUrl = GmailProvider.authorizeAccount(userId, email);
 					Logger.debug("Auth url: "+authUrl);
+					List<String> authMessage = new ArrayList<String>();
 					authMessage.add(authUrl);
-					
-					List<String> message = new ArrayList<String>();
-					message.add(returnMessage);
-					response.put("Message", message);
 					response.put("AuthUrl", authMessage);
 				}
 				catch (OAuthException e)
@@ -164,7 +161,11 @@ public class Application extends Controller
 				error.add(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
 			}
 		}
-
+		else
+		{
+			isSuccess = Boolean.FALSE;
+			error.add(new Error(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported."));
+		}
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
@@ -172,14 +173,14 @@ public class Application extends Controller
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isSuccess, "addEmail", endTime-startTime, parameters);
+		
 		if(response != null && !response.isEmpty())
 		{
-			renderJSON(new Message(new Service(request, response)));
+			renderJSON(new Message(new Service(request, new Response(response))));
 		}
 		else
 		{
-			Errors errors = new Errors(error);
-			renderJSON(new Message(new Service(request, errors)));
+			renderJSON(new Message(new Service(request,new Errors(error))));
 		}
 	}
 
@@ -196,14 +197,18 @@ public class Application extends Controller
 			@Required(message="Query string needed for upgrading")String queryString)
 	{
 		Long startTime = System.currentTimeMillis();
-
-		String returnMessage = "Token upgraded successfully";
+		List<Error> error = new ArrayList<Error>();
+		ServiceResponse response = null;
 
 		// Go to correct provider
 		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 		{
 			//Upgrade to access token and store the account
-			returnMessage = GmailProvider.upgradeToken(userId, email, queryString);
+			response = GmailProvider.upgradeToken(userId, email, queryString);
+		}
+		else
+		{
+			error.add(new Error(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported."));
 		}
 		Long endTime = System.currentTimeMillis();
 
@@ -214,13 +219,14 @@ public class Application extends Controller
 		parameters.put("queryString", queryString);
 		Request request = new Request(Boolean.TRUE, "upgradeToken", endTime-startTime, parameters);
 		
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
-		List<String> message = new ArrayList<String>();
-		message.add(returnMessage);
-		response.put("Message", message);
-		renderJSON(new Message(new Service(request, response)));
-		
-//		renderJSON(new Message(new Service(request, returnMessage)));
+		if(response != null)
+		{
+			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+		}
+		else
+		{
+			renderJSON(new Message(new Service(request, new Errors(error))));
+		}
 	}
 
 	/**

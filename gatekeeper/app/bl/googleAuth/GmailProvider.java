@@ -1,7 +1,15 @@
 package bl.googleAuth;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import jsonModels.Error;
+import jsonModels.Errors;
+import jsonModels.Response;
+import jsonModels.ServiceResponse;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
@@ -13,6 +21,7 @@ import play.Logger;
 
 import models.Account;
 import models.EmailProviders;
+import models.ErrorCodes;
 import models.ServiceProvider;
 
 public class GmailProvider
@@ -83,10 +92,13 @@ public class GmailProvider
 	 * @param queryString
 	 * @return
 	 */
-	public static String upgradeToken(String userId, String email, String queryString)
+	public static ServiceResponse upgradeToken(String userId, String email, String queryString)
 	{
 		Logger.debug("upgrade token called");
 		String returnMessage = "Successfully upgraded token";
+		ServiceResponse serviceResponse;
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
 		try
 		{
 			List<Account> accounts = Account.findAll();
@@ -109,17 +121,30 @@ public class GmailProvider
 					Logger.debug("Access Token: "+token);
 					account.save();
 				}
+				else
+				{
+					returnMessage = "No matching account found";
+				}
 			}
 			else
 			{
 				returnMessage = "No matching account found";
 			}
+			
+			List<String> message = new ArrayList<String>();
+			message.add(returnMessage);
+			response.put("Message", message);
+			serviceResponse = new Response(response);
 		}
 		catch (OAuthException e)
 		{
 			returnMessage = e.getCause() + e.getMessage();
+			List<Error> error = new ArrayList<Error>();
+			error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+			serviceResponse = new Errors(error);
 		}
-		return returnMessage;
+
+		return serviceResponse;
 	}
 	
 	/**
