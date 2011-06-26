@@ -15,7 +15,8 @@ public class UserInfo extends Model {
   public String firstName;
   public String lastName;
   public String password;
-  public int isActive;
+  public Boolean isActive;
+  public Boolean isAdmin;
   public int zipCode;
   @Email
   public String fbEmailAddress;
@@ -27,7 +28,7 @@ public class UserInfo extends Model {
 	public String emailAddress;
 	
 	public UserInfo(String userName, String firstName, String lastName,
-									String password, int isActive,int zipCode, 
+									String password, Boolean isActive, Boolean isAdmin, int zipCode, 
 									String fbEmailAddress, long fbUserId, int gender,
 									Date createdAt, Date updatedAt) {
 		this.userName = userName;
@@ -35,6 +36,7 @@ public class UserInfo extends Model {
 		this.lastName = lastName;
 		this.password = password;
 		this.isActive = isActive;
+		this.isAdmin = isAdmin;
 		this.zipCode = zipCode;
 		this.fbEmailAddress = fbEmailAddress;
 		this.fbUserId = fbUserId;

@@ -40,9 +40,17 @@ public class GmailProvider
 		CONSUMER_SECRET = gmailProvider.consumerSecret;
 	}
 	
-	public static boolean isAccountAuthorized(String userId, String email)
+	/**
+	 * Checks to see if the account already exists and is authorized
+	 * @param userId
+	 * @param email
+	 * @return
+	 */
+	public static ServiceResponse isAccountAuthorized(String userId, String email)
 	{
-		boolean isAuthorized = false;
+		String returnMessage = "false";
+		ServiceResponse serviceResponse = null;
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
 
 		//Check if we have the account already
 		List<Account> accounts = Account.find("email", email).fetch();
@@ -55,11 +63,57 @@ public class GmailProvider
 			{
 				if(account.active)
 				{
-					isAuthorized = true;
+					returnMessage = "true";
+				}
+			}
+			else
+			{
+				returnMessage = "Email address already registered to a different user.";
+				List<Error> error = new ArrayList<Error>();
+				error.add(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
+				serviceResponse = new Errors(error);
+			}
+		}
+		else if(accounts != null && accounts.size() > 1)
+		{
+			returnMessage = "Multiple accounts found with this email address.";
+			List<Error> error = new ArrayList<Error>();
+			error.add(new Error(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), returnMessage));
+			serviceResponse = new Errors(error);
+		}
+		else
+		{
+			returnMessage = "No matching account found";
+			List<Error> error = new ArrayList<Error>();
+			error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+			serviceResponse = new Errors(error);
+		}
+		
+		List<String> message = new ArrayList<String>();
+		message.add(returnMessage);
+		response.put("Message", message);
+		serviceResponse = new Response(response);
+		return serviceResponse;
+	}
+	
+	public static boolean isDuplicateAccount(String userId, String email)
+	{
+		boolean isDuplicate = false;
+
+		//Check if we have the account already
+		List<Account> accounts = Account.find("email", email).fetch();
+		if(accounts != null && accounts.size() > 0)
+		{
+			for (Account account : accounts)
+			{
+				if(account.active)
+				{
+					isDuplicate = true;
+					break;
 				}
 			}
 		}
-		return isAuthorized;
+		return isDuplicate;
 	}
 	
 	/**
@@ -96,7 +150,7 @@ public class GmailProvider
 	{
 		Logger.debug("upgrade token called");
 		String returnMessage = "Successfully upgraded token";
-		ServiceResponse serviceResponse;
+		ServiceResponse serviceResponse = null;
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		try
@@ -124,11 +178,17 @@ public class GmailProvider
 				else
 				{
 					returnMessage = "No matching account found";
+					List<Error> error = new ArrayList<Error>();
+					error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+					serviceResponse = new Errors(error);
 				}
 			}
 			else
 			{
 				returnMessage = "No matching account found";
+				List<Error> error = new ArrayList<Error>();
+				error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+				serviceResponse = new Errors(error);
 			}
 			
 			List<String> message = new ArrayList<String>();
@@ -152,9 +212,11 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static String revokeAccess(String userId, String password, String email)
+	public static ServiceResponse revokeAccess(String userId, String password, String email)
 	{
 		String returnMessage = "Revoked access for " + email;
+		ServiceResponse serviceResponse = null;
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		try
 		{
@@ -167,22 +229,34 @@ public class GmailProvider
 				GoogleOAuthParameters oauthParameters = getAuthParams();
 				GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 				oauthHelper.revokeToken(oauthParameters);
+				
 				// Clean up database
 				Account revokedAccount = ((Account)Account.find("email", email).first());
 				revokedAccount.active = false;
 				revokedAccount.save();
+				
+				List<String> message = new ArrayList<String>();
+				message.add(returnMessage);
+				response.put("Message", message);
+				serviceResponse = new Response(response);
 			}
 			else
 			{
 				returnMessage = "Incorrect login";
+				List<Error> error = new ArrayList<Error>();
+				error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+				serviceResponse = new Errors(error);
 			}
 		}
 		catch (OAuthException e)
 		{
 			returnMessage = e.getCause() + e.getMessage();
+			List<Error> error = new ArrayList<Error>();
+			error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+			serviceResponse = new Errors(error);
 		}
 		
-		return returnMessage;
+		return serviceResponse;
 	}
 	
 	private static GoogleOAuthParameters getAuthParams()
