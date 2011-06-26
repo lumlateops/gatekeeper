@@ -9,41 +9,45 @@ import play.db.jpa.*;
  
 @Entity
 @Table(name = "UserInfo")
-public class UserInfo extends Model {
-	
+public class UserInfo extends Model 
+{
 	public String userName;
-  public String firstName;
-  public String lastName;
   public String password;
   public Boolean isActive;
   public Boolean isAdmin;
-  public int zipCode;
   @Email
   public String fbEmailAddress;
-  public long fbUserId;
-  public int gender; 
+  public Long fbUserId;
+  public String fbFullName;
+  public String fbLocationName;
+  public Integer fbLocationId;
+  public Integer gender;
 	public Date	createdAt;
 	public Date	updatedAt;
 	@Email
 	public String emailAddress;
 	
-	public UserInfo(String userName, String firstName, String lastName,
-									String password, Boolean isActive, Boolean isAdmin, int zipCode, 
-									String fbEmailAddress, long fbUserId, int gender,
-									Date createdAt, Date updatedAt) {
+	public UserInfo(String userName, String password, Boolean isActive,
+			Boolean isAdmin, String fbEmailAddress, Long fbUserId, String fbFullName,
+			String fbLocationName, Integer fbLocationId, Integer gender, Date createdAt,
+			Date updatedAt, String emailAddress)
+	{
 		this.userName = userName;
-		this.firstName = firstName;
-		this.lastName = lastName;
 		this.password = password;
 		this.isActive = isActive;
 		this.isAdmin = isAdmin;
-		this.zipCode = zipCode;
 		this.fbEmailAddress = fbEmailAddress;
 		this.fbUserId = fbUserId;
+		this.fbFullName = fbFullName;
+		this.fbLocationName = fbLocationName;
+		this.fbLocationId = fbLocationId;
 		this.gender = gender;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.emailAddress = userName+"@deallr.com";
+		this.emailAddress = emailAddress;
 	}
-	
+
+	public UserInfo()
+	{
+	}
 }

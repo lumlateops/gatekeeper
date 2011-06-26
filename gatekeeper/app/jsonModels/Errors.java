@@ -1,5 +1,7 @@
 package jsonModels;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +18,11 @@ import java.util.Map;
  */
 public class Errors implements ServiceResponse
 {
-	private List<Error> error;
+	private List<Error> errors = new ArrayList<Error>();
 
-	public Errors(List<Error> error)
+	public void addError(final String code, final String message)
 	{
-		this.error = error;
+		this.errors.add(new Error(code, message));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package jsonModels;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +31,37 @@ public class Service
 {
 	private String version = "1.1";
 	private Request request;
-	private ServiceResponse response;
 //	private Response response;
-//	private Errors errors;
+	private Map<String, List<?>> response;
 	
-	public Service(Request request, ServiceResponse response)
+	private List<Error> errors;
+
+	public void addError(final String code, final String message)
+	{
+		if(this.errors == null)
+		{
+			this.errors = new ArrayList<Error>();
+		}
+		this.errors.add(new Error(code, message));
+	}
+	
+	public void setRequest(Request request)
+	{
+		this.request = request;
+	}
+	
+	public void setResponse(Map<String, List<?>> response)
+	{
+		this.response = response;
+	}
+	
+	public Service()
+	{
+	}
+	
+	public Service(Request request, Map<String, List<?>> response)
 	{
 		this.request = request;
 		this.response = response;
 	}
-	
 }

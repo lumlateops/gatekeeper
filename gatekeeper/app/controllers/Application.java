@@ -32,6 +32,7 @@ import play.data.validation.Min;
 import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
+import play.data.validation.Validation;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope.Params;
@@ -81,7 +82,7 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		response.put("Providers", providers);
-		renderJSON(new Message(new Service(request, new Response(response))));
+//		renderJSON(new Message(new Service(request, new Response(response))));
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		response.put("Providers", activeProviders);
-		renderJSON(new Message(new Service(request, new Response(response))));
+//		renderJSON(new Message(new Service(request, new Response(response))));
 	}
 
 	/**
@@ -118,7 +119,18 @@ public class Application extends Controller
 		Long startTime = System.currentTimeMillis();
 
 		Boolean isValidRequest = Boolean.TRUE;
-		String returnMessage = "";
+		String returnMessage = "";/**
+		 * 
+		 * @param userName
+		 * @param password
+		 * @param zipCode
+		 * @param firstName
+		 * @param lastName
+		 * @param gender
+		 * @param fbEmailAddress
+		 * @param fbUserId
+		 * @throws ParseException
+		 */
 		Logger.debug("Authorize Email Called:" + userId + "/" + provider + "/" + email);
 
 		//TODO: Validate input
@@ -173,11 +185,11 @@ public class Application extends Controller
 		
 		if(!response.isEmpty())
 		{
-			renderJSON(new Message(new Service(request, new Response(response))));
+//			renderJSON(new Message(new Service(request, new Response(response))));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request,new Errors(error))));
+//			renderJSON(new Message(new Service(request,new Errors(error))));
 		}
 	}
 
@@ -218,11 +230,11 @@ public class Application extends Controller
 		
 		if(response != null)
 		{
-			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+//			renderJSON(new Message(new Service(request, response.getServiceResponse())));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request, new Errors(error))));
+//			renderJSON(new Message(new Service(request, new Errors(error))));
 		}
 	}
 
@@ -262,11 +274,11 @@ public class Application extends Controller
 		
 		if(response != null)
 		{
-			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+//			renderJSON(new Message(new Service(request, response.getServiceResponse())));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request, new Errors(error))));
+//			renderJSON(new Message(new Service(request, new Errors(error))));
 		}
 	}
 
@@ -304,11 +316,11 @@ public class Application extends Controller
 		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
 		if(response != null)
 		{
-			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+//			renderJSON(new Message(new Service(request, response.getServiceResponse())));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request, new Errors(error))));
+//			renderJSON(new Message(new Service(request, new Errors(error))));
 		}
 	}
 
@@ -342,7 +354,7 @@ public class Application extends Controller
 				final UserInfo userInfo = userList.get(0);
 				if(userInfo.password != null && userInfo.password.equals(password))
 				{
-					List<Map<String, String>> message = new ArrayList<Map<String, String>>();
+					List<Map<String, String>> message = new ArrayList<Map<String,String>>();
 					message.add(
 						new HashMap<String, String>()
 						{
@@ -379,11 +391,11 @@ public class Application extends Controller
 		
 		if(!response.isEmpty())
 		{
-			renderJSON(new Message(new Service(request, new Response(response))));
+//			renderJSON(new Message(new Service(request, new Response(response))));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request,new Errors(error))));
+//			renderJSON(new Message(new Service(request,new Errors(error))));
 		}
 	}
 
@@ -438,11 +450,11 @@ public class Application extends Controller
 		
 		if(!response.isEmpty())
 		{
-			renderJSON(new Message(new Service(request, new Response(response))));
+//			renderJSON(new Message(new Service(request, new Response(response))));
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request, new Errors(error))));
+//			renderJSON(new Message(new Service(request, new Errors(error))));
 		}
 	}
 
@@ -450,89 +462,102 @@ public class Application extends Controller
 	 * 
 	 * @param userName
 	 * @param password
-	 * @param zipCode
-	 * @param firstName
-	 * @param lastName
 	 * @param gender
 	 * @param fbEmailAddress
+	 * @param fbFullName
 	 * @param fbUserId
-	 * @throws ParseException
+	 * @param fbLocationName
+	 * @param fbLocationId
 	 */
 	public static void addUser(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String userName, 
 										@Required(message="Password is required") @MinSize(5) @Password String password,
-										@Required(message="Zipcode is required") @MinSize(5) int zipCode,
-										@Required(message="First Name is required") @MinSize(3) @MaxSize(100) String firstName,
-										@Required(message="Last Name is required") @MinSize(3) @MaxSize(100) String lastName,
-										@Required(message="Gender is required") @Min(0) @Max(1) int gender,
-										@Required(message="Facebook Email is required") @Email @MinSize(7) @MaxSize(100) String fbEmailAddress,
-										@Required(message="Facebook Id is required") @MinSize(5) long fbUserId) throws ParseException
+										@Required(message="Gender is required") Integer gender,
+										@Required(message="Facebook Email is required") @Email String fbEmailAddress,
+										@Required(message="Facebook name is required") String fbFullName,
+										@Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
+										@Required(message="Facebook location name is required") String fbLocationName,
+										@Required(message="Facebook location Id is required")Integer fbLocationId)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
-		boolean isadmin = false;
 		
-		List<Error> error = new ArrayList<Error>();
+		Service serviceResponse = new Service();
 		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		
 		String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 		Date date = new Date(System.currentTimeMillis());
-		Date currentDate = formatter.parse(formatter.format(date));
-		
-		if(!userName.trim().isEmpty() && !password.trim().isEmpty() && 
-				!firstName.trim().isEmpty() && !lastName.trim().isEmpty())
+		Date currentDate = null;
+		try
 		{
-			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch();
-			if(userInfo.size() > 0)
+			currentDate = formatter.parse(formatter.format(date));
+		}
+		catch (ParseException e)
+		{
+			//Should not happen, go ahead without a date
+		}
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				error.add(new Error(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered."));
-			}
-			else
-			{
-				final UserInfo newUser = new UserInfo(userName, firstName, lastName,
-																				password, Boolean.TRUE, Boolean.FALSE, 
-																				zipCode, fbEmailAddress, fbUserId, 
-																				gender, currentDate, currentDate);
-				newUser.save();
-				List<Map<String, String>> message = new ArrayList<Map<String, String>>();
-				message.add(
-					new HashMap<String, String>()
-					{
-						{
-							put("id", newUser.id.toString());
-							put("name", newUser.userName);
-						}
-					});
-				response.put("User", message);
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
 			}
 		}
 		else
 		{
-			isValidRequest = false;
-			error.add(new Error(ErrorCodes.INVALID_REQUEST.toString(), "Required parameter missing."));
+			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch();
+			if(userInfo.size() > 0)
+			{
+				serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
+			}
+			else
+			{
+				UserInfo newUser = new UserInfo(userName, password, Boolean.TRUE, Boolean.FALSE, 
+						fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
+					  gender, currentDate, currentDate, userName+"@deallr.com");
+				newUser.save();
+				
+				List<UserInfo> message = new ArrayList<UserInfo>();
+				UserInfo recentUser = new UserInfo();
+				recentUser.id = newUser.id;
+				recentUser.userName = newUser.userName;
+				message.add(recentUser);
+				response.put("User", message);
+			}
 		}
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();			
 		parameters.put("userName", userName);
 		parameters.put("password",password);
-		parameters.put("zipCode",Integer.toString(zipCode));
-		parameters.put("gender",Integer.toString(gender));
-		parameters.put("firstName",firstName);
-		parameters.put("lastName",lastName);
-		parameters.put("createdAt", currentDate.toString());
-		parameters.put("updatedAt", currentDate.toString());
-		parameters.put("fbEmailAddress",fbEmailAddress);
-		parameters.put("fbUserId",Long.toString(fbUserId));
-		Request request = new Request(isValidRequest, "login", endTime - startTime, parameters);
+		parameters.put("gender", Integer.toString(gender));
+		parameters.put("fbEmailAddress", fbEmailAddress);
+		parameters.put("fbFullName", fbFullName);
+		parameters.put("fbUserId", Long.toString(fbUserId));
+		parameters.put("fbLocationName", fbLocationName);
+		parameters.put("fbLocationId", Integer.toString(fbLocationId));
+		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
 		
-		if(!response.isEmpty())
+		if(isValidRequest)
 		{
-			renderJSON(new Message(new Service(request, new Response(response))));
+			if(!response.isEmpty())
+			{
+				serviceResponse.setRequest(request);
+				serviceResponse.setResponse(response);
+				renderJSON(serviceResponse);
+			}
+			else
+			{
+				serviceResponse.setRequest(request);
+				renderJSON(new Message(serviceResponse));
+			}
 		}
 		else
 		{
-			renderJSON(new Message(new Service(request,new Errors(error))));
+			serviceResponse.setRequest(request);
+			renderJSON(new Message(serviceResponse));
 		}
 	}
 }

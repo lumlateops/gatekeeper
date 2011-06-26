@@ -69,24 +69,18 @@ public class GmailProvider
 			else
 			{
 				returnMessage = "Email address already registered to a different user.";
-				List<Error> error = new ArrayList<Error>();
-				error.add(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
-				serviceResponse = new Errors(error);
+//				serviceResponse = new Errors(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
 			}
 		}
 		else if(accounts != null && accounts.size() > 1)
 		{
 			returnMessage = "Multiple accounts found with this email address.";
-			List<Error> error = new ArrayList<Error>();
-			error.add(new Error(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), returnMessage));
-			serviceResponse = new Errors(error);
+//			serviceResponse = new Errors(new Error(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), returnMessage));
 		}
 		else
 		{
 			returnMessage = "No matching account found";
-			List<Error> error = new ArrayList<Error>();
-			error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
-			serviceResponse = new Errors(error);
+//			serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
 		}
 		
 		List<String> message = new ArrayList<String>();
@@ -178,17 +172,13 @@ public class GmailProvider
 				else
 				{
 					returnMessage = "No matching account found";
-					List<Error> error = new ArrayList<Error>();
-					error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
-					serviceResponse = new Errors(error);
+//					serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
 				}
 			}
 			else
 			{
 				returnMessage = "No matching account found";
-				List<Error> error = new ArrayList<Error>();
-				error.add(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
-				serviceResponse = new Errors(error);
+//				serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
 			}
 			
 			List<String> message = new ArrayList<String>();
@@ -199,9 +189,7 @@ public class GmailProvider
 		catch (OAuthException e)
 		{
 			returnMessage = e.getCause() + e.getMessage();
-			List<Error> error = new ArrayList<Error>();
-			error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
-			serviceResponse = new Errors(error);
+//			serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
 		}
 
 		return serviceResponse;
@@ -243,17 +231,13 @@ public class GmailProvider
 			else
 			{
 				returnMessage = "Incorrect login";
-				List<Error> error = new ArrayList<Error>();
-				error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
-				serviceResponse = new Errors(error);
+//				serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
 			}
 		}
 		catch (OAuthException e)
 		{
 			returnMessage = e.getCause() + e.getMessage();
-			List<Error> error = new ArrayList<Error>();
-			error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
-			serviceResponse = new Errors(error);
+//			serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
 		}
 		
 		return serviceResponse;
