@@ -69,14 +69,14 @@ ServiceProvider(TWITTER):
 Account(lumlateops):
     userId:             lumlateops
     email:              lumlateops@gmail.com
-    dllr_auth_token:    
-    dllr_token_secret:  4%2F0qWzPJNa1j5A96URgUsr2LVLqEB2
+    dllrAuthToken:    
+    dllrTokenSecret:    4%2F0qWzPJNa1j5A96URgUsr2LVLqEB2
     active:             true
-    last_error:         
-    last_confirmed_at:  2009-06-14
-    last_error_at:      2009-06-14
-    created_at:         2009-06-14
-    updated_at:         2009-06-14    
+    lastError:         
+    lastConfirmedAt:    2009-06-14
+    lastErrorAt:        2009-06-14
+    createdAt:          2009-06-14
+    updatedAt:          2009-06-14    
     
 UserInfo(ramdev):
     userId: ramdev

@@ -98,14 +98,14 @@ public class GmailProvider
 				if(account.userId.equalsIgnoreCase(userId))
 				{
 					GoogleOAuthParameters oauthParameters = getAuthParams();
-					oauthParameters.setOAuthTokenSecret(account.dllr_token_secret);
+					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
 
 					GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 					oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
 
 					String token = oauthHelper.getAccessToken(oauthParameters);
 					
-					account.dllr_auth_token = token;
+					account.dllrAuthToken = token;
 					Logger.debug("Access Token: "+token);
 					account.save();
 				}

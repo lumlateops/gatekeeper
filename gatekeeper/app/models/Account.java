@@ -16,14 +16,14 @@ public class Account extends Model
 	public String		userId;
 	@Email
 	public String		email;
-	public String		dllr_auth_token;
-	public String		dllr_token_secret;
+	public String		dllrAuthToken;
+	public String		dllrTokenSecret;
 	public boolean	active;
-	public String		last_error;
-	public Date			last_confirmed_at;
-	public Date			last_error_at;
-	public Date			created_at;
-	public Date			updated_at;
+	public String		lastError;
+	public Date			lastConfirmedAt;
+	public Date			lastErrorAt;
+	public Date			createdAt;
+	public Date			updatedAt;
 
 	@OneToOne
 	ServiceProvider	provider;
@@ -37,13 +37,13 @@ public class Account extends Model
 		this.userId = userId;
 		this.email = userEmail;
 		this.provider = provider;
-		this.dllr_auth_token = dllrAuthToken;
-		this.dllr_token_secret = dllrTokenSecret;
+		this.dllrAuthToken = dllrAuthToken;
+		this.dllrTokenSecret = dllrTokenSecret;
 		this.active = active;
-		this.last_error = lastError;
-		this.last_confirmed_at = lastConfirmedAt;
-		this.last_error_at = lastErrorAt;
-		this.created_at = createdAt;
-		this.updated_at = updatedAt;
+		this.lastError = lastError;
+		this.lastConfirmedAt = lastConfirmedAt;
+		this.lastErrorAt = lastErrorAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 }

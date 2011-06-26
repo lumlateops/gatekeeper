@@ -36,6 +36,7 @@ import play.mvc.Scope.Params;
 
 import models.Account;
 import models.EmailProviders;
+import models.ErrorCodes;
 import models.ServiceProvider;
 import models.UserInfo;
 
@@ -52,7 +53,9 @@ public class Application extends Controller
 	public static void logRequest()
 	{
 		Logger.debug("##############BEGIN REQUEST INFO##############");
-		Map<String, String[]> requestParams = play.mvc.Http.Request.current().params.all();
+		play.mvc.Http.Request currentRequest = play.mvc.Http.Request.current();
+		Logger.debug("Request end point: " + currentRequest.action);
+		Map<String, String[]> requestParams = currentRequest.params.all();
 		for (String key : requestParams.keySet())
 		{
 			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
@@ -120,6 +123,9 @@ public class Application extends Controller
 		//TODO: Validate input
 
 		List<String> authMessage = new ArrayList<String>();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		List<Error> error = new ArrayList<Error>();
+		
 		// Go to correct provider
 		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 		{
@@ -138,17 +144,24 @@ public class Application extends Controller
 					String authUrl = GmailProvider.authorizeAccount(userId, email);
 					Logger.debug("Auth url: "+authUrl);
 					authMessage.add(authUrl);
+					
+					List<String> message = new ArrayList<String>();
+					message.add(returnMessage);
+					response.put("Message", message);
+					response.put("AuthUrl", authMessage);
 				}
 				catch (OAuthException e)
 				{
 					isSuccess = Boolean.FALSE;
 					returnMessage = e.getMessage() + e.getCause();
+					error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
 				}
 			}
 			else
 			{
 				isSuccess = Boolean.FALSE;
 				returnMessage = "Account registered and authorized already";
+				error.add(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
 			}
 		}
 
@@ -159,13 +172,15 @@ public class Application extends Controller
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isSuccess, "addEmail", endTime-startTime, parameters);
-
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
-		List<String> message = new ArrayList<String>();
-		message.add(returnMessage);
-		response.put("Message", message);
-		response.put("AuthUrl", authMessage);
-		renderJSON(new Message(new Service(request, response)));
+		if(response != null && !response.isEmpty())
+		{
+			renderJSON(new Message(new Service(request, response)));
+		}
+		else
+		{
+			Errors errors = new Errors(error);
+			renderJSON(new Message(new Service(request, errors)));
+		}
 	}
 
 	/**

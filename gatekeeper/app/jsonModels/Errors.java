@@ -16,11 +16,10 @@ import java.util.Map;
  */
 public class Errors
 {
-	private List<Error> errors;
+	private List<Error> error;
 
-	public Errors(List<Error> errors)
+	public Errors(List<Error> error)
 	{
-		super();
-		this.errors = errors;
+		this.error = error;
 	}
 }
