@@ -84,6 +84,7 @@ UserInfo(ramdev):
     lastName: dev
     password: YZol8hF8NHLHMtUVb_qpBswM
     active: true
+    admin: false
     gender: unknown
     zipcode: 12345
     email: ramdev@deallr.com
