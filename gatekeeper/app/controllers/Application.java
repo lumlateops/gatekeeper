@@ -400,7 +400,7 @@ public class Application extends Controller
 	}
 
 	/**
-	 * 
+	 * Checks to see if the username is already taken.
 	 * @param userName
 	 */
 	public static void checkUserNameAvailable(
@@ -409,10 +409,19 @@ public class Application extends Controller
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
 		
-		List<Error> error = new ArrayList<Error>();
-		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
 
-		if (!userName.isEmpty() || !userName.trim().isEmpty())
+		if(Validation.hasErrors())
+		{
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), 
+																 validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
 		{
 			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch(1);
 			
@@ -437,24 +446,21 @@ public class Application extends Controller
 						});
 			}
 		}
-		else
-		{
-			isValidRequest = Boolean.FALSE;
-			error.add(new Error(ErrorCodes.INVALID_REQUEST.toString(), "UserName is required"));
-		}
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("userName", userName);
-		Request request = new Request(isValidRequest, "checkUserNameAvailable", endTime-startTime, parameters);
+		serviceResponse.setRequest(new Request(isValidRequest, "checkUserNameAvailable", 
+																					 endTime-startTime, parameters));
 		
-		if(!response.isEmpty())
+		if(isValidRequest && !response.isEmpty())
 		{
-//			renderJSON(new Message(new Service(request, new Response(response))));
+			serviceResponse.setResponse(response);
+			renderJSON(new Message(serviceResponse));
 		}
 		else
 		{
-//			renderJSON(new Message(new Service(request, new Errors(error))));
+			renderJSON(new Message(serviceResponse));
 		}
 	}
 
@@ -539,24 +545,15 @@ public class Application extends Controller
 		parameters.put("fbLocationName", fbLocationName);
 		parameters.put("fbLocationId", Long.toString(fbLocationId));
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
+		serviceResponse.setRequest(request);
 		
-		if(isValidRequest)
+		if(isValidRequest && !response.isEmpty())
 		{
-			if(!response.isEmpty())
-			{
-				serviceResponse.setRequest(request);
-				serviceResponse.setResponse(response);
-				renderJSON(serviceResponse);
-			}
-			else
-			{
-				serviceResponse.setRequest(request);
-				renderJSON(new Message(serviceResponse));
-			}
+			serviceResponse.setResponse(response);
+			renderJSON(new Message(serviceResponse));
 		}
 		else
 		{
-			serviceResponse.setRequest(request);
 			renderJSON(new Message(serviceResponse));
 		}
 	}
