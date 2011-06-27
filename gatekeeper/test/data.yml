@@ -79,7 +79,7 @@ Account(lumlateops):
     updatedAt:          2009-06-14    
     
 UserInfo(ramdev):
-    userName:             ramdev
+    username:             ramdev
     password:             test
     isActive:             true
     isAdmin:              false

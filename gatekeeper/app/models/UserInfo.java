@@ -11,7 +11,7 @@ import play.db.jpa.*;
 @Table(name = "UserInfo")
 public class UserInfo extends Model 
 {
-	public String userName;
+	public String username;
   public String password;
   public Boolean isActive;
   public Boolean isAdmin;
@@ -27,12 +27,12 @@ public class UserInfo extends Model
 	@Email
 	public String emailAddress;
 	
-	public UserInfo(String userName, String password, Boolean isActive,
+	public UserInfo(String username, String password, Boolean isActive,
 			Boolean isAdmin, String fbEmailAddress, Long fbUserId, String fbFullName,
 			String fbLocationName, Long fbLocationId, String gender, Date createdAt,
 			Date updatedAt, String emailAddress)
 	{
-		this.userName = userName;
+		this.username = username;
 		this.password = password;
 		this.isActive = isActive;
 		this.isAdmin = isAdmin;

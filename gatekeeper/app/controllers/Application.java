@@ -77,12 +77,18 @@ public class Application extends Controller
 	public static void listAllProviders()
 	{
 		Long startTime = System.currentTimeMillis();
+		
 		List<ServiceProvider> providers = ServiceProvider.findAll();
 		Long endTime = System.currentTimeMillis();
+		
 		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		response.put("Providers", providers);
-//		renderJSON(new Message(new Service(request, new Response(response))));
+
+		Service serviceResponse = new Service();
+		serviceResponse.setRequest(request);
+		serviceResponse.setResponse(response);
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**
@@ -91,6 +97,7 @@ public class Application extends Controller
 	public static void listActiveProviders()
 	{
 		Long startTime = System.currentTimeMillis();
+		
 		List<ServiceProvider> allProviders = ServiceProvider.findAll();
 		List<ServiceProvider> activeProviders = new ArrayList<ServiceProvider>();
 		for (ServiceProvider serviceProvider : allProviders)
@@ -101,10 +108,15 @@ public class Application extends Controller
 			}
 		}
 		Long endTime = System.currentTimeMillis();
+		
 		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		response.put("Providers", activeProviders);
-//		renderJSON(new Message(new Service(request, new Response(response))));
+
+		Service serviceResponse = new Service();
+		serviceResponse.setRequest(request);
+		serviceResponse.setResponse(response);
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**
@@ -330,73 +342,81 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void login(@Required(message = "username is required") String userName,
+	public static void login(@Required(message = "username is required") String username,
 			@Required(message = "Password is required") @Password @MinSize(5) String password)
 	{
-		Long startTime = System.currentTimeMillis();
-
-		String returnMessage = "";
-		Boolean isValidRequest = Boolean.TRUE;
-		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
-		List<Error> error = new ArrayList<Error>();
-		
-		if (!userName.isEmpty() || !userName.trim().isEmpty())
-		{
-			// Look up by username or FB email
-			List<UserInfo> userList = UserInfo.find("userName", userName).fetch();
-			if (userList == null || userList.size() == 0)
-			{
-				userList = UserInfo.find("fbEmailAddress", userName).fetch();
-			}
-				
-			if (userList != null && userList.size() == 1)
-			{
-				final UserInfo userInfo = userList.get(0);
-				if(userInfo.password != null && userInfo.password.equals(password))
-				{
-					List<Map<String, String>> message = new ArrayList<Map<String,String>>();
-					message.add(
-						new HashMap<String, String>()
-						{
-							{
-								put("id", userInfo.id.toString());
-								put("name", userInfo.userName);
-							}
-						});
-					response.put("User", message);
-				}
-				else
-				{
-					returnMessage = "User name and password do not match.";
-					error.add(new Error(ErrorCodes.AUTHENTICATION_FAILED.toString(), returnMessage));
-				}
-			}
-			else
-			{
-				returnMessage = "User not registered.";
-				error.add(new Error(ErrorCodes.NO_SUCH_USER.toString(), returnMessage));
-			}
-		}
-		else
-		{
-			isValidRequest = Boolean.FALSE;
-			error.add(new Error(ErrorCodes.INVALID_REQUEST.toString(), "Invalid Request"));
-		}
-		Long endTime = System.currentTimeMillis();
-		
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("userName", userName);
-		parameters.put("password", password);
-		Request request = new Request(isValidRequest, "login", endTime - startTime, parameters);
-		
-		if(!response.isEmpty())
-		{
-//			renderJSON(new Message(new Service(request, new Response(response))));
-		}
-		else
-		{
-//			renderJSON(new Message(new Service(request,new Errors(error))));
-		}
+//		Long startTime = System.currentTimeMillis();
+//
+//		Boolean isValidRequest = Boolean.TRUE;
+//		Service serviceResponse = new Service();
+//		Map<String, List<?>> response = new HashMap<String, List<?>>();
+//		
+//		if(Validation.hasErrors())
+//		{
+//			isValidRequest = false;
+//			for (play.data.validation.Error validationError : Validation.errors())
+//			{
+//				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+//			}
+//		}
+//		else
+//		{
+//			// Look up by username or FB email
+//			List<UserInfo> userList = UserInfo.find("username", username).fetch();
+//			if (userList == null || userList.size() == 0)
+//			{
+//				userList = UserInfo.find("fbEmailAddress", username).fetch();
+//			}
+//				
+//			if (userList != null && userList.size() == 1)
+//			{
+//				final UserInfo userInfo = userList.get(0);
+//				if(userInfo.password != null && userInfo.password.equals(password))
+//				{
+//					List<Map<String, String>> message = new ArrayList<Map<String,String>>();
+//					message.add(
+//						new HashMap<String, String>()
+//						{
+//							{
+//								put("id", userInfo.id.toString());
+//								put("name", userInfo.username);
+//							}
+//						});
+//					response.put("User", message);
+//				}
+//				else
+//				{
+//					returnMessage = "User name and password do not match.";
+//					error.add(new Error(ErrorCodes.AUTHENTICATION_FAILED.toString(), returnMessage));
+//				}
+//			}
+//			else
+//			{
+//				returnMessage = "User not registered.";
+//				error.add(new Error(ErrorCodes.NO_SUCH_USER.toString(), returnMessage));
+//			}
+//		}
+//		
+//		else
+//		{
+//			isValidRequest = Boolean.FALSE;
+//			error.add(new Error(ErrorCodes.INVALID_REQUEST.toString(), "Invalid Request"));
+//		}
+//		Long endTime = System.currentTimeMillis();
+//		
+//		Map<String, String> parameters = new HashMap<String, String>();
+//		parameters.put("username", username);
+//		parameters.put("password", password);
+//		Request request = new Request(isValidRequest, "login", endTime - startTime, parameters);
+//		
+//		if(!response.isEmpty())
+//		{
+////			renderJSON(new Message(new Service(request, new Response(response))));
+//		}
+//		else
+//		{
+////			renderJSON(new Message(new Service(request,new Errors(error))));
+//		}
 	}
 
 	/**
@@ -475,7 +495,7 @@ public class Application extends Controller
 	 * @param fbLocationName
 	 * @param fbLocationId
 	 */
-	public static void addUser(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String userName, 
+	public static void addUser(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String username, 
 										@Required(message="Password is required") @MinSize(5) @Password String password,
 										@Required(message="Gender is required") String gender,
 										@Required(message="Facebook Email is required") @Email String fbEmailAddress,
@@ -513,30 +533,30 @@ public class Application extends Controller
 		}
 		else
 		{
-			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch();
+			List<UserInfo> userInfo = UserInfo.find("userName", username).fetch();
 			if(userInfo.size() > 0)
 			{
 				serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
 			}
 			else
 			{
-				UserInfo newUser = new UserInfo(userName, password, Boolean.TRUE, Boolean.FALSE, 
+				UserInfo newUser = new UserInfo(username, password, Boolean.TRUE, Boolean.FALSE, 
 						fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
-					  gender, currentDate, currentDate, userName+"@deallr.com");
+					  gender, currentDate, currentDate, username+"@deallr.com");
 				newUser.save();
 				
 				List<UserInfo> message = new ArrayList<UserInfo>();
 				UserInfo recentUser = new UserInfo();
 				recentUser.id = newUser.id;
-				recentUser.userName = newUser.userName;
+				recentUser.username = newUser.username;
 				message.add(recentUser);
-				response.put("User", message);
+				response.put("user", message);
 			}
 		}
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();			
-		parameters.put("userName", userName);
+		parameters.put("username", username);
 		parameters.put("password",password);
 		parameters.put("gender", gender);
 		parameters.put("fbEmailAddress", fbEmailAddress);
