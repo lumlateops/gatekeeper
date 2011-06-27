@@ -52,7 +52,7 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
-	private static final String	EMAIL_LOOKUP_HQL	= "SELECT U FROM ACCOUNT U WHERE U.USERID IS ? AND ACTIVE IS ?";
+	private static final String	EMAIL_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
 
 	@Before
 	public static void logRequest()
@@ -452,7 +452,7 @@ public class Application extends Controller
 				final UserInfo userInfo = userList.get(0);
 				//Check if the user has any registered email accounts
 				Boolean hasEmail = Boolean.FALSE;
-				List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, Long.toString(userInfo.id), Boolean.TRUE).fetch();
+				List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE).fetch();
 				if(accounts != null && accounts.size() > 0)
 				{
 					hasEmail = Boolean.TRUE;

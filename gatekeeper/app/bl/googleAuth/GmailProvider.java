@@ -59,7 +59,7 @@ public class GmailProvider
 			Account account = accounts.get(0);
 			
 			// Make sure userId matches
-			if(account.userId.equalsIgnoreCase(userId))
+			if(account.userId == Long.parseLong(userId))
 			{
 				if(account.active)
 				{
@@ -128,7 +128,7 @@ public class GmailProvider
 		// Store the information, leaving the access token blank
 		Date current = new Date(System.currentTimeMillis());
 		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		new Account(userId, email, gmailProvider, "", tokenSecret, true, "", 
+		new Account(Long.parseLong(userId), email, gmailProvider, "", tokenSecret, true, "", 
 								current, null, current, current).save();
 		return requestUrl;
 	}
@@ -155,7 +155,7 @@ public class GmailProvider
 				Account account = accounts.get(0);
 				
 				// Make sure userId matches
-				if(account.userId.equalsIgnoreCase(userId))
+				if(account.userId == Long.parseLong(userId))
 				{
 					GoogleOAuthParameters oauthParameters = getAuthParams();
 					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);

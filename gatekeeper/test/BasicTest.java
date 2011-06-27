@@ -23,7 +23,7 @@ public class BasicTest extends UnitTest
 				currentDate).save();
 		
 	  // Create a new user email account and save it
-		new Account("bob", "bob@gmail.com", provider, "token", "secret" ,true, "",
+		new Account(Long.parseLong("23"), "bob@gmail.com", provider, "token", "secret" ,Boolean.TRUE, "",
 					currentDate, currentDate, currentDate, currentDate).save();
 	    
 	    Account account = Account.find("byEmail", "bob@gmail.com").first();

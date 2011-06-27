@@ -13,7 +13,7 @@ import play.db.jpa.Model;
 @Entity
 public class Account extends Model
 {
-	public String		userId;
+	public Long		userId;
 	@Email
 	public String		email;
 	public String		dllrAccessToken;
@@ -28,7 +28,7 @@ public class Account extends Model
 	@OneToOne
 	ServiceProvider	provider;
 
-	public Account(String userId, String userEmail, ServiceProvider provider,
+	public Account(Long userId, String userEmail, ServiceProvider provider,
 			String dllrAccessToken, String dllrTokenSecret, Boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
 	{
