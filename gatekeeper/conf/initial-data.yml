@@ -88,7 +88,7 @@ UserInfo(ramdev):
     fbFullName:           ramdev baba
     fbLocationName:       Cave
     fbLocationId:         300
-    gender:               1
+    gender:               male
     createdAt:            2009-06-14
     updatedAt:            2009-06-14
     emailAddress:         ramdev@deallr.com

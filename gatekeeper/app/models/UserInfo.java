@@ -20,8 +20,8 @@ public class UserInfo extends Model
   public Long fbUserId;
   public String fbFullName;
   public String fbLocationName;
-  public Integer fbLocationId;
-  public Integer gender;
+  public Long fbLocationId;
+  public String gender;
 	public Date	createdAt;
 	public Date	updatedAt;
 	@Email
@@ -29,7 +29,7 @@ public class UserInfo extends Model
 	
 	public UserInfo(String userName, String password, Boolean isActive,
 			Boolean isAdmin, String fbEmailAddress, Long fbUserId, String fbFullName,
-			String fbLocationName, Integer fbLocationId, Integer gender, Date createdAt,
+			String fbLocationName, Long fbLocationId, String gender, Date createdAt,
 			Date updatedAt, String emailAddress)
 	{
 		this.userName = userName;

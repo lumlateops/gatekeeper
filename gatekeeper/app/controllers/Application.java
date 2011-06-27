@@ -471,12 +471,12 @@ public class Application extends Controller
 	 */
 	public static void addUser(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String userName, 
 										@Required(message="Password is required") @MinSize(5) @Password String password,
-										@Required(message="Gender is required") Integer gender,
+										@Required(message="Gender is required") String gender,
 										@Required(message="Facebook Email is required") @Email String fbEmailAddress,
 										@Required(message="Facebook name is required") String fbFullName,
 										@Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
 										@Required(message="Facebook location name is required") String fbLocationName,
-										@Required(message="Facebook location Id is required")Integer fbLocationId)
+										@Required(message="Facebook location Id is required")Long fbLocationId)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -532,12 +532,12 @@ public class Application extends Controller
 		Map<String, String> parameters = new HashMap<String, String>();			
 		parameters.put("userName", userName);
 		parameters.put("password",password);
-		parameters.put("gender", Integer.toString(gender));
+		parameters.put("gender", gender);
 		parameters.put("fbEmailAddress", fbEmailAddress);
 		parameters.put("fbFullName", fbFullName);
 		parameters.put("fbUserId", Long.toString(fbUserId));
 		parameters.put("fbLocationName", fbLocationName);
-		parameters.put("fbLocationId", Integer.toString(fbLocationId));
+		parameters.put("fbLocationId", Long.toString(fbLocationId));
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
 		
 		if(isValidRequest)
