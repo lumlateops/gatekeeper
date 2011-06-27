@@ -16,9 +16,9 @@ public class Account extends Model
 	public String		userId;
 	@Email
 	public String		email;
-	public String		dllrAuthToken;
+	public String		dllrAccessToken;
 	public String		dllrTokenSecret;
-	public boolean	active;
+	public Boolean	active;
 	public String		lastError;
 	public Date			lastConfirmedAt;
 	public Date			lastErrorAt;
@@ -29,7 +29,7 @@ public class Account extends Model
 	ServiceProvider	provider;
 
 	public Account(String userId, String userEmail, ServiceProvider provider,
-			String dllrAuthToken, String dllrTokenSecret, boolean active, String lastError,
+			String dllrAccessToken, String dllrTokenSecret, Boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
 	{
 		Logger.info("Account constructor called");
@@ -37,7 +37,7 @@ public class Account extends Model
 		this.userId = userId;
 		this.email = userEmail;
 		this.provider = provider;
-		this.dllrAuthToken = dllrAuthToken;
+		this.dllrAccessToken = dllrAccessToken;
 		this.dllrTokenSecret = dllrTokenSecret;
 		this.active = active;
 		this.lastError = lastError;

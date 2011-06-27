@@ -67,9 +67,9 @@ ServiceProvider(TWITTER):
     updated_at:       2009-06-14    
     
 Account(lumlateops):
-    userId:             lumlateops
+    userId:             2
     email:              lumlateops@gmail.com
-    dllrAuthToken:    
+    dllrAccessToken:    
     dllrTokenSecret:    4%2F0qWzPJNa1j5A96URgUsr2LVLqEB2
     active:             true
     lastError:         
@@ -84,7 +84,7 @@ UserInfo(ramdev):
     isActive:             true
     isAdmin:              false
     fbEmailAddress:       ramdev@gmail.com
-    fbUserId:             ramdev
+    fbUserId:             231
     fbFullName:           ramdev baba
     fbLocationName:       Cave
     fbLocationId:         300

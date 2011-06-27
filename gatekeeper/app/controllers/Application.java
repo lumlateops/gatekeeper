@@ -12,6 +12,7 @@ import java.util.Map;
 import com.google.gdata.client.authn.oauth.OAuthException;
 
 import jsonModels.Errors;
+import jsonModels.LoginResponse;
 import jsonModels.Message;
 import jsonModels.Parameter;
 import jsonModels.Response;
@@ -51,6 +52,8 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
+	private static final String	EMAIL_LOOKUP_HQL	= "SELECT U FROM ACCOUNT U WHERE U.USERID IS ? AND ACTIVE IS ?";
+
 	@Before
 	public static void logRequest()
 	{
@@ -418,6 +421,66 @@ public class Application extends Controller
 ////			renderJSON(new Message(new Service(request,new Errors(error))));
 //		}
 	}
+	
+	/**
+	 * Login using the FBUserId
+	 * @param fbUserId
+	 */
+	public static void fbIdlogin(@Required(message = "Facebook Id is required") Long fbUserId)
+	{
+		Long startTime = System.currentTimeMillis();
+
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			// Look up by FB ID
+			List<UserInfo> userList = UserInfo.find("fbUserId", fbUserId).fetch();
+				
+			if (userList != null && userList.size() == 1)
+			{
+				final UserInfo userInfo = userList.get(0);
+				//Check if the user has any registered email accounts
+				Boolean hasEmail = Boolean.FALSE;
+				List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, Long.toString(userInfo.id), Boolean.TRUE).fetch();
+				if(accounts != null && accounts.size() > 0)
+				{
+					hasEmail = Boolean.TRUE;
+				}
+				List<LoginResponse> message = new ArrayList<LoginResponse>();
+				message.add(new LoginResponse(Long.toString(userInfo.id),
+																			userInfo.username, hasEmail));
+				response.put("user", message);
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.NO_SUCH_USER.toString(), "User not registered.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("fbUserId", Long.toString(fbUserId));
+		Request request = new Request(isValidRequest, "fbIdlogin", endTime - startTime, parameters);
+		
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		
+		renderJSON(new Message(serviceResponse));
+	}
 
 	/**
 	 * Checks to see if the username is already taken.
@@ -470,18 +533,14 @@ public class Application extends Controller
 		
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("userName", userName);
+
 		serviceResponse.setRequest(new Request(isValidRequest, "checkUserNameAvailable", 
 																					 endTime-startTime, parameters));
-		
 		if(isValidRequest && !response.isEmpty())
 		{
 			serviceResponse.setResponse(response);
-			renderJSON(new Message(serviceResponse));
 		}
-		else
-		{
-			renderJSON(new Message(serviceResponse));
-		}
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**
@@ -565,16 +624,12 @@ public class Application extends Controller
 		parameters.put("fbLocationName", fbLocationName);
 		parameters.put("fbLocationId", Long.toString(fbLocationId));
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
+
 		serviceResponse.setRequest(request);
-		
 		if(isValidRequest && !response.isEmpty())
 		{
 			serviceResponse.setResponse(response);
-			renderJSON(new Message(serviceResponse));
 		}
-		else
-		{
-			renderJSON(new Message(serviceResponse));
-		}
+		renderJSON(new Message(serviceResponse));
 	}
 }

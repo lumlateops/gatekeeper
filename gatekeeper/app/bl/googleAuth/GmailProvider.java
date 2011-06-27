@@ -165,7 +165,7 @@ public class GmailProvider
 
 					String token = oauthHelper.getAccessToken(oauthParameters);
 					
-					account.dllrAuthToken = token;
+					account.dllrAccessToken = token;
 					Logger.debug("Access Token: "+token);
 					account.save();
 				}
