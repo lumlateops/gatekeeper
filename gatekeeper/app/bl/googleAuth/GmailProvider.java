@@ -86,7 +86,7 @@ public class GmailProvider
 		
 		List<String> message = new ArrayList<String>();
 		message.add(returnMessage);
-		response.put("Message", message);
+		response.put("isAccountAuthorized", message);
 		return response;
 	}
 	
@@ -221,6 +221,7 @@ public class GmailProvider
 						// Revoke token
 						GoogleOAuthParameters oauthParameters = getAuthParams();
 						oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+						oauthParameters.setOAuthToken(account.dllrAccessToken);
 						GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 						oauthHelper.revokeToken(oauthParameters);
 						

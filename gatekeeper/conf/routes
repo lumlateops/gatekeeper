@@ -16,7 +16,7 @@ GET 	/providers/active													Application.listActiveProviders
 POST		/user/add														Application.addUser
 
 # Check username availability
-GET     /user/available/{username}						     				Application.checkUserNameAvailable
+GET     /user/available/{username}						     				Application.checkUsernameAvailable
 
 # Check Authentication
 GET     /login/{username}/{password}						    			Application.login
@@ -31,7 +31,7 @@ POST		/account/add						     						Application.addEmail
 POST	/account/upgradeEmailToken 											Application.upgradeToken
 
 # Check if account is authorized
-GET 	/account/verify/userId}/{provider}/{email}							Application.verifyAccount
+GET 	/account/verify/{userId}/{provider}/{email}							Application.verifyAccount
 
 # Revoke access token {userId}/{password}/{provider}/{email}
 POST	/account/revoke/													Application.revokeAccess
