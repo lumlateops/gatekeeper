@@ -132,63 +132,59 @@ public class Application extends Controller
 			@Required(message="Email is required") String email)
 	{
 		Long startTime = System.currentTimeMillis();
-
-		Boolean isValidRequest = Boolean.TRUE;
-		String returnMessage = "";/**
-		 * 
-		 * @param userName
-		 * @param password
-		 * @param zipCode
-		 * @param firstName
-		 * @param lastName
-		 * @param gender
-		 * @param fbEmailAddress
-		 * @param fbUserId
-		 * @throws ParseException
-		 */
-		Logger.debug("Authorize Email Called:" + userId + "/" + provider + "/" + email);
-
-		//TODO: Validate input
-
-		List<Error> error = new ArrayList<Error>();
-		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		
-		// Go to correct provider
-		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
 		{
-			Logger.debug("AE: Provider is Gmail");
-
-			//Check if account exists and is still valid
-			boolean isDuplicate = GmailProvider.isDuplicateAccount(userId, email);
-
-			Logger.debug("AE: isDuplicate: " + isDuplicate);
-
-			//Account not present or invalid, then get a new one and store it
-			if(!isDuplicate)
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				try
-				{
-					String authUrl = GmailProvider.authorizeAccount(userId, email);
-					Logger.debug("Auth url: "+authUrl);
-					List<String> authMessage = new ArrayList<String>();
-					authMessage.add(authUrl);
-					response.put("AuthUrl", authMessage);
-				}
-				catch (OAuthException e)
-				{
-					returnMessage = e.getMessage() + e.getCause();
-					error.add(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
-				}
-			}
-			else
-			{
-				returnMessage = "Account registered and authorized already";
-				error.add(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
 			}
 		}
 		else
 		{
-			error.add(new Error(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported."));
+			// Go to correct provider
+			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			{
+				Logger.debug("AE: Provider is Gmail");
+
+				//Check if account exists and is still valid
+				boolean isDuplicate = GmailProvider.isDuplicateAccount(userId, email);
+
+				Logger.debug("AE: isDuplicate: " + isDuplicate);
+
+				//Account not present or invalid, then get a new one and store it
+				if(!isDuplicate)
+				{
+					try
+					{
+						String authUrl = GmailProvider.authorizeAccount(userId, email);
+						Logger.debug("Auth url: "+authUrl);
+						List<String> authMessage = new ArrayList<String>();
+						authMessage.add(authUrl);
+						response.put("AuthUrl", authMessage);
+					}
+					catch (OAuthException e)
+					{
+						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+																		 e.getMessage() + e.getCause());
+					}
+				}
+				else
+				{
+					serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
+																	 "Account registered and authorized already");
+				}
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.UNSUPPORTED_PROVIDER.toString(),
+																 provider + " not supported.");
+			}
 		}
 		Long endTime = System.currentTimeMillis();
 
@@ -198,14 +194,13 @@ public class Application extends Controller
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "addEmail", endTime-startTime, parameters);
 		
-		if(!response.isEmpty())
+		serviceResponse.setRequest(request);
+		if(isValidRequest && response != null && !response.isEmpty())
 		{
-//			renderJSON(new Message(new Service(request, new Response(response))));
+			serviceResponse.setResponse(response);
 		}
-		else
-		{
-//			renderJSON(new Message(new Service(request,new Errors(error))));
-		}
+		
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**
