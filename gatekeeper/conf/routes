@@ -5,9 +5,6 @@
 # Home page
 # GET   /                                       							Application.index
 
-# Login
-GET		/login/{username}/{password}										Application.login
-
 # List all providers
 GET 	/providers/all														Application.listAllProviders
 
@@ -15,17 +12,17 @@ GET 	/providers/all														Application.listAllProviders
 GET 	/providers/active													Application.listActiveProviders
 
 # Add user 
-#POST		/user/add/{userName}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
+#POST		/user/add/{username}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
 POST		/user/add														Application.addUser
 
 # Check username availability
-GET     /user/available/{userName}						     				Application.checkUserNameAvailable
+GET     /user/available/{username}						     				Application.checkUserNameAvailable
 
 # Check Authentication
-GET     /user/authenticate/{userName}/{password}						    Application.login
+GET     /login/{username}/{password}						    			Application.login
 
 # Check Authentication
-GET     /user/authenticate/{fbUserId}									    Application.fbIdlogin
+GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 
 # Add account /{userId}/{provider}/{email}
 POST		/account/add						     						Application.addEmail

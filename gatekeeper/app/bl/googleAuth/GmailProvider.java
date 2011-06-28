@@ -9,6 +9,7 @@ import java.util.Map;
 import jsonModels.Error;
 import jsonModels.Errors;
 import jsonModels.Response;
+import jsonModels.Service;
 import jsonModels.ServiceResponse;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
@@ -46,10 +47,10 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static ServiceResponse isAccountAuthorized(String userId, String email)
+	public static Map<String, List<?>> isAccountAuthorized(String userId, String email,
+																												 Service serviceResponse)
 	{
 		String returnMessage = "false";
-		ServiceResponse serviceResponse = null;
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 
 		//Check if we have the account already
@@ -68,26 +69,25 @@ public class GmailProvider
 			}
 			else
 			{
-				returnMessage = "Email address already registered to a different user.";
-//				serviceResponse = new Errors(new Error(ErrorCodes.DUPLICATE_ACCOUNT.toString(), returnMessage));
+				serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
+																 "Email address already registered to a different user.");
 			}
 		}
 		else if(accounts != null && accounts.size() > 1)
 		{
-			returnMessage = "Multiple accounts found with this email address.";
-//			serviceResponse = new Errors(new Error(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), returnMessage));
+			serviceResponse.addError(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), 
+															 "Multiple accounts found with this email address.");
 		}
 		else
 		{
-			returnMessage = "No matching account found";
-//			serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+			serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), 
+															 "No matching account found");
 		}
 		
 		List<String> message = new ArrayList<String>();
 		message.add(returnMessage);
 		response.put("Message", message);
-		serviceResponse = new Response(response);
-		return serviceResponse;
+		return response;
 	}
 	
 	public static boolean isDuplicateAccount(String userId, String email)
