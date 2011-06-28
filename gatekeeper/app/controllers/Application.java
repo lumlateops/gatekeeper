@@ -266,18 +266,30 @@ public class Application extends Controller
 	{
 		Long startTime = System.currentTimeMillis();
 
-		List<Error> error = new ArrayList<Error>();
-		ServiceResponse response = null;
-
-		// Go to correct provider
-		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = null;
+		
+		if(Validation.hasErrors())
 		{
-			//Upgrade to access token and store the account
-			response = GmailProvider.revokeAccess(userId, password, email);
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
 		}
 		else
 		{
-			error.add(new Error(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported."));
+			// Go to correct provider
+			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			{
+				//Upgrade to access token and store the account
+				response = GmailProvider.revokeAccess(userId, password, email, serviceResponse);
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported.");
+			}
 		}
 		Long endTime = System.currentTimeMillis();
 
@@ -285,16 +297,15 @@ public class Application extends Controller
 		parameters.put("userId", userId);
 		parameters.put("provider", provider);
 		parameters.put("email", email);
-		Request request = new Request(Boolean.TRUE, "revokeAccess", endTime-startTime, parameters);
+		Request request = new Request(isValidRequest, "revokeAccess", endTime-startTime, parameters);
 		
-		if(response != null)
+		serviceResponse.setRequest(request);
+		if(isValidRequest && response != null && !response.isEmpty())
 		{
-//			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+			serviceResponse.setResponse(response);
 		}
-		else
-		{
-//			renderJSON(new Message(new Service(request, new Errors(error))));
-		}
+		
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**

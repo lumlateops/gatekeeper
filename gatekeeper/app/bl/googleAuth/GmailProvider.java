@@ -200,10 +200,10 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static ServiceResponse revokeAccess(String userId, String password, String email)
+	public static Map<String, List<?>> revokeAccess(String userId, String password,
+																						 String email, Service serviceResponse)
 	{
 		String returnMessage = "Revoked access for " + email;
-		ServiceResponse serviceResponse = null;
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		try
@@ -226,21 +226,20 @@ public class GmailProvider
 				List<String> message = new ArrayList<String>();
 				message.add(returnMessage);
 				response.put("Message", message);
-				serviceResponse = new Response(response);
 			}
 			else
 			{
-				returnMessage = "Incorrect login";
-//				serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+				serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+																 "Incorrect login");
 			}
 		}
 		catch (OAuthException e)
 		{
-			returnMessage = e.getCause() + e.getMessage();
-//			serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+															 e.getCause() + e.getMessage());
 		}
 		
-		return serviceResponse;
+		return response;
 	}
 	
 	private static GoogleOAuthParameters getAuthParams()
