@@ -215,42 +215,54 @@ public class Application extends Controller
 	 * @param email
 	 * @param requestToken
 	 */
-	public static void upgradeToken(@Required(message="UserId is required") String userId,
+	public static void upgradeToken(@Required(message="userId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
 			@Required(message="Email is required") String email,
 			@Required(message="Query string needed for upgrading")String queryString)
 	{
 		Long startTime = System.currentTimeMillis();
-		List<Error> error = new ArrayList<Error>();
-		ServiceResponse response = null;
-
-		// Go to correct provider
-		if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+		
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = null;
+		
+		if(Validation.hasErrors())
 		{
-			//Upgrade to access token and store the account
-			response = GmailProvider.upgradeToken(userId, email, queryString);
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
 		}
 		else
 		{
-			error.add(new Error(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported."));
+			// Go to correct provider
+			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			{
+				//Upgrade to access token and store the account
+				response = GmailProvider.upgradeToken(userId, email, queryString, serviceResponse);
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.UNSUPPORTED_PROVIDER.toString(), provider + " not supported.");
+			}
 		}
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", userId);
+		parameters.put("userId", Long.toBinaryString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		parameters.put("queryString", queryString);
-		Request request = new Request(Boolean.TRUE, "upgradeToken", endTime-startTime, parameters);
+		Request request = new Request(isValidRequest, "upgradeToken", endTime-startTime, parameters);
 		
-		if(response != null)
+		serviceResponse.setRequest(request);
+		if(isValidRequest && response != null && !response.isEmpty())
 		{
-//			renderJSON(new Message(new Service(request, response.getServiceResponse())));
+			serviceResponse.setResponse(response);
 		}
-		else
-		{
-//			renderJSON(new Message(new Service(request, new Errors(error))));
-		}
+		
+		renderJSON(new Message(serviceResponse));
 	}
 
 	/**

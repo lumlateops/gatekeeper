@@ -140,11 +140,11 @@ public class GmailProvider
 	 * @param queryString
 	 * @return
 	 */
-	public static ServiceResponse upgradeToken(String userId, String email, String queryString)
+	public static Map<String, List<?>> upgradeToken(Long userId, String email, 
+																									String queryString, Service serviceResponse)
 	{
 		Logger.debug("upgrade token called");
 		String returnMessage = "Successfully upgraded token";
-		ServiceResponse serviceResponse = null;
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		try
@@ -155,7 +155,7 @@ public class GmailProvider
 				Account account = accounts.get(0);
 				
 				// Make sure userId matches
-				if(account.userId == Long.parseLong(userId))
+				if(account.userId == userId)
 				{
 					GoogleOAuthParameters oauthParameters = getAuthParams();
 					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
@@ -172,27 +172,25 @@ public class GmailProvider
 				else
 				{
 					returnMessage = "No matching account found";
-//					serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
 				}
 			}
 			else
 			{
-				returnMessage = "No matching account found";
-//				serviceResponse = new Errors(new Error(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), returnMessage));
+				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
 			}
 			
 			List<String> message = new ArrayList<String>();
 			message.add(returnMessage);
 			response.put("Message", message);
-			serviceResponse = new Response(response);
 		}
 		catch (OAuthException e)
 		{
-			returnMessage = e.getCause() + e.getMessage();
-//			serviceResponse = new Errors(new Error(ErrorCodes.OAUTH_EXCEPTION.toString(), returnMessage));
+			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+															 e.getCause() + e.getMessage());
 		}
 
-		return serviceResponse;
+		return response;
 	}
 	
 	/**
