@@ -345,81 +345,77 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void login(@Required(message = "username is required") String username,
-			@Required(message = "Password is required") @Password @MinSize(5) String password)
+	public static void login(@Required(message = "Username or email is required") String username,
+			@Required(message = "Password is required") @Password String password)
 	{
-//		Long startTime = System.currentTimeMillis();
-//
-//		Boolean isValidRequest = Boolean.TRUE;
-//		Service serviceResponse = new Service();
-//		Map<String, List<?>> response = new HashMap<String, List<?>>();
-//		
-//		if(Validation.hasErrors())
-//		{
-//			isValidRequest = false;
-//			for (play.data.validation.Error validationError : Validation.errors())
-//			{
-//				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
-//			}
-//		}
-//		else
-//		{
-//			// Look up by username or FB email
-//			List<UserInfo> userList = UserInfo.find("username", username).fetch();
-//			if (userList == null || userList.size() == 0)
-//			{
-//				userList = UserInfo.find("fbEmailAddress", username).fetch();
-//			}
-//				
-//			if (userList != null && userList.size() == 1)
-//			{
-//				final UserInfo userInfo = userList.get(0);
-//				if(userInfo.password != null && userInfo.password.equals(password))
-//				{
-//					List<Map<String, String>> message = new ArrayList<Map<String,String>>();
-//					message.add(
-//						new HashMap<String, String>()
-//						{
-//							{
-//								put("id", userInfo.id.toString());
-//								put("name", userInfo.username);
-//							}
-//						});
-//					response.put("User", message);
-//				}
-//				else
-//				{
-//					returnMessage = "User name and password do not match.";
-//					error.add(new Error(ErrorCodes.AUTHENTICATION_FAILED.toString(), returnMessage));
-//				}
-//			}
-//			else
-//			{
-//				returnMessage = "User not registered.";
-//				error.add(new Error(ErrorCodes.NO_SUCH_USER.toString(), returnMessage));
-//			}
-//		}
-//		
-//		else
-//		{
-//			isValidRequest = Boolean.FALSE;
-//			error.add(new Error(ErrorCodes.INVALID_REQUEST.toString(), "Invalid Request"));
-//		}
-//		Long endTime = System.currentTimeMillis();
-//		
-//		Map<String, String> parameters = new HashMap<String, String>();
-//		parameters.put("username", username);
-//		parameters.put("password", password);
-//		Request request = new Request(isValidRequest, "login", endTime - startTime, parameters);
-//		
-//		if(!response.isEmpty())
-//		{
-////			renderJSON(new Message(new Service(request, new Response(response))));
-//		}
-//		else
-//		{
-////			renderJSON(new Message(new Service(request,new Errors(error))));
-//		}
+		Long startTime = System.currentTimeMillis();
+
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			// Look up by username or Deallr email or FB email
+			List<UserInfo> userList = UserInfo.find("username", username).fetch();
+			if (userList == null || userList.size() == 0)
+			{
+				userList = UserInfo.find("emailAddress", username).fetch();
+				if (userList == null || userList.size() == 0)
+				{
+					userList = UserInfo.find("fbEmailAddress", username).fetch();
+				}
+			}
+				
+			if (userList != null && userList.size() == 1)
+			{
+				final UserInfo userInfo = userList.get(0);
+				if(userInfo.password != null && userInfo.password.equals(password))
+				{
+					//Check if the user has any registered email accounts
+					Boolean hasEmail = Boolean.FALSE;
+					List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE).fetch();
+					if(accounts != null && accounts.size() > 0)
+					{
+						hasEmail = Boolean.TRUE;
+					}
+					List<LoginResponse> message = new ArrayList<LoginResponse>();
+					message.add(new LoginResponse(Long.toString(userInfo.id),
+																				userInfo.username, hasEmail));
+					response.put("user", message);
+				}
+				else
+				{
+					serviceResponse.addError(ErrorCodes.AUTHENTICATION_FAILED.toString(), "User name and password do not match.");
+				}
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.NO_SUCH_USER.toString(), "User not registered.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("username", username);
+		parameters.put("password", password);
+		Request request = new Request(isValidRequest, "login", endTime - startTime, parameters);
+		
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		
+		renderJSON(new Message(serviceResponse));
 	}
 	
 	/**
