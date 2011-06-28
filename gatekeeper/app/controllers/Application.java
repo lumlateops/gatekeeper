@@ -127,7 +127,7 @@ public class Application extends Controller
 	 * If not it gets the request token for the address.
 	 * @param author
 	 */
-	public static void addEmail(@Required(message="UserId is required") String userId,
+	public static void addEmail(@Required(message="UserId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
 			@Required(message="Email is required") String email)
 	{
@@ -189,7 +189,7 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", userId);
+		parameters.put("userId", Long.toString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "addEmail", endTime-startTime, parameters);
@@ -245,7 +245,7 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toBinaryString(userId));
+		parameters.put("userId", Long.toString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		parameters.put("queryString", queryString);
@@ -266,7 +266,7 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void revokeAccess(@Required(message="UserId is required") String userId,
+	public static void revokeAccess(@Required(message="UserId is required") Long userId,
 			@Required(message="UserId is required") String password,
 			@Required(message="Email provider is required") String provider,
 			@Required(message="Email is required") String email)
@@ -301,7 +301,7 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", userId);
+		parameters.put("userId", Long.toString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "revokeAccess", endTime-startTime, parameters);
@@ -321,7 +321,7 @@ public class Application extends Controller
 	 * @param provider
 	 * @param email
 	 */
-	public static void verifyAccount(@Required(message="UserId is required") String userId,
+	public static void verifyAccount(@Required(message="UserId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
 			@Required(message="Email is required") String email)
 	{
@@ -355,7 +355,7 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", userId);
+		parameters.put("userId", Long.toString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "verifyAccount", endTime-startTime, parameters);
@@ -512,8 +512,8 @@ public class Application extends Controller
 	 * Checks to see if the username is already taken.
 	 * @param userName
 	 */
-	public static void checkUserNameAvailable(
-			@Required(message = "UserName is required") @MinSize(4) @MaxSize(100) String userName)
+	public static void checkUsernameAvailable(
+			@Required(message = "UserName is required") @MinSize(4) @MaxSize(100) String username)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -532,7 +532,7 @@ public class Application extends Controller
 		}
 		else
 		{
-			List<UserInfo> userInfo = UserInfo.find("userName", userName).fetch(1);
+			List<UserInfo> userInfo = UserInfo.find("userName", username).fetch(1);
 			
 			if (userInfo.size() > 0)
 			{
@@ -558,9 +558,9 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("userName", userName);
+		parameters.put("username", username);
 
-		serviceResponse.setRequest(new Request(isValidRequest, "checkUserNameAvailable", 
+		serviceResponse.setRequest(new Request(isValidRequest, "checkUsernameAvailable", 
 																					 endTime-startTime, parameters));
 		if(isValidRequest && !response.isEmpty())
 		{

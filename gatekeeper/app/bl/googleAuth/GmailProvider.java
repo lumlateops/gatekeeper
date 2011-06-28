@@ -47,7 +47,7 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static Map<String, List<?>> isAccountAuthorized(String userId, String email,
+	public static Map<String, List<?>> isAccountAuthorized(Long userId, String email,
 																												 Service serviceResponse)
 	{
 		String returnMessage = "false";
@@ -60,7 +60,7 @@ public class GmailProvider
 			Account account = accounts.get(0);
 			
 			// Make sure userId matches
-			if(account.userId == Long.parseLong(userId))
+			if(account.userId == userId)
 			{
 				if(account.active)
 				{
@@ -90,7 +90,7 @@ public class GmailProvider
 		return response;
 	}
 	
-	public static boolean isDuplicateAccount(String userId, String email)
+	public static boolean isDuplicateAccount(Long userId, String email)
 	{
 		boolean isDuplicate = false;
 
@@ -100,7 +100,7 @@ public class GmailProvider
 		{
 			for (Account account : accounts)
 			{
-				if(account.active)
+				if(account.userId == userId && account.active)
 				{
 					isDuplicate = true;
 					break;
@@ -117,7 +117,7 @@ public class GmailProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static String authorizeAccount(String userId, String email) throws OAuthException
+	public static String authorizeAccount(Long userId, String email) throws OAuthException
 	{
 		GoogleOAuthParameters oauthParameters = getAuthParams();
 		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
@@ -128,7 +128,7 @@ public class GmailProvider
 		// Store the information, leaving the access token blank
 		Date current = new Date(System.currentTimeMillis());
 		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		new Account(Long.parseLong(userId), email, gmailProvider, "", tokenSecret, true, "", 
+		new Account(userId, email, gmailProvider, "", tokenSecret, true, "", 
 								current, null, current, current).save();
 		return requestUrl;
 	}
@@ -149,7 +149,7 @@ public class GmailProvider
 		
 		try
 		{
-			List<Account> accounts = Account.findAll();
+			List<Account> accounts =  Account.find("email", email).fetch();
 			if(accounts != null && accounts.size() == 1)
 			{
 				Account account = accounts.get(0);
@@ -198,36 +198,53 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
-	public static Map<String, List<?>> revokeAccess(String userId, String password,
+	public static Map<String, List<?>> revokeAccess(Long userId, String password,
 																						 String email, Service serviceResponse)
 	{
-		String returnMessage = "Revoked access for " + email;
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		try
 		{
 			// TODO: Check user credentials
-			boolean isAuthenticated = false;
+			boolean isAuthenticated = true;
 			
 			if(isAuthenticated)
 			{
-				// Revoke token
-				GoogleOAuthParameters oauthParameters = getAuthParams();
-				GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-				oauthHelper.revokeToken(oauthParameters);
-				
-				// Clean up database
-				Account revokedAccount = ((Account)Account.find("email", email).first());
-				revokedAccount.active = false;
-				revokedAccount.save();
-				
-				List<String> message = new ArrayList<String>();
-				message.add(returnMessage);
-				response.put("Message", message);
+				List<Account> accounts =  Account.find("email", email).fetch();
+				if(accounts != null && accounts.size() == 1)
+				{
+					Account account = accounts.get(0);
+					
+					// Make sure userId matches
+					if(account.userId == userId)
+					{
+						// Revoke token
+						GoogleOAuthParameters oauthParameters = getAuthParams();
+						oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+						GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+						oauthHelper.revokeToken(oauthParameters);
+						
+						// Clean up database
+						account.active = false;
+						account.save();
+						
+						List<String> message = new ArrayList<String>();
+						message.add("Revoked access for " + email);
+						response.put("Message", message);
+					}
+					else
+					{
+						serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+					}
+				}
+				else
+				{
+					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+				}
 			}
 			else
 			{
-				serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+				serviceResponse.addError(ErrorCodes.AUTHENTICATION_FAILED.toString(), 
 																 "Incorrect login");
 			}
 		}
