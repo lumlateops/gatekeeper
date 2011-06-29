@@ -719,30 +719,9 @@ public class Application extends Controller
 			{
 				// Adjust result for page number
 				int startIndex = PAGE_SIZE * (page - 1);
-				int endIndex = ((startIndex + PAGE_SIZE) <= (allDealsCount-1)) ? (startIndex + PAGE_SIZE) : (allDealsCount-1);
-				final List<Deal> onePageDeals = allDeals.subList(startIndex, endIndex-1);
-				
-				if(onePageDeals != null && onePageDeals.size() != 0)
-				{
-					response.put("numberOfResults", 
-							new ArrayList<String>()
-							{
-								{
-									add(Integer.toString(allDealsCount));
-								}
-							});
-					final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
-					response.put("numberOfPages", 
-							new ArrayList<String>()
-							{
-								{
-									
-									add(Integer.toString(pageCount));
-								}
-							});
-					response.put("deals", onePageDeals);
-				}
-				else
+				int endIndex = ((startIndex + PAGE_SIZE) <= allDealsCount) ? (startIndex + PAGE_SIZE) : allDealsCount;
+
+				if(startIndex >= endIndex)
 				{
 					response.put("numberOfResults", 
 							new ArrayList<String>()
@@ -751,6 +730,40 @@ public class Application extends Controller
 									add("0");
 								}
 							});
+				}
+				else
+				{
+					final List<Deal> onePageDeals = allDeals.subList(startIndex, endIndex);
+					if(onePageDeals != null && onePageDeals.size() != 0)
+					{
+						response.put("numberOfResults", 
+								new ArrayList<String>()
+								{
+									{
+										add(Integer.toString(allDealsCount));
+									}
+								});
+						final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
+						response.put("numberOfPages", 
+								new ArrayList<String>()
+								{
+									{
+										
+										add(Integer.toString(pageCount));
+									}
+								});
+						response.put("deals", onePageDeals);
+					}
+					else
+					{
+						response.put("numberOfResults", 
+								new ArrayList<String>()
+								{
+									{
+										add("0");
+									}
+								});
+					}
 				}
 			}
 			else
