@@ -27,15 +27,15 @@ public class Deal extends Model
 	public Date			updatedAt;
 
 	@ManyToMany
-	public List<DealCategory>	dealCategories;
+	public List<DealCategory>	dealCategory;
 	
 	@OneToOne
-	public Retailer retailer;
+	public Retailers retailers;
 
 	public Deal(Long userId, String title, String description,
 			String discountPercentage, Date expiryDate, Date postDate, String url,
-			Date createdAt, Date updatedAt, List<DealCategory> dealCategories,
-			Retailer retailer)
+			Date createdAt, Date updatedAt, List<DealCategory> dealCategory,
+			Retailers retailers)
 	{
 		this.userId = userId;
 		this.title = title;
@@ -46,8 +46,8 @@ public class Deal extends Model
 		this.url = url;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.dealCategories = dealCategories;
-		this.retailer = retailer;
+		this.dealCategory = dealCategory;
+		this.retailers = retailers;
 	}
 	
 	/**

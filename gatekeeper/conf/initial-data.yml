@@ -93,21 +93,14 @@ UserInfo(ramdev):
     updatedAt:            2009-06-14
     emailAddress:         ramdev@deallr.com    
     
-Retailer(437):
+Retailers(437):
     domain:             macys.com
     name:               Macy's
     image:              http://www1.macys.com/img/nav/co_macysLogo3.gif
     createdAt:          2011-06-19 22:20:08
     updatedAt:          2011-06-19 22:20:08    
     
-Retailer(482):
-    domain:             target.com
-    name:               Target
-    image:              http://th209.photobucket.com/albums/bb175/clayandcrystal/th_target_logo.jpg
-    createdAt:          2011-06-19 22:20:08
-    updatedAt:          2011-06-19 22:20:08    
-    
-Retailer(482):
+Retailers(482):
     domain:             target.com
     name:               Target
     image:              http://th209.photobucket.com/albums/bb175/clayandcrystal/th_target_logo.jpg
@@ -129,8 +122,8 @@ Deal(1):
     discountPercentage: 40%
     expiryDate:         2012-06-14
     postDate:           2009-06-14
-    retailer:           482
-    dealCategories:     2
+    retailers:          482
+    dealCategory:       2
     url:                http://mydeal.com
     createdAt:          2009-06-14
     updatedAt:          2009-06-14    
@@ -142,8 +135,8 @@ Deal(2):
     discountPercentage: 40%
     expiryDate:         2012-06-14
     postDate:           2009-06-14
-    retailer:           482
-    dealCategories:     2
+    retailers:          482
+    dealCategory:       2
     url:                http://mydeal.com
     createdAt:          2009-06-14
     updatedAt:          2009-06-14    
@@ -155,8 +148,8 @@ Deal(3):
     discountPercentage: 60%
     expiryDate:         2012-06-14
     postDate:           2011-06-14
-    retailer:           437
-    dealCategories:     1
+    retailers:          437
+    dealCategory:       1
     url:                http://deal.com
     createdAt:          2009-06-14
     updatedAt:          2009-06-14
