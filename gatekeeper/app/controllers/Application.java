@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.annotations.OptimisticLock;
+
 import com.google.gdata.client.authn.oauth.OAuthException;
 
 import jsonModels.Errors;
@@ -39,9 +41,12 @@ import play.mvc.Controller;
 import play.mvc.Scope.Params;
 
 import models.Account;
+import models.Deal;
 import models.EmailProviders;
 import models.ErrorCodes;
 import models.ServiceProvider;
+import models.SortFields;
+import models.SortOrder;
 import models.UserInfo;
 
 /**
@@ -52,7 +57,9 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
+	private static final int	PAGE_SIZE	= 20;
 	private static final String	EMAIL_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
+	private static final String DEAL_LOOKUP_HQL = "SELECT d FROM Deal d WHERE d.userId IS ? order by d.postDate DESC";
 
 	@Before
 	public static void logRequest()
@@ -657,5 +664,100 @@ public class Application extends Controller
 			serviceResponse.setResponse(response);
 		}
 		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
+	 * End point to get the deals for a user
+	 * @param userId: Id of the user we want to get deals for.
+	 * @param page: Result page number to return. Default is 1.
+	 * @param sort: The field to sort the results by. Possible values are {@code SortFields}. Default is POST_DATE
+	 * @param sortOrder: Order of sort. Possible values are {@code SortOrder}. Default is DESC
+	 */
+	public static void getUserDeals(@Required(message="userId is required")Long userId,
+																	int page, String sort, String sortOrder)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			//Set defaults
+			if(page <= 0)
+			{
+				page = 1;
+			}
+			if(sort == null || SortFields.valueOf(sort) == null)
+			{
+				sort = SortFields.postDate.toString();
+			}
+			if(sortOrder == null || SortOrder.valueOf(sortOrder) == null)
+			{
+				sortOrder = SortOrder.DESC.toString();
+			}
+			
+			// Get deals for user
+			final List<Deal> deals = Deal.find(DEAL_LOOKUP_HQL, userId).fetch();
+			final int dealCount = deals.size();
+			if(deals != null && dealCount != 0)
+			{
+				response.put("numberOfResults", 
+						new ArrayList<String>()
+						{
+							{
+								add(Integer.toString(dealCount));
+							}
+						});
+				final int pageCount = (dealCount/PAGE_SIZE) > 0 ? (dealCount/PAGE_SIZE) : 1;
+				response.put("numberOfPages", 
+						new ArrayList<String>()
+						{
+							{
+								
+								add(Integer.toString(pageCount));
+							}
+						});
+				response.put("deals", deals);
+			}
+			else
+			{
+				response.put("numberOfResults", 
+						new ArrayList<String>()
+						{
+							{
+								add("0");
+							}
+						});
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		parameters.put("page", Integer.toString(page));
+		parameters.put("sort", sort);
+		parameters.put("sortOrder", sortOrder);
+		Request request = new Request(isValidRequest, "getUserDeals", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
 	}
 }

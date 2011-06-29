@@ -10,6 +10,28 @@ import play.Logger;
 import play.data.validation.Email;
 import play.db.jpa.Model;
 
+
+/**
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| id              | bigint(20)   | NO   | PRI | NULL    | auto_increment |
+| active          | bit(1)       | YES  |     | NULL    |                |
+| createdAt       | datetime     | YES  |     | NULL    |                |
+| dllrAccessToken | varchar(255) | YES  |     | NULL    |                |
+| dllrTokenSecret | varchar(255) | YES  |     | NULL    |                |
+| email           | varchar(255) | YES  |     | NULL    |                |
+| lastConfirmedAt | datetime     | YES  |     | NULL    |                |
+| lastError       | varchar(255) | YES  |     | NULL    |                |
+| lastErrorAt     | datetime     | YES  |     | NULL    |                |
+| updatedAt       | datetime     | YES  |     | NULL    |                |
+| userId          | bigint(20)   | YES  |     | NULL    |                |
+| provider_id     | bigint(20)   | YES  | MUL | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+ * 
+ * @author prachi
+ *
+ */
 @Entity
 public class Account extends Model
 {

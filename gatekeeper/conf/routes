@@ -12,8 +12,7 @@ GET 	/providers/all														Application.listAllProviders
 GET 	/providers/active													Application.listActiveProviders
 
 # Add user 
-#POST		/user/add/{username}/{password}/{firstName}/{lastName}/{gender}/{zipCode}/{fbEmailAddress}/{fbUserId}			Application.addUser
-POST		/user/add														Application.addUser
+POST	/user/add															Application.addUser
 
 # Check username availability
 GET     /user/available/{username}						     				Application.checkUsernameAvailable
@@ -24,17 +23,27 @@ GET     /login/{username}/{password}						    			Application.login
 # Check Authentication
 GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 
-# Add account /{userId}/{provider}/{email}
-POST		/account/add						     						Application.addEmail
+# Add account
+POST	/account/add						     							Application.addEmail
 
-# Upgrade token {userId}/{provider}/{email}/{queryString}
+# Upgrade token
 POST	/account/upgradeEmailToken 											Application.upgradeToken
 
 # Check if account is authorized
 GET 	/account/verify/{userId}/{provider}/{email}							Application.verifyAccount
 
-# Revoke access token {userId}/{password}/{provider}/{email}
+# Revoke access token
 POST	/account/revoke/													Application.revokeAccess
+
+# Get deals for a user
+GET		/deals/{userId}														Application.getUserDeals
+GET		/deals/{userId}/{page}												Application.getUserDeals
+GET		/deals/{userId}/{sort}												Application.getUserDeals
+GET		/deals/{userId}/{sortOrder}											Application.getUserDeals
+GET		/deals/{userId}/{page}/{sort}										Application.getUserDeals
+GET		/deals/{userId}/{page}/{sortOrder}									Application.getUserDeals
+GET		/deals/{userId}/{sort}/{sortOrder}									Application.getUserDeals
+GET		/deals/{userId}/{page}/{sort}/{sortOrder}							Application.getUserDeals
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404
