@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ehcache.hibernate.HibernateUtil;
+
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.OptimisticLock;
 
 import com.google.gdata.client.authn.oauth.OAuthException;
@@ -57,9 +60,9 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
-	private static final int	PAGE_SIZE	= 20;
+	private static final int		PAGE_SIZE					= 20;
 	private static final String	EMAIL_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
-	private static final String DEAL_LOOKUP_HQL = "SELECT d FROM Deal d WHERE d.userId IS ? order by d.postDate DESC";
+	private static final String	DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
 
 	@Before
 	public static void logRequest()
@@ -93,7 +96,7 @@ public class Application extends Controller
 		
 		Request request = new Request(Boolean.TRUE, "listAllProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
-		response.put("Providers", providers);
+		response.put("providers", providers);
 
 		Service serviceResponse = new Service();
 		serviceResponse.setRequest(request);
@@ -121,7 +124,7 @@ public class Application extends Controller
 		
 		Request request = new Request(Boolean.TRUE, "listActiveProviders", endTime-startTime, Collections.EMPTY_MAP);
 		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
-		response.put("Providers", activeProviders);
+		response.put("providers", activeProviders);
 
 		Service serviceResponse = new Service();
 		serviceResponse.setRequest(request);
@@ -708,27 +711,47 @@ public class Application extends Controller
 			}
 			
 			// Get deals for user
-			final List<Deal> deals = Deal.find(DEAL_LOOKUP_HQL, userId).fetch();
-			final int dealCount = deals.size();
-			if(deals != null && dealCount != 0)
+			String query = DEAL_LOOKUP_HQL + sort + " " + sortOrder;
+			final List<Deal> allDeals = Deal.find(query, userId).fetch();
+			final int allDealsCount = allDeals.size();
+
+			if(allDeals != null && allDealsCount != 0)
 			{
-				response.put("numberOfResults", 
-						new ArrayList<String>()
-						{
+				// Adjust result for page number
+				int startIndex = PAGE_SIZE * (page - 1);
+				int endIndex = ((startIndex + PAGE_SIZE) <= (allDealsCount-1)) ? (startIndex + PAGE_SIZE) : (allDealsCount-1);
+				final List<Deal> onePageDeals = allDeals.subList(startIndex, endIndex-1);
+				
+				if(onePageDeals != null && onePageDeals.size() != 0)
+				{
+					response.put("numberOfResults", 
+							new ArrayList<String>()
 							{
-								add(Integer.toString(dealCount));
-							}
-						});
-				final int pageCount = (dealCount/PAGE_SIZE) > 0 ? (dealCount/PAGE_SIZE) : 1;
-				response.put("numberOfPages", 
-						new ArrayList<String>()
-						{
+								{
+									add(Integer.toString(allDealsCount));
+								}
+							});
+					final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
+					response.put("numberOfPages", 
+							new ArrayList<String>()
 							{
-								
-								add(Integer.toString(pageCount));
-							}
-						});
-				response.put("deals", deals);
+								{
+									
+									add(Integer.toString(pageCount));
+								}
+							});
+					response.put("deals", onePageDeals);
+				}
+				else
+				{
+					response.put("numberOfResults", 
+							new ArrayList<String>()
+							{
+								{
+									add("0");
+								}
+							});
+				}
 			}
 			else
 			{
