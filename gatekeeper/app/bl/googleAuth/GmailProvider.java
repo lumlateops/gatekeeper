@@ -21,8 +21,8 @@ import com.google.gdata.client.authn.oauth.OAuthSigner;
 import play.Logger;
 
 import models.Account;
-import models.EmailProviders;
 import models.ErrorCodes;
+import models.Providers;
 import models.ServiceProvider;
 
 public class GmailProvider
@@ -36,7 +36,7 @@ public class GmailProvider
 	// Initialize tokens
 	static
 	{
-		gmailProvider = ServiceProvider.find("name", EmailProviders.GMAIL.toString()).first();
+		gmailProvider = ServiceProvider.find("name", Providers.GMAIL.toString()).first();
 		CONSUMER_KEY = gmailProvider.consumerKey;
 		CONSUMER_SECRET = gmailProvider.consumerSecret;
 	}

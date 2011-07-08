@@ -1,9 +1,11 @@
 package models;
 
-public enum EmailProviders {
+public enum Providers {
 	GMAIL,
 	AOL,
 	MSN,
 	YAHOO,
+	FACEBOOK,
+	TWITTER,
 	OTHER
 }

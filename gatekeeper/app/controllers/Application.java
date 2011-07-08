@@ -41,12 +41,13 @@ import play.data.validation.Required;
 import play.data.validation.Validation;
 import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Scope;
 import play.mvc.Scope.Params;
 
 import models.Account;
 import models.Deal;
-import models.EmailProviders;
 import models.ErrorCodes;
+import models.Providers;
 import models.ServiceProvider;
 import models.SortFields;
 import models.SortOrder;
@@ -76,6 +77,7 @@ public class Application extends Controller
 			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
 		}
 		Logger.debug("##############END REQUEST INFO##############");
+		
 	}
 	
 	public static void index()
@@ -158,7 +160,7 @@ public class Application extends Controller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				Logger.debug("AE: Provider is Gmail");
 
@@ -242,7 +244,7 @@ public class Application extends Controller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
 				response = GmailProvider.upgradeToken(userId, email, queryString, serviceResponse);
@@ -298,7 +300,7 @@ public class Application extends Controller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
 				response = GmailProvider.revokeAccess(userId, password, email, serviceResponse);
@@ -352,7 +354,7 @@ public class Application extends Controller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && EmailProviders.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
 				response = GmailProvider.isAccountAuthorized(userId, email, serviceResponse);
@@ -388,6 +390,9 @@ public class Application extends Controller
 	public static void login(@Required(message = "Username or email is required") String username,
 			@Required(message = "Password is required") @Password String password)
 	{
+		String authenticityToken = session.getAuthenticityToken();
+		Logger.debug(authenticityToken);
+		
 		Long startTime = System.currentTimeMillis();
 
 		Boolean isValidRequest = Boolean.TRUE;
@@ -464,6 +469,9 @@ public class Application extends Controller
 	 */
 	public static void fbIdlogin(@Required(message = "Facebook Id is required") Long fbUserId)
 	{
+		String authenticityToken = session.getAuthenticityToken();
+		Logger.debug(authenticityToken);
+		
 		Long startTime = System.currentTimeMillis();
 
 		Boolean isValidRequest = Boolean.TRUE;
@@ -590,14 +598,15 @@ public class Application extends Controller
 	 * @param fbLocationName
 	 * @param fbLocationId
 	 */
-	public static void addUser(@Required(message="UserName is required") @MinSize(4) @MaxSize(100) String username, 
-										@Required(message="Password is required") @MinSize(5) @Password String password,
+	public static void addUser(@MinSize(4) @MaxSize(100) String username, 
+										@MinSize(5) @Password String password,
 										@Required(message="Gender is required") String gender,
 										@Required(message="Facebook Email is required") @Email String fbEmailAddress,
 										@Required(message="Facebook name is required") String fbFullName,
 										@Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
 										@Required(message="Facebook location name is required") String fbLocationName,
-										@Required(message="Facebook location Id is required")Long fbLocationId)
+										@Required(message="Facebook location Id is required")Long fbLocationId,
+										@Required(message="Facebook auth token is required")String fbAuthToken)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -628,22 +637,41 @@ public class Application extends Controller
 		}
 		else
 		{
-			List<UserInfo> userInfo = UserInfo.find("userName", username).fetch();
+			List<UserInfo> userInfo = Collections.emptyList();
+			if(username != null && password != null)
+			{
+				userInfo = UserInfo.find("userName", username).fetch();
+			}
+			else
+			{
+				userInfo = UserInfo.find("fbUserId", fbUserId).fetch();
+			}
+			
 			if(userInfo.size() > 0)
 			{
 				serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
 			}
 			else
 			{
+				// Create new user
 				UserInfo newUser = new UserInfo(username, password, Boolean.TRUE, Boolean.FALSE, 
 						fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
-					  gender, currentDate, currentDate, username+"@deallr.com");
+					  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
 				newUser.save();
+				
+				// Save FB auth token
+				ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
+				Account newAccount = new Account(newUser.id, newUser.emailAddress, provider, fbAuthToken, "", 
+						Boolean.TRUE, "", currentDate, currentDate, currentDate, currentDate);
+				newAccount.save();
+				
+				Logger.info(Account.find("email", newUser.emailAddress).first().toString());
 				
 				List<UserInfo> message = new ArrayList<UserInfo>();
 				UserInfo recentUser = new UserInfo();
 				recentUser.id = newUser.id;
 				recentUser.username = newUser.username;
+				recentUser.emailAddress = newUser.emailAddress;
 				message.add(recentUser);
 				response.put("user", message);
 			}
@@ -659,6 +687,7 @@ public class Application extends Controller
 		parameters.put("fbUserId", Long.toString(fbUserId));
 		parameters.put("fbLocationName", fbLocationName);
 		parameters.put("fbLocationId", Long.toString(fbLocationId));
+		parameters.put("fbAuthToken", fbAuthToken);
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
@@ -667,6 +696,22 @@ public class Application extends Controller
 			serviceResponse.setResponse(response);
 		}
 		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
+	 * Generated a deallr email address for the user being added
+	 * @param username
+	 * @param fbEmailAddress
+	 * @return
+	 */
+	private static String getUniqueDeallrEmailAddress(String username, String fbEmailAddress)
+	{
+		if(username == null || username.trim().isEmpty())
+		{
+			username = fbEmailAddress.substring(0,fbEmailAddress.indexOf("@"));
+		}
+		
+		return username + "@deallr.com";
 	}
 	
 	/**

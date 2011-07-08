@@ -16,7 +16,7 @@ public class BasicTest extends UnitTest
 	public void createAndRetrieveAccount() 
 	{
 		Date currentDate = new Date(System.currentTimeMillis());
-		ServiceProvider provider = new ServiceProvider(EmailProviders.GMAIL
+		ServiceProvider provider = new ServiceProvider(Providers.GMAIL
 				.toString(), "deallr.com", "f_yk4d2GkQljJ38JQrcRJBPr", "logourl" ,true,
 				"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 				currentDate, 
@@ -36,14 +36,13 @@ public class BasicTest extends UnitTest
 	@Test
 	public void createAndRetrieveProvider()
 	{
-		new ServiceProvider(EmailProviders.GMAIL.toString(), "deallr.com",
+		new ServiceProvider(Providers.GMAIL.toString(), "deallr.com",
 				"f_yk4d2GkQljJ38JQrcRJBPr", "logourl", true, 
 							"http://gmail.com", AuthProtocols.OAUTH.toString(), 
 							new Date(System.currentTimeMillis()), 
 							new Date(System.currentTimeMillis())).save();
 		
-		ServiceProvider provider = ServiceProvider.find("byName", 
-								   EmailProviders.GMAIL.toString()).first();
+		ServiceProvider provider = ServiceProvider.find("byName", Providers.GMAIL.toString()).first();
 		
 		assertNotNull(provider);
 		assertEquals("http://gmail.com", provider.website);
