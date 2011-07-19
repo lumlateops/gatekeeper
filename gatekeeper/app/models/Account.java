@@ -48,7 +48,7 @@ public class Account extends Model
 	public Date			updatedAt;
 
 	@OneToOne
-	ServiceProvider	provider;
+	public ServiceProvider	provider;
 
 	public Account(Long userId, String userEmail, ServiceProvider provider,
 			String dllrAccessToken, String dllrTokenSecret, Boolean active, String lastError,

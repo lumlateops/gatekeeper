@@ -428,13 +428,25 @@ public class Application extends Controller
 					//Check if the user has any registered email accounts
 					Boolean hasEmail = Boolean.FALSE;
 					List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE).fetch();
+					//Check if atleast one email account registered
 					if(accounts != null && accounts.size() > 0)
 					{
 						hasEmail = Boolean.TRUE;
 					}
+					//Get the fbAuthToken
+					String fbAuthToken = "";
+					for (Account account : accounts)
+					{
+						if(account.provider.name.equalsIgnoreCase(Providers.FACEBOOK.toString()))
+						{
+							fbAuthToken = account.dllrAccessToken;
+							break;
+						}
+					}
 					List<LoginResponse> message = new ArrayList<LoginResponse>();
 					message.add(new LoginResponse(Long.toString(userInfo.id),
-																				userInfo.username, hasEmail));
+																				userInfo.username, userInfo.fbFullName,
+																				fbAuthToken, hasEmail));
 					response.put("user", message);
 				}
 				else
@@ -503,7 +515,8 @@ public class Application extends Controller
 				}
 				List<LoginResponse> message = new ArrayList<LoginResponse>();
 				message.add(new LoginResponse(Long.toString(userInfo.id),
-																			userInfo.username, hasEmail));
+																			userInfo.username, userInfo.fbFullName,
+																			userInfo.fbLocationName, hasEmail));
 				response.put("user", message);
 			}
 			else
