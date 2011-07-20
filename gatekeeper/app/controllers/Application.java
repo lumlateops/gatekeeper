@@ -39,6 +39,7 @@ import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
 import play.data.validation.Validation;
+import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope;
@@ -64,11 +65,12 @@ public class Application extends Controller
 	private static final int		PAGE_SIZE					= 20;
 	private static final String	EMAIL_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
 	private static final String	DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
+	private static final String	ACCOUNT_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND u.provider IS ? ";
 
 	@Before
 	public static void logRequest()
 	{
-		Logger.debug("##############BEGIN REQUEST INFO##############");
+		Logger.debug("-----------------BEGIN REQUEST INFO-----------------");
 		play.mvc.Http.Request currentRequest = play.mvc.Http.Request.current();
 		Logger.debug("Request end point: " + currentRequest.action);
 		Map<String, String[]> requestParams = currentRequest.params.all();
@@ -76,8 +78,17 @@ public class Application extends Controller
 		{
 			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
 		}
-		Logger.debug("##############END REQUEST INFO##############");
-		
+		Logger.debug("-----------------END REQUEST INFO-----------------");
+	}
+	
+	@After
+	public static void logResponse()
+	{
+		Logger.debug("-----------------BEGIN RESPONSE INFO-----------------");
+		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
+		Logger.debug("Response status: " + currentResponse.status);
+		Logger.debug(currentResponse.toString());
+		Logger.debug("-----------------END RESPONSE INFO-----------------");
 	}
 	
 	public static void index()
@@ -702,6 +713,77 @@ public class Application extends Controller
 		parameters.put("fbLocationId", Long.toString(fbLocationId));
 		parameters.put("fbAuthToken", fbAuthToken);
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
+	 * Registers a new FBToken for the user
+	 * @param id
+	 * @param fbUserId
+	 * @param fbAuthToken
+	 */
+	public static void updateFBToken(@Required(message="User Id is required") Long id,
+																	 Long fbUserId, 
+																	 @Required(message="FB auth token is required") String fbAuthToken)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			ServiceProvider provider = ServiceProvider.find("name", "Facebook").first();
+			if(provider != null)
+			{
+				Account fbAccount = Account.find(ACCOUNT_LOOKUP_HQL, id, provider).first();
+				if(fbAccount == null)
+				{
+					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching user found.");
+				}
+				else
+				{
+					fbAccount.dllrAccessToken = fbAuthToken;
+					fbAccount.save();
+					response.put("status", 
+							new ArrayList<String>()
+							{
+								{
+									add("ok");
+								}
+							});
+				}
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching user found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();			
+		parameters.put("id", Long.toString(id));
+		if(fbUserId != null)
+		{
+			parameters.put("fbUserId", Long.toString(fbUserId));
+		}
+		parameters.put("fbAuthToken", fbAuthToken);
+		Request request = new Request(isValidRequest, "updateFBToken", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())

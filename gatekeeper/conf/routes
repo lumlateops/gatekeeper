@@ -35,6 +35,9 @@ GET 	/account/verify/{userId}/{provider}/{email}							Application.verifyAccount
 # Revoke access token
 POST	/account/revoke/													Application.revokeAccess
 
+# Update FB Token
+POST	/account/fb/update													Application.updateFBToken
+
 # Get deals for a user
 GET		/deals/{userId}														Application.getUserDeals
 GET		/deals/{userId}/{page}												Application.getUserDeals
