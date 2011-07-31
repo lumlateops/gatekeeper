@@ -87,7 +87,6 @@ public class Application extends Controller
 		Logger.debug("-----------------BEGIN RESPONSE INFO-----------------");
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
 		Logger.debug("Response status: " + currentResponse.status);
-		Logger.debug(currentResponse.toString());
 		Logger.debug("-----------------END RESPONSE INFO-----------------");
 	}
 	
