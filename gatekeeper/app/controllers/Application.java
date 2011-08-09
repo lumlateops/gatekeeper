@@ -630,7 +630,7 @@ public class Application extends Controller
 														 @Required(message="Facebook name is required") String fbFullName,
 														 @Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
 														 String fbLocationName,
-														 @Required(message="Facebook location Id is required")Long fbLocationId,
+														 Long fbLocationId,
 														 @Required(message="Facebook auth token is required")String fbAuthToken)
 	{
 		Long startTime = System.currentTimeMillis();
