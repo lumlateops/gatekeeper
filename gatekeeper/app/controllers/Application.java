@@ -1,5 +1,6 @@
 package controllers;
 
+import java.net.SecureCacheResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope;
+import play.mvc.With;
 import play.mvc.Scope.Params;
 
 import models.Account;
@@ -621,15 +623,15 @@ public class Application extends Controller
 	 * @param fbLocationName
 	 * @param fbLocationId
 	 */
-	public static void addUser(@MinSize(4) @MaxSize(100) String username, 
-										@MinSize(5) @Password String password,
-										@Required(message="Gender is required") String gender,
-										@Required(message="Facebook Email is required") @Email String fbEmailAddress,
-										@Required(message="Facebook name is required") String fbFullName,
-										@Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
-										@Required(message="Facebook location name is required") String fbLocationName,
-										@Required(message="Facebook location Id is required")Long fbLocationId,
-										@Required(message="Facebook auth token is required")String fbAuthToken)
+	public static void addUser(@MinSize(4) @MaxSize(100) String username,
+														 @MinSize(5) @Password String password,
+														 @Required(message="Gender is required") String gender,
+														 @Required(message="Facebook Email is required") @Email String fbEmailAddress,
+														 @Required(message="Facebook name is required") String fbFullName,
+														 @Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
+														 String fbLocationName,
+														 @Required(message="Facebook location Id is required")Long fbLocationId,
+														 @Required(message="Facebook auth token is required")String fbAuthToken)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
