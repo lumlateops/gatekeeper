@@ -625,7 +625,7 @@ public class Application extends Controller
 	 */
 	public static void addUser(@MinSize(4) @MaxSize(100) String username,
 														 @MinSize(5) @Password String password,
-														 @Required(message="Gender is required") String gender,
+														 String gender,
 														 @Required(message="Facebook Email is required") @Email String fbEmailAddress,
 														 @Required(message="Facebook name is required") String fbFullName,
 														 @Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
