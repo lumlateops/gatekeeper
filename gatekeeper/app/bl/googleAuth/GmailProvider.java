@@ -100,9 +100,19 @@ public class GmailProvider
 		{
 			for (Account account : accounts)
 			{
-				if(account.userId == userId && account.active)
+				if(account.active)
 				{
-					isDuplicate = true;
+					Logger.info("Duplicate account check :" + account);
+					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
+					{
+						isDuplicate = true;
+					}
+					// If an incomplete account exists then clean it up so a new one can be registered
+					else
+					{
+						isDuplicate = false;
+						account.delete();
+					}
 					break;
 				}
 			}
