@@ -1,6 +1,7 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
+GET /rabbitmq/	 															module:rabbitmq
 
 # Home page
 # GET   /                                       							Application.index
@@ -39,14 +40,11 @@ POST	/account/revoke/													Application.revokeAccess
 POST	/account/fb/update													Application.updateFBToken
 
 # Get deals for a user
-GET		/deals/{userId}														Application.getUserDeals
-GET		/deals/{userId}/{page}												Application.getUserDeals
-GET		/deals/{userId}/{sort}												Application.getUserDeals
-GET		/deals/{userId}/{sortOrder}											Application.getUserDeals
-GET		/deals/{userId}/{page}/{sort}										Application.getUserDeals
-GET		/deals/{userId}/{page}/{sortOrder}									Application.getUserDeals
-GET		/deals/{userId}/{sort}/{sortOrder}									Application.getUserDeals
 GET		/deals/{userId}/{page}/{sort}/{sortOrder}							Application.getUserDeals
+
+# Deal Wallet
+GET		/deals/wallet/{userId}												Application.getWalletDeals
+POST	/deals/wallet/add													Application.addWalletDeals
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404
