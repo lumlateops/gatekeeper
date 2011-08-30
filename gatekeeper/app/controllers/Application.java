@@ -527,7 +527,8 @@ public class Application extends Controller
 				String fbAuthToken = "";
 				for (Account account : accounts)
 				{
-					if(account.provider.id == Providers.FACEBOOK.ordinal())
+					Logger.info("FB Ordinal:" + Providers.FACEBOOK.ordinal());
+					if(account.provider.id == Providers.FACEBOOK.ordinal()+1)
 					{
 						fbAuthToken = account.dllrAccessToken;
 					}

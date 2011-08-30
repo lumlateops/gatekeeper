@@ -1,5 +1,6 @@
 package bl.googleAuth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,11 +18,16 @@ import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 
 import play.Logger;
 
 import models.Account;
 import models.ErrorCodes;
+import models.NewAccountMessage;
 import models.Providers;
 import models.ServiceProvider;
 
@@ -29,6 +35,7 @@ public class GmailProvider
 {
 	//TODO Add scope to the DB as well
 	private static final String	SCOPE	= "https://mail.google.com/mail/feed/atom/";
+	private static final String	LOGIN_EMAIL_FETCH_QUEUE	= "login_email_fetch";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
@@ -182,6 +189,9 @@ public class GmailProvider
 					account.dllrAccessToken = token;
 					Logger.debug("Access Token: "+token);
 					account.save();
+					
+					// Add new email address to queue
+					
 				}
 				else
 				{
@@ -270,6 +280,26 @@ public class GmailProvider
 		}
 		
 		return response;
+	}
+	
+	private static void publish(NewAccountMessage message) 
+	{
+		String rmqserver = "rmq01.deallr.com";
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(rmqserver);
+		try
+		{
+			Connection connection = factory.newConnection();
+			Channel channel = connection.createChannel();
+			channel.queueDeclare(LOGIN_EMAIL_FETCH_QUEUE, true, false, false, null);
+			channel.basicPublish("", LOGIN_EMAIL_FETCH_QUEUE, MessageProperties.PERSISTENT_TEXT_PLAIN, message.toString().getBytes());
+			channel.close();
+			connection.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	private static GoogleOAuthParameters getAuthParams()
