@@ -35,7 +35,7 @@ public class GmailProvider
 {
 	//TODO Add scope to the DB as well
 	private static final String	SCOPE	= "https://mail.google.com/mail/feed/atom/";
-	private static final String	LOGIN_EMAIL_FETCH_QUEUE	= "login_email_fetch";
+	private static final String	NEW_EMAIL_ACCOUNT_QUEUE	= "new_email_account";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
@@ -191,7 +191,7 @@ public class GmailProvider
 					account.save();
 					
 					// Add new email address to queue
-					
+					publish(new NewAccountMessage("hello", "world"));
 				}
 				else
 				{
@@ -287,18 +287,30 @@ public class GmailProvider
 		String rmqserver = "rmq01.deallr.com";
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(rmqserver);
+		Connection connection = null;
+		Channel channel = null;
 		try
 		{
-			Connection connection = factory.newConnection();
-			Channel channel = connection.createChannel();
-			channel.queueDeclare(LOGIN_EMAIL_FETCH_QUEUE, true, false, false, null);
-			channel.basicPublish("", LOGIN_EMAIL_FETCH_QUEUE, MessageProperties.PERSISTENT_TEXT_PLAIN, message.toString().getBytes());
-			channel.close();
-			connection.close();
+			connection = factory.newConnection();
+			channel = connection.createChannel();
+			channel.queueDeclare(NEW_EMAIL_ACCOUNT_QUEUE, true, false, false, null);
+			channel.basicPublish("", NEW_EMAIL_ACCOUNT_QUEUE, MessageProperties.PERSISTENT_TEXT_PLAIN, message.toString().getBytes());
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				channel.close();
+				connection.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
