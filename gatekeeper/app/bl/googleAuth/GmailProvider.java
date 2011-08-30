@@ -90,7 +90,12 @@ public class GmailProvider
 		return response;
 	}
 	
-	public static boolean isDuplicateAccount(Long userId, String email)
+	/**
+	 * Checks if the email address is duplicate or not.
+	 * @param email
+	 * @return
+	 */
+	public static boolean isDuplicateAccount(String email)
 	{
 		boolean isDuplicate = false;
 
@@ -102,7 +107,6 @@ public class GmailProvider
 			{
 				if(account.active)
 				{
-					Logger.info("Duplicate account check :" + account);
 					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
 					{
 						isDuplicate = true;

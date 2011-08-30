@@ -86,10 +86,8 @@ public class Application extends Controller
 	@After
 	public static void logResponse()
 	{
-		Logger.debug("-----------------BEGIN RESPONSE INFO-----------------");
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
 		Logger.debug("Response status: " + currentResponse.status);
-		Logger.debug("-----------------END RESPONSE INFO-----------------");
 	}
 	
 	public static void index()
@@ -177,7 +175,7 @@ public class Application extends Controller
 				Logger.debug("AE: Provider is Gmail");
 
 				//Check if account exists and is still valid
-				boolean isDuplicate = GmailProvider.isDuplicateAccount(userId, email);
+				boolean isDuplicate = GmailProvider.isDuplicateAccount(email);
 
 				Logger.debug("AE: isDuplicate: " + isDuplicate);
 
@@ -525,10 +523,20 @@ public class Application extends Controller
 				{
 					hasEmail = Boolean.TRUE;
 				}
+				//Get the FBAuthToken from registered accounts
+				String fbAuthToken = "";
+				for (Account account : accounts)
+				{
+					if(account.provider.id == Providers.FACEBOOK.ordinal())
+					{
+						fbAuthToken = account.dllrAccessToken;
+					}
+				}
+				//Find the user's FB account
 				List<LoginResponse> message = new ArrayList<LoginResponse>();
 				message.add(new LoginResponse(Long.toString(userInfo.id),
 																			userInfo.username, userInfo.fbFullName,
-																			userInfo.fbLocationName, hasEmail));
+																			fbAuthToken, hasEmail));
 				response.put("user", message);
 			}
 			else
@@ -555,8 +563,7 @@ public class Application extends Controller
 	 * Checks to see if the username is already taken.
 	 * @param userName
 	 */
-	public static void checkUsernameAvailable(
-			@Required(message = "UserName is required") @MinSize(4) @MaxSize(100) String username)
+	public static void checkUsernameAvailable(@Required(message = "UserName is required") @MinSize(4) @MaxSize(100) String username)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
