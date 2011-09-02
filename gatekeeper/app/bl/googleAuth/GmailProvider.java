@@ -18,6 +18,7 @@ import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -282,6 +283,10 @@ public class GmailProvider
 		return response;
 	}
 	
+	/**
+	 * Posts messages to RMQ
+	 * @param message
+	 */
 	private static void publish(NewAccountMessage message) 
 	{
 		String rmqserver = "rmq01.deallr.com";

@@ -50,6 +50,7 @@ import play.mvc.Scope.Params;
 import models.Account;
 import models.Deal;
 import models.ErrorCodes;
+import models.NewAccountMessage;
 import models.Providers;
 import models.ServiceProvider;
 import models.SortFields;
@@ -80,7 +81,6 @@ public class Application extends Controller
 		{
 			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
 		}
-		Logger.debug("-----------------END REQUEST INFO-----------------");
 	}
 	
 	@After
@@ -88,6 +88,7 @@ public class Application extends Controller
 	{
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
 		Logger.debug("Response status: " + currentResponse.status);
+		Logger.debug("-----------------END REQUEST INFO-----------------");
 	}
 	
 	public static void index()
