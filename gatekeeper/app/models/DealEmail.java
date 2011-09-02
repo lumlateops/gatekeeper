@@ -1,6 +1,6 @@
 package models;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Entity;
 
@@ -21,15 +21,15 @@ public class DealEmail extends Model
 	public String	senderIP;
 	public String	spfResult;
 	public String	domainKey;
-	public String	rawContent;
-	public String	fullText;
+	public String	parsedContent;
+	public String	content;
 	public String	category;
 	public Date		sentDate;
 	public Date		dateReceived;
 	
 	public DealEmail(String fromName, String fromEmail, String toName,
 			Date dateReceived, Date sentDate, String subject, String senderIP,
-			String spfResult, String domainKey, String rawContent, String fullText,
+			String spfResult, String domainKey, String parsedContent, String content,
 			String category)
 	{
 		this.fromName = fromName;
@@ -41,8 +41,8 @@ public class DealEmail extends Model
 		this.senderIP = senderIP;
 		this.spfResult = spfResult;
 		this.domainKey = domainKey;
-		this.rawContent = rawContent;
-		this.fullText = fullText;
+		this.parsedContent = parsedContent;
+		this.content = content;
 		this.category = category;
 	}
 }
