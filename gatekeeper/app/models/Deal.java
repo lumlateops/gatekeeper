@@ -13,72 +13,71 @@ import play.Logger;
 import play.data.validation.Email;
 import play.db.jpa.Model;
 
+/**
+ * 
+ */
 @Entity
 public class Deal extends Model
 {
-	public Long			userId;
-	public String		title;
-	public String		description;
-	public String		discountPercentage;
-	public Date			expiryDate;
-	public Date			postDate;
-	public String		url;
-	public Date			createdAt;
-	public Date			updatedAt;
-
-	@ManyToMany
-	public List<DealCategory>	dealCategory;
-	
 	@OneToOne
-	public Retailers retailers;
-
-	public Deal(Long userId, String title, String description,
-			String discountPercentage, Date expiryDate, Date postDate, String url,
-			Date createdAt, Date updatedAt, List<DealCategory> dealCategory,
-			Retailers retailers)
+	public Subscription		subscription;
+	public int						locationId;
+	@ManyToMany
+	public List<Product>	products;
+	public String					email;
+	public Date						createdAt;
+	public Date						updatedAt;
+	public int						discountPercentage;
+	public float					originalValue;
+	public float					dealValue;
+	public Date						expiryDate;
+	public Date						postDate;
+	public String					validTo;
+	public Boolean				freeShipping;
+	public String					title;
+	public String					url;
+	
+	public Deal(Subscription subscription, int locationId,
+			List<Product> products, String email, Date createdAt, Date updatedAt,
+			int discountPercentage, float originalValue, float dealValue,
+			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
+			String title, String url)
 	{
-		this.userId = userId;
-		this.title = title;
-		this.description = description;
-		this.discountPercentage = discountPercentage;
-		this.expiryDate = expiryDate;
-		this.postDate = postDate;
-		this.url = url;
+		this.subscription = subscription;
+		this.locationId = locationId;
+		this.products = products;
+		this.email = email;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.dealCategory = dealCategory;
-		this.retailers = retailers;
+		this.discountPercentage = discountPercentage;
+		this.originalValue = originalValue;
+		this.dealValue = dealValue;
+		this.expiryDate = expiryDate;
+		this.postDate = postDate;
+		this.validTo = validTo;
+		this.freeShipping = freeShipping;
+		this.title = title;
+		this.url = url;
 	}
 	
 	/**
-	 * {
-   "numberOfResults":"Total number of Deals",
-   "numberOfPages":"Total number of pages with deals for this user",
-   "deals":[
-      {
-         "id":"123456",
-         "title":"Title of the deal",
-         "description":"Description of the deal",
-         "discountPercentage":"50%",
-         "expiryDate":"Any time or date based string. Preferable format: MM/DD/YYYY",
-         "postDate":"Day the deal was posted or received in the email by the user. MM/DD/YYYY",
-         "url":"Optional deal url into poster's or publisher's url",
-         "dealCategories":[
-            {
-               "id":"123",
-               "name":"Apparel" 
-            },
-            {
-               "id":"11244",
-               "name":"Kids Clothing" 
-            }
-         ],
-         "publisherId":"23663",
-         "publisherName":"Macys",
-         "publisherUrl":"http://www.macys.com",
-         "publisherLogoUrl":"URL for the logo" 
-      }
-   ]
-}
+	 *  CREATE TABLE `Deal` (r
+			`id` bigint(20) NOT NULL AUTO_INCREMENT,
+			`subscriptionId` int(11) NOT NULL, 
+			`locationId` int(11) NOT NULL DEFAULT 0,
+			`productId` int(11) DEFAULT 0,
+			`emailId` int(11) DEFAULT 0,
+			`createdAt` datetime DEFAULT NULL,
+			`discountPercentage` int(3) DEFAULT NULL,
+			`dealValue` int(11) NOT NULL DEFAULT 0,
+			`expiryDate` datetime DEFAULT NULL,
+			`postDate` datetime DEFAULT NULL,
+			`validTo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			`freeShipping` bit(1) NOT NULL, 
+			`title` varchar(255) DEFAULT NULL,
+			`updatedAt` datetime DEFAULT NULL,
+			`url` varchar(255) DEFAULT NULL,
+			PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 	 */
 }
