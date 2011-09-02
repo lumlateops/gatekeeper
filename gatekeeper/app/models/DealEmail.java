@@ -4,13 +4,15 @@ import java.sql.Date;
 
 import javax.persistence.Entity;
 
+import play.db.jpa.Model;
+
 /**
  * Stored the deal emails we read in from user's inboxes
  * @author prachi
  *
  */
 @Entity
-public class DealEmail
+public class DealEmail extends Model
 {
 	public String	fromName;
 	public String	fromEmail;

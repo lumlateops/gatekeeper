@@ -6,13 +6,15 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import play.db.jpa.Model;
+
 /**
  * 
  * @author prachi
  *
  */
 @Entity
-public class Subscription
+public class Subscription extends Model
 {
 	@OneToOne
 	public UserInfo		userInfo;
@@ -23,9 +25,9 @@ public class Subscription
 	public Boolean		active;
 	public Date				createdAt;
 	public Date				updatedAt;
-
-	public Subscription(UserInfo userInfo, Retailer retailer, Department department,
-			Boolean active, Date createdAt, Date updatedAt)
+	
+	public Subscription(UserInfo userInfo, Retailer retailer,
+			Department department, Boolean active, Date createdAt, Date updatedAt)
 	{
 		this.userInfo = userInfo;
 		this.retailer = retailer;
@@ -34,7 +36,7 @@ public class Subscription
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
-	
+
 	/**
 	 * CREATE TABLE `Subscriptions` (
 		`id` bigint(20) NOT NULL AUTO_INCREMENT,

@@ -9,6 +9,8 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
+import play.db.jpa.Model;
+
 /**
  * Table to store retailer department information for deal categorization
  * @author prachi
@@ -16,7 +18,7 @@ import org.hibernate.annotations.IndexColumn;
  *
  */
 @Entity
-public class Department
+public class Department extends Model
 {
 	@OneToOne
 	public Retailer	retailer;

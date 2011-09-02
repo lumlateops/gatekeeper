@@ -6,13 +6,15 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Index;
 
+import play.db.jpa.Model;
+
 /**
  * Table to keep track of each product in the deals
  * @author prachi
  *
  */
 @Entity
-public class Product
+public class Product extends Model
 {
 	@Index(name = "index_product")
 	public String	name;
