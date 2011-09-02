@@ -23,7 +23,7 @@ import play.db.jpa.Model;
 +-----------+--------------+------+-----+---------+----------------+
 */
 @Entity
-public class Retailer extends Model
+public class Retailers extends Model
 {
 	public String	domain;
 	public String	name;
@@ -31,7 +31,7 @@ public class Retailer extends Model
 	public Date		createdAT;
 	public Date		updatedAT;
 	
-	public Retailer(String domain, String name, String image, Date createdAT,
+	public Retailers(String domain, String name, String image, Date createdAT,
 									Date updatedAT)
 	{
 		this.domain = domain;

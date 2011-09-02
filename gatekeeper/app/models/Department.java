@@ -21,7 +21,7 @@ import play.db.jpa.Model;
 public class Department extends Model
 {
 	@OneToOne
-	public Retailer	retailer;
+	public Retailers	retailer;
 	@Index(name = "index_departments_on_email")
 	public String		email;
 	public String		name;
@@ -29,7 +29,7 @@ public class Department extends Model
 	public Date			createdAt;
 	public Date			updatedAt;
 	
-	public Department(Retailer retailer, String email, String name,
+	public Department(Retailers retailer, String email, String name,
 			String logo, Date createdAt, Date updatedAt)
 	{
 		this.retailer = retailer;

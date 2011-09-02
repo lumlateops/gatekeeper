@@ -19,14 +19,14 @@ public class Subscription extends Model
 	@OneToOne
 	public UserInfo		userInfo;
 	@OneToOne
-	public Retailer		retailer;
+	public Retailers		retailer;
 	@OneToOne
 	public Department	department;
 	public Boolean		active;
 	public Date				createdAt;
 	public Date				updatedAt;
 	
-	public Subscription(UserInfo userInfo, Retailer retailer,
+	public Subscription(UserInfo userInfo, Retailers retailer,
 			Department department, Boolean active, Date createdAt, Date updatedAt)
 	{
 		this.userInfo = userInfo;
