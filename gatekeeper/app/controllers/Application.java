@@ -71,6 +71,7 @@ public class Application extends Controller
 	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.id IN ";
+	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.dealRead='false' ";
 	private static final String	ACCOUNT_LOOKUP_HQL				= "SELECT u FROM Account u WHERE u.userId IS ? AND u.provider IS ? ";
 	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f FROM FetchHistory f WHERE f.userId IS ? and f.fetchStatus='complete'";// and f.fetchEndTime<=currentTime-60";
 
@@ -989,8 +990,7 @@ public class Application extends Controller
 		else
 		{
 			String queryString = DEAL_LOOKUP_HQL + "(" + dealIds + ")";
-			Logger.info(queryString);
-			final List<Deal> deals = Deal.find(queryString, userId).fetch();
+			List<Deal> deals = Deal.find(queryString, userId).fetch();
 			if(deals != null && !deals.isEmpty())
 			{
 				for (Deal deal : deals)
@@ -1059,7 +1059,7 @@ public class Application extends Controller
 		else
 		{
 			String queryString = DEAL_LOOKUP_HQL + "(" + dealIds + ")";
-			final List<Deal> deals = Deal.find(queryString, userId).fetch();
+			List<Deal> deals = Deal.find(queryString, userId).fetch();
 			if(deals != null && !deals.isEmpty())
 			{
 				for (Deal deal : deals)
@@ -1093,6 +1093,65 @@ public class Application extends Controller
 			parameters.put("dealIds", dealIds);
 		}
 		Request request = new Request(isValidRequest, "markDealsUnRead", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * End point to mark a user deals as unread.
+	 * @param userId: Id of the user we want to get deals for.
+	 * @param dealIds: Id of the user deals to be marked as unread.
+	 */
+	public static void getUnreadDealCount(@Required(message="userId is required")Long userId)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			List<Deal> deals = Deal.find(UNREAD_DEAL_LOOKUP_HQL, userId).fetch();
+			final int count;
+			if(deals != null && !deals.isEmpty())
+			{
+				count = deals.size();
+			}
+			else
+			{
+				count = 0;
+			}
+			response.put("count", 
+					new ArrayList<String>()
+					{
+						{
+							add(Integer.toString(count));
+						}
+					});
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		Request request = new Request(isValidRequest, "getUnreadDealCount", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())
