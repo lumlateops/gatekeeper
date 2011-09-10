@@ -72,7 +72,7 @@ public class Application extends Controller
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.id IN ";
 	private static final String	ACCOUNT_LOOKUP_HQL				= "SELECT u FROM Account u WHERE u.userId IS ? AND u.provider IS ? ";
-	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime<=currentTime-60";
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f FROM FetchHistory f WHERE f.userId IS ? and f.fetchStatus='complete'";// and f.fetchEndTime<=currentTime-60";
 
 	@Before
 	public static void logRequest()
