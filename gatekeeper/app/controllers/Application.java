@@ -27,6 +27,7 @@ import jsonModels.Request;
 import jsonModels.Error;
 import jsonModels.ServiceResponse;
 
+import bl.RMQProducer;
 import bl.googleAuth.AuthPayLoad;
 import bl.googleAuth.GmailProvider;
 
@@ -50,6 +51,7 @@ import play.mvc.Scope.Params;
 import models.Account;
 import models.Deal;
 import models.ErrorCodes;
+import models.FetchHistory;
 import models.NewAccountMessage;
 import models.Providers;
 import models.ServiceProvider;
@@ -65,10 +67,12 @@ import models.UserInfo;
  */
 public class Application extends Controller
 {
-	private static final int		PAGE_SIZE					= 20;
-	private static final String	EMAIL_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
-	private static final String	DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
-	private static final String	ACCOUNT_LOOKUP_HQL	= "SELECT u FROM Account u WHERE u.userId IS ? AND u.provider IS ? ";
+	private static final int		PAGE_SIZE									= 20;
+	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
+	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
+	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.id IN ";
+	private static final String	ACCOUNT_LOOKUP_HQL				= "SELECT u FROM Account u WHERE u.userId IS ? AND u.provider IS ? ";
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime<=currentTime-60";
 
 	@Before
 	public static void logRequest()
@@ -88,7 +92,6 @@ public class Application extends Controller
 	{
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
 		Logger.debug("Response status: " + currentResponse.status);
-		Logger.debug("-----------------END REQUEST INFO-----------------");
 	}
 	
 	public static void index()
@@ -193,6 +196,7 @@ public class Application extends Controller
 					}
 					catch (OAuthException e)
 					{
+						Logger.debug(e.getCause() + e.getMessage());
 						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
 																		 e.getMessage() + e.getCause());
 					}
@@ -528,7 +532,6 @@ public class Application extends Controller
 				String fbAuthToken = "";
 				for (Account account : accounts)
 				{
-					Logger.info("FB Ordinal:" + Providers.FACEBOOK.ordinal());
 					if(account.provider.id == Providers.FACEBOOK.ordinal()+1)
 					{
 						fbAuthToken = account.dllrAccessToken;
@@ -540,6 +543,19 @@ public class Application extends Controller
 																			userInfo.username, userInfo.fbFullName,
 																			fbAuthToken, hasEmail));
 				response.put("user", message);
+				
+				// Add email address to queue if no fetch happened within the last 60 mins
+				FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userInfo.id).first();
+				if(lastFetch==null)
+				{
+//					ServiceProvider gmailProvider = ServiceProvider.find("name", Providers.GMAIL.toString()).first();
+//					NewAccountMessage rmqMessage = new NewAccountMessage(userInfo.id, email, token, 
+//																														account.dllrTokenSecret,
+//																														Providers.GMAIL.toString(),	
+//																														gmailProvider.consumerKey, 
+//																														gmailProvider.consumerSecret);
+//					RMQProducer.publishNewEmailAccountMessage(rmqMessage);
+				}
 			}
 			else
 			{
@@ -861,7 +877,7 @@ public class Application extends Controller
 			}
 			
 			// Get deals for user
-			String query = DEAL_LOOKUP_HQL + sort + " " + sortOrder;
+			String query = USER_DEAL_LOOKUP_HQL + sort + " " + sortOrder;
 			final List<Deal> allDeals = Deal.find(query, userId).fetch();
 			final int allDealsCount = allDeals.size();
 
@@ -938,6 +954,145 @@ public class Application extends Controller
 		parameters.put("sort", sort);
 		parameters.put("sortOrder", sortOrder);
 		Request request = new Request(isValidRequest, "getUserDeals", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * End point to mark deals as read.
+	 * @param userId: Id of the user we want to get deals for.
+	 * @param dealIds: Ids of the deals to be marked as read.
+	 */
+	public static void markDealsRead(@Required(message="userId is required")Long userId,
+																	@Required(message="dealIds are required")String dealIds)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			String queryString = DEAL_LOOKUP_HQL + "(" + dealIds + ")";
+			Logger.info(queryString);
+			final List<Deal> deals = Deal.find(queryString, userId).fetch();
+			if(deals != null && !deals.isEmpty())
+			{
+				for (Deal deal : deals)
+				{
+					deal.dealRead = true;
+					deal.save();
+				}
+				
+				response.put("status", 
+						new ArrayList<String>()
+						{
+							{
+								add("ok");
+							}
+						});
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching deal found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		if(dealIds != null)
+		{
+			parameters.put("dealIds", dealIds);
+		}
+		Request request = new Request(isValidRequest, "markDealRead", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * End point to mark a user deals as unread.
+	 * @param userId: Id of the user we want to get deals for.
+	 * @param dealIds: Id of the user deals to be marked as unread.
+	 */
+	public static void markDealsUnRead(@Required(message="userId is required")Long userId,
+																		 @Required(message="dealIds are required")String dealIds)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			String queryString = DEAL_LOOKUP_HQL + "(" + dealIds + ")";
+			final List<Deal> deals = Deal.find(queryString, userId).fetch();
+			if(deals != null && !deals.isEmpty())
+			{
+				for (Deal deal : deals)
+				{
+					deal.dealRead = false;
+					deal.save();
+				}
+				
+				response.put("status", 
+						new ArrayList<String>()
+						{
+							{
+								add("ok");
+							}
+						});
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching deal found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		if(dealIds != null)
+		{
+			parameters.put("dealIds", dealIds);
+		}
+		Request request = new Request(isValidRequest, "markDealsUnRead", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())

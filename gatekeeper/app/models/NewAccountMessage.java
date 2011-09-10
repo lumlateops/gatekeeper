@@ -2,39 +2,101 @@ package models;
 
 import java.io.Serializable;
 
+/**
+ * POJO for RMQ message
+ * @author prachi
+ *
+ */
 public class NewAccountMessage implements Serializable
 {
-	private String	field1;
-	private String	field2;
-
-	public NewAccountMessage(String field1, String field2)
+  private Long userId;
+  private String email;
+  private String oauthToken;
+  private String tokenSecret;
+  private String serviceProviderName;
+  private String consumerKey;
+  private String consumerSecret;
+  
+  public NewAccountMessage(Long userid, String email, String oauthToken,
+  												 String tokenSecret, String serviceProviderName, 
+  												 String consumerKey,	String consumerSecret)
 	{
-		this.field1 = field1;
-		this.field2 = field2;
+		this.userId = userid;
+		this.email = email;
+		this.oauthToken = oauthToken;
+		this.tokenSecret = tokenSecret;
+		this.serviceProviderName = serviceProviderName;
+		this.consumerKey = consumerKey;
+		this.consumerSecret = consumerSecret;
 	}
 
-	public String getField1()
+	public Long getUserId()
 	{
-		return field1;
+		return userId;
 	}
 
-	public void setField1(String field1)
+	public void setUserId(Long userId)
 	{
-		this.field1 = field1;
+		this.userId = userId;
 	}
 
-	public String getField2()
+	public String getEmail()
 	{
-		return field2;
+		return email;
 	}
 
-	public void setField2(String field2)
+	public void setEmail(String email)
 	{
-		this.field2 = field2;
+		this.email = email;
 	}
 
-	public String toString() 
+	public String getOauthToken()
 	{
-		return "NewAccountMessage [field1=" + field1 + ", field2=" + field2 + "]";
+		return oauthToken;
+	}
+
+	public void setOauthToken(String oauthToken)
+	{
+		this.oauthToken = oauthToken;
+	}
+
+	public String getTokenSecret()
+	{
+		return tokenSecret;
+	}
+
+	public void setTokenSecret(String tokenSecret)
+	{
+		this.tokenSecret = tokenSecret;
+	}
+
+	public String getServiceProviderName()
+	{
+		return serviceProviderName;
+	}
+
+	public void setServiceProviderName(String serviceProviderName)
+	{
+		this.serviceProviderName = serviceProviderName;
+	}
+
+	public String getConsumerKey()
+	{
+		return consumerKey;
+	}
+
+	public void setConsumerKey(String consumerKey)
+	{
+		this.consumerKey = consumerKey;
+	}
+
+	public String getConsumerSecret()
+	{
+		return consumerSecret;
+	}
+
+	public void setConsumerSecret(String consumerSecret)
+	{
+		this.consumerSecret = consumerSecret;
 	}
 }

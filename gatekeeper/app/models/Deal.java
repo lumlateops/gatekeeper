@@ -19,6 +19,7 @@ import play.db.jpa.Model;
 @Entity
 public class Deal extends Model
 {
+	public Long						userId;
 	@OneToOne
 	public Subscription		subscription;
 	public int						locationId;
@@ -36,13 +37,15 @@ public class Deal extends Model
 	public Boolean				freeShipping;
 	public String					title;
 	public String					url;
+	public boolean				dealRead;
 	
-	public Deal(Subscription subscription, int locationId,
+	public Deal(Long userId, Subscription subscription, int locationId,
 			List<Product> products, String email, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
-			String title, String url)
+			String title, String url, boolean dealRead)
 	{
+		this.userId = userId;
 		this.subscription = subscription;
 		this.locationId = locationId;
 		this.products = products;
@@ -58,26 +61,6 @@ public class Deal extends Model
 		this.freeShipping = freeShipping;
 		this.title = title;
 		this.url = url;
+		this.dealRead = dealRead;
 	}
-	
-	/**
-	 *  CREATE TABLE `Deal` (r
-			`id` bigint(20) NOT NULL AUTO_INCREMENT,
-			`subscriptionId` int(11) NOT NULL, 
-			`locationId` int(11) NOT NULL DEFAULT 0,
-			`productId` int(11) DEFAULT 0,
-			`emailId` int(11) DEFAULT 0,
-			`createdAt` datetime DEFAULT NULL,
-			`discountPercentage` int(3) DEFAULT NULL,
-			`dealValue` int(11) NOT NULL DEFAULT 0,
-			`expiryDate` datetime DEFAULT NULL,
-			`postDate` datetime DEFAULT NULL,
-			`validTo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			`freeShipping` bit(1) NOT NULL, 
-			`title` varchar(255) DEFAULT NULL,
-			`updatedAt` datetime DEFAULT NULL,
-			`url` varchar(255) DEFAULT NULL,
-			PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 
-	 */
 }

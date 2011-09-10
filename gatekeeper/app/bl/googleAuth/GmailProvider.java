@@ -13,11 +13,14 @@ import jsonModels.Response;
 import jsonModels.Service;
 import jsonModels.ServiceResponse;
 
+import bl.RMQProducer;
+
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthSigner;
+import com.google.gdata.client.authn.oauth.OAuthParameters.OAuthType;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -28,6 +31,7 @@ import play.Logger;
 
 import models.Account;
 import models.ErrorCodes;
+import models.FetchHistory;
 import models.NewAccountMessage;
 import models.Providers;
 import models.ServiceProvider;
@@ -35,11 +39,11 @@ import models.ServiceProvider;
 public class GmailProvider
 {
 	//TODO Add scope to the DB as well
-	private static final String	SCOPE	= "https://mail.google.com/mail/feed/atom/";
-	private static final String	NEW_EMAIL_ACCOUNT_QUEUE	= "new_email_account";
+	private static final String	SCOPE	= "https://mail.google.com/";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime<=currentTime-60";
 	
 	// Initialize tokens
 	static
@@ -191,8 +195,17 @@ public class GmailProvider
 					Logger.debug("Access Token: "+token);
 					account.save();
 					
-					// Add new email address to queue
-					publish(new NewAccountMessage("hello", "world"));
+					// Add new email address to queue if no fetch happened within the last 60 mins
+					FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+					if(lastFetch==null)
+					{
+						NewAccountMessage message = new NewAccountMessage(userId, email, token, 
+																															account.dllrTokenSecret,
+																															Providers.GMAIL.toString(),	
+																															gmailProvider.consumerKey, 
+																															gmailProvider.consumerSecret);
+						RMQProducer.publishNewEmailAccountMessage(message);
+					}
 				}
 				else
 				{
@@ -283,48 +296,13 @@ public class GmailProvider
 		return response;
 	}
 	
-	/**
-	 * Posts messages to RMQ
-	 * @param message
-	 */
-	private static void publish(NewAccountMessage message) 
-	{
-		String rmqserver = "rmq01.deallr.com";
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(rmqserver);
-		Connection connection = null;
-		Channel channel = null;
-		try
-		{
-			connection = factory.newConnection();
-			channel = connection.createChannel();
-			channel.queueDeclare(NEW_EMAIL_ACCOUNT_QUEUE, true, false, false, null);
-			channel.basicPublish("", NEW_EMAIL_ACCOUNT_QUEUE, MessageProperties.PERSISTENT_TEXT_PLAIN, message.toString().getBytes());
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				channel.close();
-				connection.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	private static GoogleOAuthParameters getAuthParams()
 	{
 		GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
 		oauthParameters.setScope(SCOPE);
 		oauthParameters.setOAuthConsumerKey(CONSUMER_KEY);
 		oauthParameters.setOAuthConsumerSecret(CONSUMER_SECRET);
+		oauthParameters.setOAuthType(OAuthType.THREE_LEGGED_OAUTH);
 		return oauthParameters;
 	}
 }

@@ -65,30 +65,3 @@ ServiceProvider(TWITTER):
     protocol:         OAUTH
     created_at:       2009-06-14
     updated_at:       2009-06-14    
-    
-Account(lumlateops):
-    userId:             2
-    email:              lumlateops@gmail.com
-    dllrAccessToken:    
-    dllrTokenSecret:    4%2F0qWzPJNa1j5A96URgUsr2LVLqEB2
-    active:             true
-    lastError:         
-    lastConfirmedAt:    2009-06-14
-    lastErrorAt:        2009-06-14
-    createdAt:          2009-06-14
-    updatedAt:          2009-06-14    
-    
-UserInfo(ramdev):
-    username:             ramdev
-    password:             test
-    isActive:             true
-    isAdmin:              false
-    fbEmailAddress:       ramdev@gmail.com
-    fbUserId:             231
-    fbFullName:           ramdev baba
-    fbLocationName:       Cave
-    fbLocationId:         300
-    gender:               male
-    createdAt:            2009-06-14
-    updatedAt:            2009-06-14
-    emailAddress:         ramdev@deallr.com    
