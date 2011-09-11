@@ -65,3 +65,18 @@ ServiceProvider(TWITTER):
     protocol:         OAUTH
     created_at:       2009-06-14
     updated_at:       2009-06-14    
+    
+EmailCategory(deal):
+    name:             deal
+    
+EmailCategory(subscription):
+    name:             subscription
+    
+EmailCategory(spam):
+    name:             spam
+    
+EmailCategory(confirmation):
+    name:             confirmation
+    
+EmailCategory(other):
+    name:             other

@@ -10,7 +10,7 @@ public class Bootstrap extends Job
 	public void doJob() 
 	{
 		// Check if the database is empty
-		if (Account.count() == 0 && ServiceProvider.count() == 0) 
+		if (ServiceProvider.count() == 0 || EmailCategory.count() == 0) 
 		{
 			Fixtures.loadModels("initial-data.yml");
 		}
