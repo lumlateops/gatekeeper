@@ -38,12 +38,13 @@ public class Deal extends Model
 	public String					title;
 	public String					url;
 	public boolean				dealRead;
+	public Long						dealEmailId;
 	
 	public Deal(Long userId, Subscription subscription, int locationId,
 			List<Product> products, String email, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
-			String title, String url, boolean dealRead)
+			String title, String url, boolean dealRead, Long dealEmailId)
 	{
 		this.userId = userId;
 		this.subscription = subscription;
@@ -62,5 +63,6 @@ public class Deal extends Model
 		this.title = title;
 		this.url = url;
 		this.dealRead = dealRead;
+		this.dealEmailId = dealEmailId;
 	}
 }

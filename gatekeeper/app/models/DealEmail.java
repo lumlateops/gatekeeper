@@ -23,14 +23,14 @@ public class DealEmail extends Model
 	public String	domainKey;
 	public String	parsedContent;
 	public String	content;
-	public String	category;
+	public Long		categoryId;
 	public Date		sentDate;
 	public Date		dateReceived;
 	
 	public DealEmail(String fromName, String fromEmail, String toName,
 			Date dateReceived, Date sentDate, String subject, String senderIP,
 			String spfResult, String domainKey, String parsedContent, String content,
-			String category)
+			Long categoryId)
 	{
 		this.fromName = fromName;
 		this.fromEmail = fromEmail;
@@ -43,6 +43,6 @@ public class DealEmail extends Model
 		this.domainKey = domainKey;
 		this.parsedContent = parsedContent;
 		this.content = content;
-		this.category = category;
+		this.categoryId = categoryId;
 	}
 }
