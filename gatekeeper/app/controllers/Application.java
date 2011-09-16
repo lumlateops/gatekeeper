@@ -156,7 +156,8 @@ public class Application extends Controller
 	 */
 	public static void addEmail(@Required(message="UserId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required") String email)
+			@Required(message="Email is required") String email,
+			@Required(message="Password is required") String password)
 	{
 		Long startTime = System.currentTimeMillis();
 		
@@ -189,13 +190,16 @@ public class Application extends Controller
 				{
 					try
 					{
-						String authUrl = GmailProvider.authorizeAccount(userId, email);
-						Logger.debug("Auth url: "+authUrl);
-						List<String> authMessage = new ArrayList<String>();
-						authMessage.add(authUrl);
-						response.put("AuthUrl", authMessage);
+						GmailProvider.authorizeAccount(userId, email, password);
+						response.put("status", 
+								new ArrayList<String>()
+								{
+									{
+										add("ok");
+									}
+								});
 					}
-					catch (OAuthException e)
+					catch (Exception e)
 					{
 						Logger.debug(e.getCause() + e.getMessage());
 						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
@@ -205,7 +209,7 @@ public class Application extends Controller
 				else
 				{
 					serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
-																	 "Account registered and authorized already");
+																	 "Account registered already");
 				}
 			}
 			else
@@ -220,6 +224,7 @@ public class Application extends Controller
 		parameters.put("userId", Long.toString(userId));
 		parameters.put("provider", provider);
 		parameters.put("email", email);
+		parameters.put("password", password);
 		Request request = new Request(isValidRequest, "addEmail", endTime-startTime, parameters);
 		
 		serviceResponse.setRequest(request);
@@ -712,7 +717,7 @@ public class Application extends Controller
 				
 				// Save FB auth token
 				ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-				Account newAccount = new Account(newUser.id, newUser.emailAddress, provider, fbAuthToken, "", 
+				Account newAccount = new Account(newUser.id, newUser.emailAddress, "" ,provider, fbAuthToken, "", 
 						Boolean.TRUE, "", currentDate, currentDate, currentDate, currentDate);
 				newAccount.save();
 				

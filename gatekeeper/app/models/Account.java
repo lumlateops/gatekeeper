@@ -38,6 +38,7 @@ public class Account extends Model
 	public Long		userId;
 	@Email
 	public String		email;
+	public String		pasword;
 	public String		dllrAccessToken;
 	public String		dllrTokenSecret;
 	public Boolean	active;
@@ -50,13 +51,14 @@ public class Account extends Model
 	@OneToOne
 	public ServiceProvider	provider;
 
-	public Account(Long userId, String userEmail, ServiceProvider provider,
+	public Account(Long userId, String userEmail, String password, ServiceProvider provider,
 			String dllrAccessToken, String dllrTokenSecret, Boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
 	{
 		Logger.info("Account constructor called");
 		
 		this.userId = userId;
+		this.pasword = password;
 		this.email = userEmail;
 		this.provider = provider;
 		this.dllrAccessToken = dllrAccessToken;

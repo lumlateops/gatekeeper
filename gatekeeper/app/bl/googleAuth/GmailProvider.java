@@ -74,7 +74,7 @@ public class GmailProvider
 			// Make sure userId matches
 			if(account.userId == userId)
 			{
-				if(account.active)
+				if(account.active && account.pasword != null)
 				{
 					returnMessage = "true";
 				}
@@ -117,18 +117,19 @@ public class GmailProvider
 		{
 			for (Account account : accounts)
 			{
-				if(account.active)
+				if(account.active && account.pasword != null)
 				{
-					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
-					{
-						isDuplicate = true;
-					}
-					// If an incomplete account exists then clean it up so a new one can be registered
-					else
-					{
-						isDuplicate = false;
-						account.delete();
-					}
+					isDuplicate = true;
+//					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
+//					{
+//						isDuplicate = true;
+//					}
+//					// If an incomplete account exists then clean it up so a new one can be registered
+//					else
+//					{
+//						isDuplicate = false;
+//						account.delete();
+//					}
 					break;
 				}
 			}
@@ -143,20 +144,19 @@ public class GmailProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static String authorizeAccount(Long userId, String email) throws OAuthException
+	public static void authorizeAccount(Long userId, String email, String password) throws Exception
 	{
-		GoogleOAuthParameters oauthParameters = getAuthParams();
-		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
-		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
-		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
+//		GoogleOAuthParameters oauthParameters = getAuthParams();
+//		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
+//		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+//		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
+//		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
 		
 		// Store the information, leaving the access token blank
 		Date current = new Date(System.currentTimeMillis());
-		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		new Account(userId, email, gmailProvider, "", tokenSecret, true, "", 
+//		String tokenSecret = oauthParameters.getOAuthTokenSecret();
+		new Account(userId, email, password, gmailProvider, "", null, true, "", 
 								current, null, current, current).save();
-		return requestUrl;
 	}
 	
 	/**
