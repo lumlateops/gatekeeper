@@ -12,22 +12,6 @@ import play.db.jpa.Model;
 
 
 /**
-+-----------------+--------------+------+-----+---------+----------------+
-| Field           | Type         | Null | Key | Default | Extra          |
-+-----------------+--------------+------+-----+---------+----------------+
-| id              | bigint(20)   | NO   | PRI | NULL    | auto_increment |
-| active          | bit(1)       | YES  |     | NULL    |                |
-| createdAt       | datetime     | YES  |     | NULL    |                |
-| dllrAccessToken | varchar(255) | YES  |     | NULL    |                |
-| dllrTokenSecret | varchar(255) | YES  |     | NULL    |                |
-| email           | varchar(255) | YES  |     | NULL    |                |
-| lastConfirmedAt | datetime     | YES  |     | NULL    |                |
-| lastError       | varchar(255) | YES  |     | NULL    |                |
-| lastErrorAt     | datetime     | YES  |     | NULL    |                |
-| updatedAt       | datetime     | YES  |     | NULL    |                |
-| userId          | bigint(20)   | YES  |     | NULL    |                |
-| provider_id     | bigint(20)   | YES  | MUL | NULL    |                |
-+-----------------+--------------+------+-----+---------+----------------+
  * 
  * @author prachi
  *
@@ -41,6 +25,8 @@ public class Account extends Model
 	public String		pasword;
 	public String		dllrAccessToken;
 	public String		dllrTokenSecret;
+	public String		fbToken;
+	public Boolean	registeredEmail;
 	public Boolean	active;
 	public String		lastError;
 	public Date			lastConfirmedAt;
@@ -51,23 +37,25 @@ public class Account extends Model
 	@OneToOne
 	public ServiceProvider	provider;
 
-	public Account(Long userId, String userEmail, String password, ServiceProvider provider,
-			String dllrAccessToken, String dllrTokenSecret, Boolean active, String lastError,
-			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt)
+	public Account(Long userId, String email, String pasword,
+			String dllrAccessToken, String dllrTokenSecret, String fbToken,
+			Boolean registeredEmail, Boolean active, String lastError,
+			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt,
+			ServiceProvider provider)
 	{
-		Logger.info("Account constructor called");
-		
 		this.userId = userId;
-		this.pasword = password;
-		this.email = userEmail;
-		this.provider = provider;
+		this.email = email;
+		this.pasword = pasword;
 		this.dllrAccessToken = dllrAccessToken;
 		this.dllrTokenSecret = dllrTokenSecret;
+		this.fbToken = fbToken;
+		this.registeredEmail = registeredEmail;
 		this.active = active;
 		this.lastError = lastError;
 		this.lastConfirmedAt = lastConfirmedAt;
 		this.lastErrorAt = lastErrorAt;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.provider = provider;
 	}
 }

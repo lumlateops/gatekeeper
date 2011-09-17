@@ -27,7 +27,7 @@ GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 POST	/account/add						     							Application.addEmail
 
 # Upgrade token
-POST	/account/upgradeEmailToken 											Application.upgradeToken
+#POST	/account/upgradeEmailToken 											Application.upgradeToken
 
 # Check if account is authorized
 GET 	/account/verify/{userId}/{provider}/{email}							Application.verifyAccount
@@ -37,6 +37,15 @@ POST	/account/revoke/													Application.revokeAccess
 
 # Update FB Token
 POST	/account/fb/update													Application.updateFBToken
+
+# Mark deal as read
+POST	/deal/mark/read														Application.markDealsRead
+
+# Mark deal as unread
+POST	/deal/mark/unread													Application.markDealsUnRead
+
+# Get unread deals count
+GET /deal/unread/count														Application.getUnreadDealCount
 
 # Get deals for a user
 GET		/deals/{userId}/{page}/{sort}/{sortOrder}							Application.getUserDeals

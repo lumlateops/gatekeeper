@@ -717,8 +717,10 @@ public class Application extends Controller
 				
 				// Save FB auth token
 				ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-				Account newAccount = new Account(newUser.id, newUser.emailAddress, "" ,provider, fbAuthToken, "", 
-						Boolean.TRUE, "", currentDate, currentDate, currentDate, currentDate);
+			  Account newAccount = new Account(newUser.id, newUser.emailAddress, password, "",
+																				 "", fbAuthToken, Boolean.FALSE, Boolean.TRUE, 
+																				 "", currentDate, currentDate, currentDate,
+																				 currentDate, provider);
 				newAccount.save();
 				
 				Logger.info(Account.find("email", newUser.emailAddress).first().toString());

@@ -151,12 +151,12 @@ public class GmailProvider
 //		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
 //		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 //		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
+//		String tokenSecret = oauthParameters.getOAuthTokenSecret();
 		
 		// Store the information, leaving the access token blank
-		Date current = new Date(System.currentTimeMillis());
-//		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		new Account(userId, email, password, gmailProvider, "", null, true, "", 
-								current, null, current, current).save();
+		Date currentDate = new Date(System.currentTimeMillis());
+		new Account(userId, email, password, "", "", null, Boolean.TRUE, Boolean.TRUE, 
+				 				"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
 	}
 	
 	/**
