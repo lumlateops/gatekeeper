@@ -43,7 +43,7 @@ public class GmailProvider
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
-	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f as f FROM FetchHistory f WHERE userId IS ? and fetchStatus='complete' and fetchEndTime > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 	
 	// Initialize tokens
 	static
@@ -144,7 +144,7 @@ public class GmailProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static void authorizeAccount(Long userId, String email, String password) throws Exception
+	public static void authorizeAccount(Long userId, String email, String password)
 	{
 //		GoogleOAuthParameters oauthParameters = getAuthParams();
 //		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
@@ -159,11 +159,11 @@ public class GmailProvider
 				 				"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
 		
 		// Add new email address to queue if no fetch happened within the last 60 mins
-		FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
-		if(lastFetch == null)
-		{
-			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
-		}
+		RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
+//		FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+//		if(lastFetch == null)
+//		{
+//		}
 	}
 	
 	/**
@@ -203,8 +203,8 @@ public class GmailProvider
 					account.save();
 					
 					// Add new email address to queue if no fetch happened within the last 60 mins
-					FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
-					if(lastFetch==null)
+//					FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+//					if(lastFetch==null)
 					{
 //						NewAccountMessage message = new NewAccountMessage(userId, email, token, 
 //																															account.dllrTokenSecret,

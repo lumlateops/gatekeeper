@@ -201,8 +201,8 @@ public class Application extends Controller
 					}
 					catch (Exception e)
 					{
-						Logger.debug(e.getCause() + e.getMessage());
-						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+						Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
+						serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
 																		 e.getMessage() + e.getCause());
 					}
 				}

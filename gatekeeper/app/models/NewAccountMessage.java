@@ -66,4 +66,12 @@ public class NewAccountMessage implements Serializable
 	{
 		this.serviceProviderName = serviceProviderName;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "NewAccountMessage [email=" + email + ", password=" + password
+				+ ", serviceProviderName=" + serviceProviderName + ", userId=" + userId
+				+ "]";
+	}
 }
