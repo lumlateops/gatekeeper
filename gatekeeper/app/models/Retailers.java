@@ -18,8 +18,8 @@ import play.db.jpa.Model;
 | domain    | varchar(255) | NO   | UNI | NULL    |                |
 | name      | varchar(255) | NO   |     | NULL    |                |
 | image     | varchar(255) | YES  |     | NULL    |                |
-| createdAT | datetime     | YES  |     | NULL    |                |
-| updatedAT | datetime     | YES  |     | NULL    |                |
+| createdAt | datetime     | YES  |     | NULL    |                |
+| updatedAt | datetime     | YES  |     | NULL    |                |
 +-----------+--------------+------+-----+---------+----------------+
 */
 @Entity
@@ -28,16 +28,16 @@ public class Retailers extends Model
 	public String	domain;
 	public String	name;
 	public String	image;
-	public Date		createdAT;
-	public Date		updatedAT;
+	public Date		createdAt;
+	public Date		updatedAt;
 	
-	public Retailers(String domain, String name, String image, Date createdAT,
-									Date updatedAT)
+	public Retailers(String domain, String name, String image, Date createdAt,
+									Date updatedAt)
 	{
 		this.domain = domain;
 		this.name = name;
 		this.image = image;
-		this.createdAT = createdAT;
-		this.updatedAT = updatedAT;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 }

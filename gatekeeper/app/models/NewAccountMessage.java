@@ -11,23 +11,20 @@ public class NewAccountMessage implements Serializable
 {
   private Long userId;
   private String email;
-  private String oauthToken;
-  private String tokenSecret;
+  private String password;
+//  private String oauthToken;
+//  private String tokenSecret;
   private String serviceProviderName;
-  private String consumerKey;
-  private String consumerSecret;
+//  private String consumerKey;
+//  private String consumerSecret;
   
-  public NewAccountMessage(Long userid, String email, String oauthToken,
-  												 String tokenSecret, String serviceProviderName, 
-  												 String consumerKey,	String consumerSecret)
+	public NewAccountMessage(Long userId, String email, String password,
+			String serviceProviderName)
 	{
-		this.userId = userid;
+		this.userId = userId;
 		this.email = email;
-		this.oauthToken = oauthToken;
-		this.tokenSecret = tokenSecret;
+		this.password = password;
 		this.serviceProviderName = serviceProviderName;
-		this.consumerKey = consumerKey;
-		this.consumerSecret = consumerSecret;
 	}
 
 	public Long getUserId()
@@ -50,24 +47,14 @@ public class NewAccountMessage implements Serializable
 		this.email = email;
 	}
 
-	public String getOauthToken()
+	public String getPassword()
 	{
-		return oauthToken;
+		return password;
 	}
 
-	public void setOauthToken(String oauthToken)
+	public void setPassword(String password)
 	{
-		this.oauthToken = oauthToken;
-	}
-
-	public String getTokenSecret()
-	{
-		return tokenSecret;
-	}
-
-	public void setTokenSecret(String tokenSecret)
-	{
-		this.tokenSecret = tokenSecret;
+		this.password = password;
 	}
 
 	public String getServiceProviderName()
@@ -78,25 +65,5 @@ public class NewAccountMessage implements Serializable
 	public void setServiceProviderName(String serviceProviderName)
 	{
 		this.serviceProviderName = serviceProviderName;
-	}
-
-	public String getConsumerKey()
-	{
-		return consumerKey;
-	}
-
-	public void setConsumerKey(String consumerKey)
-	{
-		this.consumerKey = consumerKey;
-	}
-
-	public String getConsumerSecret()
-	{
-		return consumerSecret;
-	}
-
-	public void setConsumerSecret(String consumerSecret)
-	{
-		this.consumerSecret = consumerSecret;
 	}
 }

@@ -43,7 +43,7 @@ public class GmailProvider
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
-	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime<=currentTime-60";
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT * FROM FetchHistory WHERE userId IS ? and fetchStatus='complete' and fetchEndTime > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 	
 	// Initialize tokens
 	static
@@ -157,6 +157,13 @@ public class GmailProvider
 		Date currentDate = new Date(System.currentTimeMillis());
 		new Account(userId, email, password, "", "", null, Boolean.TRUE, Boolean.TRUE, 
 				 				"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
+		
+		// Add new email address to queue if no fetch happened within the last 60 mins
+		FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+		if(lastFetch == null)
+		{
+			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
+		}
 	}
 	
 	/**
@@ -199,12 +206,12 @@ public class GmailProvider
 					FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
 					if(lastFetch==null)
 					{
-						NewAccountMessage message = new NewAccountMessage(userId, email, token, 
-																															account.dllrTokenSecret,
-																															Providers.GMAIL.toString(),	
-																															gmailProvider.consumerKey, 
-																															gmailProvider.consumerSecret);
-						RMQProducer.publishNewEmailAccountMessage(message);
+//						NewAccountMessage message = new NewAccountMessage(userId, email, token, 
+//																															account.dllrTokenSecret,
+//																															Providers.GMAIL.toString(),	
+//																															gmailProvider.consumerKey, 
+//																															gmailProvider.consumerSecret);
+//						RMQProducer.publishNewEmailAccountMessage(message);
 					}
 				}
 				else

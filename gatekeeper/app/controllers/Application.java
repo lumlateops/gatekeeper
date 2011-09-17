@@ -670,19 +670,6 @@ public class Application extends Controller
 		Service serviceResponse = new Service();
 		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
 		
-		String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-		SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-		Date date = new Date(System.currentTimeMillis());
-		Date currentDate = null;
-		try
-		{
-			currentDate = formatter.parse(formatter.format(date));
-		}
-		catch (ParseException e)
-		{
-			//Should not happen, go ahead without a date
-		}
-		
 		if(Validation.hasErrors())
 		{
 			isValidRequest = false;
@@ -703,12 +690,23 @@ public class Application extends Controller
 				userInfo = UserInfo.find("fbUserId", fbUserId).fetch();
 			}
 			
-			if(userInfo.size() > 0)
+			if(userInfo != null && userInfo.size() > 0)
 			{
 				serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
 			}
 			else
 			{
+				String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+				SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+				Date currentDate = null;
+				try
+				{
+					currentDate = formatter.parse(formatter.format(new Date(System.currentTimeMillis())));
+				}
+				catch (ParseException e)
+				{
+					//Should not happen, go ahead without a date
+				}
 				// Create new user
 				UserInfo newUser = new UserInfo(username, password, Boolean.TRUE, Boolean.FALSE, 
 						fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
@@ -717,14 +715,13 @@ public class Application extends Controller
 				
 				// Save FB auth token
 				ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-			  Account newAccount = new Account(newUser.id, newUser.emailAddress, password, "",
-																				 "", fbAuthToken, Boolean.FALSE, Boolean.TRUE, 
-																				 "", currentDate, currentDate, currentDate,
-																				 currentDate, provider);
-				newAccount.save();
+			  new Account(newUser.id, newUser.emailAddress, password, "", "", fbAuthToken, 
+			  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
+										currentDate, provider).save();
 				
 				Logger.info(Account.find("email", newUser.emailAddress).first().toString());
 				
+				// construct service response
 				List<UserInfo> message = new ArrayList<UserInfo>();
 				UserInfo recentUser = new UserInfo();
 				recentUser.id = newUser.id;
