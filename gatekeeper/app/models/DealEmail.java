@@ -2,6 +2,7 @@ package models;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import play.db.jpa.Model;
@@ -21,7 +22,9 @@ public class DealEmail extends Model
 	public String	senderIP;
 	public String	spfResult;
 	public String	domainKey;
+	@Column(length=5000)
 	public String	parsedContent;
+	@Column(length=5000)
 	public String	content;
 	public Long		categoryId;
 	public Date		sentDate;

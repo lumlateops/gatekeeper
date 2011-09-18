@@ -235,6 +235,57 @@ public class Application extends Controller
 		
 		renderJSON(new Message(serviceResponse));
 	}
+	
+	/**
+	 * Returns a list of all the registered email accounts for this user
+	 * @param userId
+	 */
+	public static void listAllUserEmails(@Required(message="userId is required") Long userId)
+	{
+		Long startTime = System.currentTimeMillis();
+
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			List<Account> accounts = Account.find("userId", userId).fetch();
+			List<Account> activeAccounts = new ArrayList<Account>();
+			if(accounts != null && accounts.size() > 0)
+			{
+				for (Account account : accounts)
+				{
+					if(account.registeredEmail && account.active)
+					{
+						activeAccounts.add(account);
+					}
+				}
+			}
+			response.put("Accounts", activeAccounts);
+		}
+		Long endTime = System.currentTimeMillis();
+
+		Map<String, String>	parameters = new HashMap<String, String>();
+		parameters.put("userId", Long.toString(userId));
+		Request request = new Request(isValidRequest, "listAllUserEmails", endTime-startTime, parameters);
+		
+		serviceResponse.setRequest(request);
+		if(isValidRequest && response != null && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		
+		renderJSON(new Message(serviceResponse));
+	}
 
 	/**
 	 * Upgrades a request token to an access token
