@@ -1,6 +1,5 @@
 package controllers;
 
-import java.net.SecureCacheResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,34 +9,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.ehcache.hibernate.HibernateUtil;
-
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.OptimisticLock;
-
-import com.google.gdata.client.authn.oauth.OAuthException;
-
-import jsonModels.Errors;
+import jsonModels.DealEmailResponse;
 import jsonModels.LoginResponse;
 import jsonModels.Message;
-import jsonModels.Parameter;
-import jsonModels.Response;
-import jsonModels.Service;
 import jsonModels.Request;
-import jsonModels.Error;
-import jsonModels.ServiceResponse;
-
-import bl.RMQProducer;
-import bl.googleAuth.AuthPayLoad;
-import bl.googleAuth.GmailProvider;
-
+import jsonModels.Service;
+import models.Account;
+import models.Deal;
+import models.ErrorCodes;
+import models.FetchHistory;
+import models.Providers;
+import models.ServiceProvider;
+import models.SortFields;
+import models.SortOrder;
+import models.UserInfo;
 import play.Logger;
 import play.data.validation.Email;
-import play.data.validation.IsTrue;
-import play.data.validation.Match;
-import play.data.validation.Max;
 import play.data.validation.MaxSize;
-import play.data.validation.Min;
 import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
@@ -45,20 +33,7 @@ import play.data.validation.Validation;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Scope;
-import play.mvc.With;
-import play.mvc.Scope.Params;
-
-import models.Account;
-import models.Deal;
-import models.ErrorCodes;
-import models.FetchHistory;
-import models.NewAccountMessage;
-import models.Providers;
-import models.ServiceProvider;
-import models.SortFields;
-import models.SortOrder;
-import models.UserInfo;
+import bl.googleAuth.GmailProvider;
 
 /**
  * The main controller for the application. This is the only controller in the
@@ -1217,6 +1192,66 @@ public class Application extends Controller
 			parameters.put("userId", Long.toString(userId));
 		}
 		Request request = new Request(isValidRequest, "getUnreadDealCount", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * Returns the email address the deal was received on.
+	 * @param dealId: Id of the deal we want info for.
+	 */
+	public static void getDealUserEmail(@Required(message="dealId is required")Long dealId)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+			}
+		}
+		else
+		{
+			Deal deal = Deal.find("id", dealId).first();
+			if(deal != null && deal.subscription != null)
+			{
+				Account account = Account.find("id", deal.subscription.accountId).first();
+				if(account != null)
+				{
+					List<DealEmailResponse> message = new ArrayList<DealEmailResponse>();
+					message.add(new DealEmailResponse(dealId, account.email, deal.postDate));
+					response.put("dealInfo", message);
+				}
+				else
+				{
+					serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching Account found");
+				}
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching deal found");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(dealId != null)
+		{
+			parameters.put("dealId", Long.toString(dealId));
+		}
+		Request request = new Request(isValidRequest, "getDealUserEmail", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())
