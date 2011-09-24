@@ -26,6 +26,9 @@ GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 # Add account
 POST	/account/add						     							Application.addEmail
 
+# List all registered accounts
+GET		/account/list/{userId}			     								Application.listAllUserEmails
+
 # Upgrade token
 #POST	/account/upgradeEmailToken 											Application.upgradeToken
 

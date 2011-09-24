@@ -25,7 +25,6 @@ public class Deal extends Model
 	public int						locationId;
 	@ManyToMany
 	public List<Product>	products;
-	public String					email;
 	public Date						createdAt;
 	public Date						updatedAt;
 	public int						discountPercentage;
@@ -38,10 +37,11 @@ public class Deal extends Model
 	public String					title;
 	public String					url;
 	public boolean				dealRead;
+	//From information
 	public Long						dealEmailId;
 	
 	public Deal(Long userId, Subscription subscription, int locationId,
-			List<Product> products, String email, Date createdAt, Date updatedAt,
+			List<Product> products, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
 			String title, String url, boolean dealRead, Long dealEmailId)
@@ -50,7 +50,6 @@ public class Deal extends Model
 		this.subscription = subscription;
 		this.locationId = locationId;
 		this.products = products;
-		this.email = email;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.discountPercentage = discountPercentage;

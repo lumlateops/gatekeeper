@@ -34,6 +34,7 @@ import bl.googleAuth.GmailProvider;
 import play.Logger;
 import play.data.validation.Email;
 import play.data.validation.IsTrue;
+import play.data.validation.Match;
 import play.data.validation.Max;
 import play.data.validation.MaxSize;
 import play.data.validation.Min;
@@ -243,12 +244,14 @@ public class Application extends Controller
 	public static void listAllUserEmails(@Required(message="userId is required") Long userId)
 	{
 		Long startTime = System.currentTimeMillis();
+		
+		Logger.debug("**" + userId);
 
 		Boolean isValidRequest = Boolean.TRUE;
 		Service serviceResponse = new Service();
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
-		if(Validation.hasErrors())
+		if(Validation.hasErrors() || userId == null)
 		{
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
@@ -275,7 +278,14 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toString(userId));
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		else
+		{
+			parameters.put("userId", "null");
+		}
 		Request request = new Request(isValidRequest, "listAllUserEmails", endTime-startTime, parameters);
 		
 		serviceResponse.setRequest(request);
