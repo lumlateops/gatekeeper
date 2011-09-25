@@ -44,7 +44,7 @@ import bl.googleAuth.GmailProvider;
 public class Application extends Controller
 {
 	private static final int		PAGE_SIZE									= 20;
-	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ?";
+	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userId IS ? AND active IS ? AND registeredEmail IS ?";
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userId IS ? ORDER BY ";
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userId IS ? AND d.dealRead='false' ";
@@ -146,7 +146,7 @@ public class Application extends Controller
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -231,7 +231,7 @@ public class Application extends Controller
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -295,7 +295,7 @@ public class Application extends Controller
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -351,7 +351,7 @@ public class Application extends Controller
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -405,7 +405,7 @@ public class Application extends Controller
 			isValidRequest = Boolean.FALSE;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -461,7 +461,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -484,7 +484,7 @@ public class Application extends Controller
 				{
 					//Check if the user has any registered email accounts
 					Boolean hasEmail = Boolean.FALSE;
-					List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE).fetch();
+					List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE, Boolean.TRUE).fetch();
 					//Check if atleast one email account registered
 					if(accounts != null && accounts.size() > 0)
 					{
@@ -552,7 +552,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -565,7 +565,7 @@ public class Application extends Controller
 				final UserInfo userInfo = userList.get(0);
 				//Check if the user has any registered email accounts
 				Boolean hasEmail = Boolean.FALSE;
-				List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE).fetch();
+				List<Account> accounts = Account.find(EMAIL_LOOKUP_HQL, userInfo.id, Boolean.TRUE, Boolean.TRUE).fetch();
 				if(accounts != null && accounts.size() > 0)
 				{
 					hasEmail = Boolean.TRUE;
@@ -587,9 +587,9 @@ public class Application extends Controller
 				response.put("user", message);
 				
 				// Add email address to queue if no fetch happened within the last 60 mins
-				FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userInfo.id).first();
-				if(lastFetch==null)
-				{
+//				FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userInfo.id).first();
+//				if(lastFetch==null)
+//				{
 //					ServiceProvider gmailProvider = ServiceProvider.find("name", Providers.GMAIL.toString()).first();
 //					NewAccountMessage rmqMessage = new NewAccountMessage(userInfo.id, email, token, 
 //																														account.dllrTokenSecret,
@@ -597,7 +597,7 @@ public class Application extends Controller
 //																														gmailProvider.consumerKey, 
 //																														gmailProvider.consumerSecret);
 //					RMQProducer.publishNewEmailAccountMessage(rmqMessage);
-				}
+//				}
 			}
 			else
 			{
@@ -637,7 +637,7 @@ public class Application extends Controller
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
 				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), 
-																 validationError.getKey() + ":" + validationError.message());
+																 validationError.message());
 			}
 		}
 		else
@@ -711,7 +711,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -810,7 +810,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -898,7 +898,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -1024,7 +1024,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -1093,7 +1093,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -1161,7 +1161,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
@@ -1219,7 +1219,7 @@ public class Application extends Controller
 			isValidRequest = false;
 			for (play.data.validation.Error validationError : Validation.errors())
 			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.getKey() + ":" + validationError.message());
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
 			}
 		}
 		else
