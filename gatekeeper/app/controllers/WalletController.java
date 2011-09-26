@@ -20,7 +20,7 @@ import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
 
-public class Wallet extends Controller
+public class WalletController extends Controller
 {
 	@Before
 	public static void logRequest()
@@ -40,10 +40,5 @@ public class Wallet extends Controller
 	{
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
 		Logger.debug("Response status: " + currentResponse.status);
-	}
-	
-	public static void index()
-	{
-		renderJSON("Loaded");
 	}
 }
