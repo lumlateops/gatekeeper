@@ -18,8 +18,8 @@ public class ServiceProvider extends Model
 	public boolean	active;
 	public String		website;
 	public String		protocol;
-	public Date			created_at;
-	public Date			updated_at;
+	public Date			createdAt;
+	public Date			updatedAt;
 
 	public ServiceProvider(String name, String consumerKey, String consumerSecret, 
 												 String logoUrl, boolean active, String website,
@@ -32,7 +32,7 @@ public class ServiceProvider extends Model
 		this.active = active;
 		this.website = website;
 		this.protocol = protocol;
-		created_at = createdAt;
-		updated_at = updatedAt;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 }

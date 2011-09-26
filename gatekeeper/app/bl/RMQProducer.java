@@ -31,6 +31,8 @@ public class RMQProducer
 		{
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(RMQ_SERVER);
+			factory.setUsername("lumlate");
+			factory.setPassword("lumlate$");
 			Connection connection = factory.newConnection();
 			Channel channel = connection.createChannel();
 			if(channel != null)

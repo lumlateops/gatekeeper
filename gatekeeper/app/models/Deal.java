@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.ForeignKey;
 
 import play.Logger;
 import play.data.validation.Email;
@@ -19,7 +22,8 @@ import play.db.jpa.Model;
 @Entity
 public class Deal extends Model
 {
-	public Long						userId;
+	@ManyToOne
+	public UserInfo				userInfo;
 	@OneToOne
 	public Subscription		subscription;
 	public int						locationId;
@@ -37,16 +41,16 @@ public class Deal extends Model
 	public String					title;
 	public String					url;
 	public boolean				dealRead;
-	//From information
-	public Long						dealEmailId;
+	@ManyToOne
+	public DealEmail			dealEmail;
 	
-	public Deal(Long userId, Subscription subscription, int locationId,
+	public Deal(UserInfo userInfo, Subscription subscription, int locationId,
 			List<Product> products, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
-			String title, String url, boolean dealRead, Long dealEmailId)
+			String title, String url, boolean dealRead, DealEmail dealEmail)
 	{
-		this.userId = userId;
+		this.userInfo = userInfo;
 		this.subscription = subscription;
 		this.locationId = locationId;
 		this.products = products;
@@ -62,6 +66,6 @@ public class Deal extends Model
 		this.title = title;
 		this.url = url;
 		this.dealRead = dealRead;
-		this.dealEmailId = dealEmailId;
+		this.dealEmail = dealEmail;
 	}
 }

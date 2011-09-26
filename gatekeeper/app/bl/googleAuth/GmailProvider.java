@@ -35,6 +35,7 @@ import models.FetchHistory;
 import models.NewAccountMessage;
 import models.Providers;
 import models.ServiceProvider;
+import models.UserInfo;
 
 public class GmailProvider
 {
@@ -72,9 +73,9 @@ public class GmailProvider
 			Account account = accounts.get(0);
 			
 			// Make sure userId matches
-			if(account.userId == userId)
+			if(account.userInfo.id == userId)
 			{
-				if(account.active && account.pasword != null)
+				if(account.active && account.password != null)
 				{
 					returnMessage = "true";
 				}
@@ -117,7 +118,7 @@ public class GmailProvider
 		{
 			for (Account account : accounts)
 			{
-				if(account.active && account.pasword != null)
+				if(account.active && account.password != null)
 				{
 					isDuplicate = true;
 //					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
@@ -144,26 +145,25 @@ public class GmailProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static void authorizeAccount(Long userId, String email, String password)
+	public static void createAccount(Long userId, String email, String password) throws Exception
 	{
-//		GoogleOAuthParameters oauthParameters = getAuthParams();
-//		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/" + email);
-//		GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-//		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
-//		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
-//		String tokenSecret = oauthParameters.getOAuthTokenSecret();
+		// Make sure the user exists
+		UserInfo user = UserInfo.find("id", userId).first();
 		
-		// Store the information, leaving the access token blank
-		Date currentDate = new Date(System.currentTimeMillis());
-		new Account(userId, email, password, "", "", null, Boolean.TRUE, Boolean.TRUE, 
-				 				"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
-		
-		// Add new email address to queue if no fetch happened within the last 60 mins
-		RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
-//		FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
-//		if(lastFetch == null)
-//		{
-//		}
+		if(user != null)
+		{
+			// Store the information, leaving the access token blank
+			Date currentDate = new Date(System.currentTimeMillis());
+			new Account(user, email, password, "", "", null, Boolean.TRUE, Boolean.TRUE, 
+					"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
+			
+			// Add new email address to queue if no fetch happened within the last 60 mins
+			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
+		}
+		else
+		{
+			throw new Exception("No matching user found");
+		}
 	}
 	
 	/**
@@ -188,7 +188,7 @@ public class GmailProvider
 				Account account = accounts.get(0);
 				
 				// Make sure userId matches
-				if(account.userId == userId)
+				if(account.userInfo.id == userId)
 				{
 					GoogleOAuthParameters oauthParameters = getAuthParams();
 					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
@@ -261,7 +261,7 @@ public class GmailProvider
 					Account account = accounts.get(0);
 					
 					// Make sure userId matches
-					if(account.userId == userId)
+					if(account.userInfo.id == userId)
 					{
 						// Revoke token
 						GoogleOAuthParameters oauthParameters = getAuthParams();

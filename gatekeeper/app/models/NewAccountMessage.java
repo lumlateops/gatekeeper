@@ -12,11 +12,7 @@ public class NewAccountMessage implements Serializable
   private Long userId;
   private String email;
   private String password;
-//  private String oauthToken;
-//  private String tokenSecret;
   private String serviceProviderName;
-//  private String consumerKey;
-//  private String consumerSecret;
   
 	public NewAccountMessage(Long userId, String email, String password,
 			String serviceProviderName)

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 import play.db.jpa.Model;
 
@@ -15,25 +16,26 @@ import play.db.jpa.Model;
 @Entity
 public class DealEmail extends Model
 {
-	public String	fromName;
-	public String	fromEmail;
-	public String	toName;
-	public String	subject;
-	public String	senderIP;
-	public String	spfResult;
-	public String	domainKey;
-	@Column(length=5000)
-	public String	parsedContent;
-	@Column(length=5000)
-	public String	content;
-	public Long		categoryId;
-	public Date		sentDate;
-	public Date		dateReceived;
+	public String					fromName;
+	public String					fromEmail;
+	public String					toName;
+	public String					subject;
+	public String					senderIP;
+	public String					spfResult;
+	public String					domainKey;
+	@Column(length = 5000)
+	public String					parsedContent;
+	@Column(length = 5000)
+	public String					content;
+	@OneToOne
+	public EmailCategory	emailCategory;
+	public Date						sentDate;
+	public Date						dateReceived;
 	
 	public DealEmail(String fromName, String fromEmail, String toName,
 			Date dateReceived, Date sentDate, String subject, String senderIP,
 			String spfResult, String domainKey, String parsedContent, String content,
-			Long categoryId)
+			EmailCategory emailCategory)
 	{
 		this.fromName = fromName;
 		this.fromEmail = fromEmail;
@@ -46,6 +48,6 @@ public class DealEmail extends Model
 		this.domainKey = domainKey;
 		this.parsedContent = parsedContent;
 		this.content = content;
-		this.categoryId = categoryId;
+		this.emailCategory = emailCategory;
 	}
 }

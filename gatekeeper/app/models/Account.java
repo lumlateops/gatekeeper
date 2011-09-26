@@ -4,6 +4,7 @@ package models;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import play.Logger;
@@ -19,10 +20,11 @@ import play.db.jpa.Model;
 @Entity
 public class Account extends Model
 {
-	public Long		userId;
+	@ManyToOne
+	public UserInfo	userInfo;
 	@Email
 	public String		email;
-	public String		pasword;
+	public String		password;
 	public String		dllrAccessToken;
 	public String		dllrTokenSecret;
 	public String		fbToken;
@@ -37,15 +39,15 @@ public class Account extends Model
 	@OneToOne
 	public ServiceProvider	provider;
 
-	public Account(Long userId, String email, String pasword,
+	public Account(UserInfo userInfo, String email, String password,
 			String dllrAccessToken, String dllrTokenSecret, String fbToken,
 			Boolean registeredEmail, Boolean active, String lastError,
 			Date lastConfirmedAt, Date lastErrorAt, Date createdAt, Date updatedAt,
 			ServiceProvider provider)
 	{
-		this.userId = userId;
+		this.userInfo = userInfo;
 		this.email = email;
-		this.pasword = pasword;
+		this.password = password;
 		this.dllrAccessToken = dllrAccessToken;
 		this.dllrTokenSecret = dllrTokenSecret;
 		this.fbToken = fbToken;

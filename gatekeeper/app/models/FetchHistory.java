@@ -3,23 +3,25 @@ package models;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import play.db.jpa.Model;
 
 @Entity
 public class FetchHistory extends Model
 {
-  public Long userId;
-  public Date fetchStartTime;
-  public Date fetchEndTime;
-  public String fetchStatus;
-  public String fetchErrorMessage;
-  public String sessionid;
+	@ManyToOne
+	public UserInfo	userInfo;
+	public Date			fetchStartTime;
+	public Date			fetchEndTime;
+	public String		fetchStatus;
+	public String		fetchErrorMessage;
+	public String		sessionid;
   
-	public FetchHistory(Long userId, Date fetchStartTime, Date fetchEndTime,
+	public FetchHistory(UserInfo userInfo, Date fetchStartTime, Date fetchEndTime,
 			String fetchStatus, String fetchErrorMessage, String sessionid)
 	{
-		this.userId = userId;
+		this.userInfo = userInfo;
 		this.fetchStartTime = fetchStartTime;
 		this.fetchEndTime = fetchEndTime;
 		this.fetchStatus = fetchStatus;

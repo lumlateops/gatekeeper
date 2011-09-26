@@ -17,18 +17,17 @@ import play.db.jpa.Model;
 @Entity
 public class Wallet extends Model
 {
-	public Long				dealId;
-	public Long				userId;
-	public Boolean		isExpired;
-	public Date				alertTime;
-	public Date				createdAt;
+	@OneToOne
+	public Deal			deal;
+	public UserInfo	userInfo;
+	public Boolean	isExpired;
+	public Date			alertTime;
+	public Date			createdAt;
 	
-	public Wallet(Long dealId, Long userId, Boolean isExpired, Date alertTime,
-			Date createdAt)
+	public Wallet(Deal deal, UserInfo userInfo, Boolean isExpired, Date alertTime, Date createdAt)
 	{
-		super();
-		this.dealId = dealId;
-		this.userId = userId;
+		this.deal = deal;
+		this.userInfo = userInfo;
 		this.isExpired = isExpired;
 		this.alertTime = alertTime;
 		this.createdAt = createdAt;

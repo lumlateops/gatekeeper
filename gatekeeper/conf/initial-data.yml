@@ -8,8 +8,8 @@ ServiceProvider(GMAIL):
     active:           true
     website:          http://gmail.com
     protocol:         OAUTH
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 ServiceProvider(YAHOO):
     name:             Yahoo
@@ -19,8 +19,8 @@ ServiceProvider(YAHOO):
     active:           false
     website:          http://mail.yahoo.com
     protocol:         OAUTH
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 ServiceProvider(AOL):
     name:             AOL
@@ -30,8 +30,8 @@ ServiceProvider(AOL):
     active:           true
     website:          http://webmail.aol.com
     protocol:         OPENAUTH
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 ServiceProvider(MSN):
     name:             MSN
@@ -41,8 +41,8 @@ ServiceProvider(MSN):
     active:           true
     website:          http://mail.live.com
     protocol:         DELEGATEDAUTH
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 ServiceProvider(FACEBOOK):
     name:             Facebook
@@ -52,8 +52,8 @@ ServiceProvider(FACEBOOK):
     active:           true
     website:          http://facebook.com
     protocol:         OAUTH2Long id, 
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 ServiceProvider(TWITTER):
     name:             Twitter
@@ -63,8 +63,8 @@ ServiceProvider(TWITTER):
     active:           true
     website:          http://twitter.com
     protocol:         OAUTH
-    created_at:       2009-06-14
-    updated_at:       2009-06-14    
+    createdAt:       2009-06-14
+    updatedAt:       2009-06-14    
     
 EmailCategory(deal):
     name:             deal
