@@ -3,6 +3,8 @@ package bl;
 import java.io.IOException;
 
 import play.Logger;
+import play.Play;
+import play.modules.rabbitmq.producer.RabbitMQPublisher;
 
 import models.NewAccountMessage;
 
@@ -13,8 +15,10 @@ import com.rabbitmq.client.MessageProperties;
 
 public class RMQProducer
 {
-	private static final String RMQ_SERVER = "rmq01.deallr.com";
-	private static final String	NEW_EMAIL_ACCOUNT_QUEUE	= "new_email_account";
+	private static final String	RMQ_SERVER							= (String) Play.configuration.get("rabbitmq.host");
+	private static final String	RMQ_USER								= (String) Play.configuration.get("rabbitmq.user");
+	private static final String	RMQ_PASSWORD						= (String) Play.configuration.get("rabbitmq.password");
+	private static final String	NEW_EMAIL_ACCOUNT_QUEUE	= (String) Play.configuration.get("rabbitmq.new.account.queue");
 	
 	public static void publishNewEmailAccountMessage(NewAccountMessage message)
 	{
@@ -31,8 +35,8 @@ public class RMQProducer
 		{
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(RMQ_SERVER);
-			factory.setUsername("lumlate");
-			factory.setPassword("lumlate$");
+			factory.setUsername(RMQ_USER);
+			factory.setPassword(RMQ_PASSWORD);
 			Connection connection = factory.newConnection();
 			Channel channel = connection.createChannel();
 			if(channel != null)

@@ -17,6 +17,7 @@ import bl.googleAuth.GmailProvider;
 import play.Logger;
 import play.data.validation.Required;
 import play.data.validation.Validation;
+import play.libs.Codec;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
