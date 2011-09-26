@@ -49,7 +49,7 @@ public class RMQProducer
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			Logger.debug("Error posting to RMQ: " + e.toString() + e.getCause());
+			Logger.error("Error posting to RMQ: " + e.toString() + e.getCause());
 		}
 	}
 }

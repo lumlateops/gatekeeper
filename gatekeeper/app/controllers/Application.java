@@ -220,9 +220,6 @@ public class Application extends Controller
 	 */
 	public static void fbIdlogin(@Required(message = "Facebook Id is required") Long fbUserId)
 	{
-		String authenticityToken = session.getAuthenticityToken();
-		Logger.debug(authenticityToken);
-		
 		Long startTime = System.currentTimeMillis();
 
 		Boolean isValidRequest = Boolean.TRUE;
@@ -436,8 +433,6 @@ public class Application extends Controller
 			  new Account(newUser, newUser.emailAddress, password, "", "", fbAuthToken, 
 			  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
 										currentDate, provider).save();
-				
-				Logger.info(Account.find("email", newUser.emailAddress).first().toString());
 				
 				// construct service response
 				List<UserInfo> message = new ArrayList<UserInfo>();
