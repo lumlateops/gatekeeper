@@ -17,6 +17,7 @@ import bl.Utility;
 import bl.googleAuth.GmailProvider;
 
 import play.Logger;
+import play.data.validation.Email;
 import play.data.validation.Required;
 import play.data.validation.Validation;
 import play.libs.Codec;
@@ -47,7 +48,7 @@ public class AccountController extends Controller
 	 */
 	public static void addEmail(@Required(message="UserId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required") String email,
+			@Required(message="Email is required")@Email String email,
 			@Required(message="Password is required") String password)
 	{
 		Long startTime = System.currentTimeMillis();
@@ -157,7 +158,7 @@ public class AccountController extends Controller
 		}
 		else
 		{
-			List<Account> accounts = Account.find("userId", userId).fetch();
+			List<Account> accounts = Account.find("userInfo_id", userId).fetch();
 			List<EmailAccountResponse> activeAccounts = new ArrayList<EmailAccountResponse>();
 			if(accounts != null && accounts.size() > 0)
 			{
