@@ -33,6 +33,7 @@ import play.data.validation.Validation;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
+import bl.Utility;
 import bl.googleAuth.GmailProvider;
 
 /**
@@ -264,19 +265,6 @@ public class Application extends Controller
 																			userInfo.username, userInfo.fbFullName,
 																			fbAuthToken, hasEmail));
 				response.put("user", message);
-				
-				// Add email address to queue if no fetch happened within the last 60 mins
-//				FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userInfo.id).first();
-//				if(lastFetch==null)
-//				{
-//					ServiceProvider gmailProvider = ServiceProvider.find("name", Providers.GMAIL.toString()).first();
-//					NewAccountMessage rmqMessage = new NewAccountMessage(userInfo.id, email, token, 
-//																														account.dllrTokenSecret,
-//																														Providers.GMAIL.toString(),	
-//																														gmailProvider.consumerKey, 
-//																														gmailProvider.consumerSecret);
-//					RMQProducer.publishNewEmailAccountMessage(rmqMessage);
-//				}
 			}
 			else
 			{
@@ -286,7 +274,13 @@ public class Application extends Controller
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("fbUserId", Long.toString(fbUserId));
+		if(fbUserId != null)
+		{
+			parameters.put("fbUserId", Long.toString(fbUserId));
+		}else
+		{
+			parameters.put("fbUserId", "null");
+		}
 		Request request = new Request(isValidRequest, "fbIdlogin", endTime - startTime, parameters);
 		
 		serviceResponse.setRequest(request);
@@ -411,37 +405,36 @@ public class Application extends Controller
 			}
 			else
 			{
-				String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-				SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-				Date currentDate = null;
 				try
 				{
-					currentDate = formatter.parse(formatter.format(new Date(System.currentTimeMillis())));
+					Date currentDate = new Date(System.currentTimeMillis());
+					// Create new user
+					UserInfo newUser = new UserInfo(username, Utility.encrypt(password), Boolean.TRUE, Boolean.FALSE, 
+							fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
+						  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
+					newUser.save();
+					
+					// Save FB auth token
+					ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
+				  new Account(newUser, newUser.emailAddress, Utility.encrypt(password), null, null, fbAuthToken, 
+				  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
+											currentDate, provider).save();
+
+				  // construct service response
+				  List<UserInfo> message = new ArrayList<UserInfo>();
+				  UserInfo recentUser = new UserInfo();
+				  recentUser.id = newUser.id;
+				  recentUser.username = newUser.username;
+				  recentUser.emailAddress = newUser.emailAddress;
+				  message.add(recentUser);
+				  response.put("user", message);
 				}
-				catch (ParseException e)
+				catch (Exception e)
 				{
-					//Should not happen, go ahead without a date
+					Logger.debug("Error adding user: " + e.getCause() + e.getMessage());
+					serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
+																	 e.getMessage() + e.getCause());
 				}
-				// Create new user
-				UserInfo newUser = new UserInfo(username, password, Boolean.TRUE, Boolean.FALSE, 
-						fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
-					  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
-				newUser.save();
-				
-				// Save FB auth token
-				ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-			  new Account(newUser, newUser.emailAddress, password, "", "", fbAuthToken, 
-			  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
-										currentDate, provider).save();
-				
-				// construct service response
-				List<UserInfo> message = new ArrayList<UserInfo>();
-				UserInfo recentUser = new UserInfo();
-				recentUser.id = newUser.id;
-				recentUser.username = newUser.username;
-				recentUser.emailAddress = newUser.emailAddress;
-				message.add(recentUser);
-				response.put("user", message);
 			}
 		}
 		Long endTime = System.currentTimeMillis();
@@ -452,9 +445,21 @@ public class Application extends Controller
 		parameters.put("gender", gender);
 		parameters.put("fbEmailAddress", fbEmailAddress);
 		parameters.put("fbFullName", fbFullName);
-		parameters.put("fbUserId", Long.toString(fbUserId));
+		if(fbUserId != null)
+		{
+			parameters.put("fbUserId", Long.toString(fbUserId));
+		}else
+		{
+			parameters.put("fbUserId", "null");
+		}
 		parameters.put("fbLocationName", fbLocationName);
-		parameters.put("fbLocationId", Long.toString(fbLocationId));
+		if(fbLocationId != null)
+		{
+			parameters.put("fbLocationId", Long.toString(fbLocationId));
+		}else
+		{
+			parameters.put("fbLocationId", "null");			
+		}
 		parameters.put("fbAuthToken", fbAuthToken);
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
 
@@ -478,7 +483,19 @@ public class Application extends Controller
 		{
 			username = fbEmailAddress.substring(0,fbEmailAddress.indexOf("@"));
 		}
+
+		String newEmail = username + "@deallr.com";
+		Account duplicate = Account.find("email", newEmail).first();
+		if(duplicate != null)
+		{
+			do
+			{
+				int cntr = (int) (Math.random() * 77);
+				newEmail = username + cntr + "@deallr.com";
+				duplicate = Account.find("email", newEmail).first();
+			}while(duplicate != null);
+		}
 		
-		return username + "@deallr.com";
+		return newEmail;
 	}
 }

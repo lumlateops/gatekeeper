@@ -14,6 +14,7 @@ import jsonModels.Service;
 import jsonModels.ServiceResponse;
 
 import bl.RMQProducer;
+import bl.Utility;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
@@ -154,10 +155,11 @@ public class GmailProvider
 		{
 			// Store the information, leaving the access token blank
 			Date currentDate = new Date(System.currentTimeMillis());
-			new Account(user, email, password, "", "", null, Boolean.TRUE, Boolean.TRUE, 
-					"", currentDate, currentDate, currentDate, currentDate, gmailProvider).save();
+			new Account(user, email, Utility.encrypt(password), null, null, null, 
+									Boolean.TRUE, Boolean.TRUE, "", currentDate, currentDate, 
+									currentDate, currentDate, gmailProvider).save();
 			
-			// Add new email address to queue if no fetch happened within the last 60 mins
+			// Add new email address to queue
 			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
 		}
 		else

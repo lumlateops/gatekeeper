@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jsonModels.EmailAccountResponse;
 import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
@@ -118,7 +119,13 @@ public class AccountController extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toString(userId));
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
+		}
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		parameters.put("password", password);
@@ -158,14 +165,14 @@ public class AccountController extends Controller
 		else
 		{
 			List<Account> accounts = Account.find("userId", userId).fetch();
-			List<Account> activeAccounts = new ArrayList<Account>();
+			List<EmailAccountResponse> activeAccounts = new ArrayList<EmailAccountResponse>();
 			if(accounts != null && accounts.size() > 0)
 			{
 				for (Account account : accounts)
 				{
 					if(account.registeredEmail && account.active)
 					{
-						activeAccounts.add(account);
+						activeAccounts.add(new EmailAccountResponse(account.email, account.provider.name));
 					}
 				}
 			}
@@ -235,7 +242,13 @@ public class AccountController extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toString(userId));
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
+		}
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		parameters.put("queryString", queryString);
@@ -291,7 +304,13 @@ public class AccountController extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toString(userId));
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
+		}
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "revokeAccess", endTime-startTime, parameters);
@@ -345,7 +364,13 @@ public class AccountController extends Controller
 		Long endTime = System.currentTimeMillis();
 
 		Map<String, String>	parameters = new HashMap<String, String>();
-		parameters.put("userId", Long.toString(userId));
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
+		}
 		parameters.put("provider", provider);
 		parameters.put("email", email);
 		Request request = new Request(isValidRequest, "verifyAccount", endTime-startTime, parameters);
@@ -414,10 +439,19 @@ public class AccountController extends Controller
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();			
-		parameters.put("id", Long.toString(id));
+		if(id != null)
+		{
+			parameters.put("id", Long.toString(id));
+		}else
+		{
+			parameters.put("id", "null");
+		}
 		if(fbUserId != null)
 		{
 			parameters.put("fbUserId", Long.toString(fbUserId));
+		}else
+		{
+			parameters.put("fbUserId", "null");
 		}
 		parameters.put("fbAuthToken", fbAuthToken);
 		Request request = new Request(isValidRequest, "updateFBToken", endTime - startTime, parameters);

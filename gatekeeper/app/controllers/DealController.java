@@ -49,11 +49,6 @@ public class DealController extends Controller
 		Logger.debug("Response status: " + currentResponse.status);
 	}
 	
-	public static void index()
-	{
-		renderJSON("Loaded");
-	}
-	
 	/**
 	 * End point to get the deals for a user
 	 * @param userId: Id of the user we want to get deals for.
@@ -168,6 +163,9 @@ public class DealController extends Controller
 		if(userId != null)
 		{
 			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
 		}
 		parameters.put("page", Integer.toString(page));
 		parameters.put("sort", sort);
@@ -236,6 +234,9 @@ public class DealController extends Controller
 		if(userId != null)
 		{
 			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
 		}
 		if(dealIds != null)
 		{
@@ -305,6 +306,9 @@ public class DealController extends Controller
 		if(userId != null)
 		{
 			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
 		}
 		if(dealIds != null)
 		{
@@ -368,6 +372,9 @@ public class DealController extends Controller
 		if(userId != null)
 		{
 			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
 		}
 		Request request = new Request(isValidRequest, "getUnreadDealCount", endTime - startTime, parameters);
 
@@ -428,6 +435,9 @@ public class DealController extends Controller
 		if(dealId != null)
 		{
 			parameters.put("dealId", Long.toString(dealId));
+		}else
+		{
+			parameters.put("dealId", "null");
 		}
 		Request request = new Request(isValidRequest, "getDealUserEmail", endTime - startTime, parameters);
 
