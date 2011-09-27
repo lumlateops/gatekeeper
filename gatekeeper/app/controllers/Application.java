@@ -401,14 +401,15 @@ public class Application extends Controller
 				{
 					Date currentDate = new Date(System.currentTimeMillis());
 					// Create new user
-					UserInfo newUser = new UserInfo(username, Utility.encrypt(password), Boolean.TRUE, Boolean.FALSE, 
+					String encryptedPassword = Utility.encrypt(password);
+					UserInfo newUser = new UserInfo(username, encryptedPassword, Boolean.TRUE, Boolean.FALSE, 
 							fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
 						  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
 					newUser.save();
 					
 					// Save FB auth token
 					ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-				  new Account(newUser, newUser.emailAddress, Utility.encrypt(password), null, null, fbAuthToken, 
+				  new Account(newUser, newUser.emailAddress, encryptedPassword, null, null, fbAuthToken, 
 				  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
 											currentDate, provider).save();
 
@@ -433,7 +434,7 @@ public class Application extends Controller
 		
 		Map<String, String> parameters = new HashMap<String, String>();			
 		parameters.put("username", username);
-		parameters.put("password",password);
+		parameters.put("password", password);
 		parameters.put("gender", gender);
 		parameters.put("fbEmailAddress", fbEmailAddress);
 		parameters.put("fbFullName", fbFullName);

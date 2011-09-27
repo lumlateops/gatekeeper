@@ -156,12 +156,12 @@ public class GmailProvider
 			// Store the information, leaving the access token blank
 			password = Utility.encrypt(password);
 			Date currentDate = new Date(System.currentTimeMillis());
-			new Account(user, email, password, null, null, null, 
+			Account newAccount = new Account(user, email, password, null, null, null, 
 									Boolean.TRUE, Boolean.TRUE, "", currentDate, currentDate, 
 									currentDate, currentDate, gmailProvider).save();
 			
 			// Add new email address to queue
-			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(userId, email, password, Providers.GMAIL.toString()));
+			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(newAccount.id, newAccount.email, newAccount.password, newAccount.provider.name));
 		}
 		else
 		{
