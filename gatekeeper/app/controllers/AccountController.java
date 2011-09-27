@@ -13,6 +13,7 @@ import models.Account;
 import models.ErrorCodes;
 import models.Providers;
 import models.ServiceProvider;
+import bl.Utility;
 import bl.googleAuth.GmailProvider;
 
 import play.Logger;
@@ -30,21 +31,13 @@ public class AccountController extends Controller
 	@Before
 	public static void logRequest()
 	{
-		Logger.debug("-----------------BEGIN REQUEST INFO-----------------");
-		play.mvc.Http.Request currentRequest = play.mvc.Http.Request.current();
-		Logger.debug("Request end point: " + currentRequest.action);
-		Map<String, String[]> requestParams = currentRequest.params.all();
-		for (String key : requestParams.keySet())
-		{
-			Logger.debug(key + ": '"+ requestParams.get(key)[0] + "'");
-		}
+		Utility.logRequest();
 	}
 	
 	@After
 	public static void logResponse()
 	{
-		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
-		Logger.debug("Response status: " + currentResponse.status);
+		Utility.logResponse();
 	}
 	
 	/**
