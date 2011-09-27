@@ -203,7 +203,7 @@ public class AccountController extends Controller
 	 */
 	public static void upgradeToken(@Required(message="userId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required") String email,
+			@Required(message="Email is required")@Email String email,
 			@Required(message="Query string needed for upgrading")String queryString)
 	{
 		Long startTime = System.currentTimeMillis();
@@ -266,7 +266,7 @@ public class AccountController extends Controller
 	public static void revokeAccess(@Required(message="UserId is required") Long userId,
 			@Required(message="UserId is required") String password,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required") String email)
+			@Required(message="Email is required")@Email String email)
 	{
 		Long startTime = System.currentTimeMillis();
 
@@ -326,7 +326,7 @@ public class AccountController extends Controller
 	 */
 	public static void verifyAccount(@Required(message="UserId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required") String email)
+			@Required(message="Email is required")@Email String email)
 	{
 		Long startTime = System.currentTimeMillis();
 		
