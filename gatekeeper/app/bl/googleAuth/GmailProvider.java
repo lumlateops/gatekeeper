@@ -154,8 +154,9 @@ public class GmailProvider
 		if(user != null)
 		{
 			// Store the information, leaving the access token blank
+			password = Utility.encrypt(password);
 			Date currentDate = new Date(System.currentTimeMillis());
-			new Account(user, email, Utility.encrypt(password), null, null, null, 
+			new Account(user, email, password, null, null, null, 
 									Boolean.TRUE, Boolean.TRUE, "", currentDate, currentDate, 
 									currentDate, currentDate, gmailProvider).save();
 			
