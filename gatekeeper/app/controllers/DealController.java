@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import bl.Utility;
 
 import jsonModels.DealEmailResponse;
@@ -20,6 +23,7 @@ import models.SortOrder;
 import play.Logger;
 import play.data.validation.Required;
 import play.data.validation.Validation;
+import play.db.jpa.JPA;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
@@ -28,6 +32,7 @@ public class DealController extends Controller
 {
 	private static final int		PAGE_SIZE									= 20;
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? ORDER BY ";
+	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
 	
@@ -84,30 +89,29 @@ public class DealController extends Controller
 				sortOrder = SortOrder.DESC.toString();
 			}
 			
-			// Get deals for user
-			String query = USER_DEAL_LOOKUP_HQL + sort + " " + sortOrder;
-			final List<Deal> allDeals = Deal.find(query, userId).fetch();
-			final int allDealsCount = allDeals.size();
+			// Adjust result for page number
+			int startIndex = PAGE_SIZE * (page - 1);
+			int endIndex = startIndex + PAGE_SIZE;
 
-			if(allDeals != null && allDealsCount != 0)
+			if(startIndex >= endIndex)
 			{
-				// Adjust result for page number
-				int startIndex = PAGE_SIZE * (page - 1);
-				int endIndex = ((startIndex + PAGE_SIZE) <= allDealsCount) ? (startIndex + PAGE_SIZE) : allDealsCount;
-
-				if(startIndex >= endIndex)
-				{
-					response.put("numberOfResults", 
-							new ArrayList<String>()
+				response.put("numberOfResults", 
+						new ArrayList<String>()
+						{
 							{
-								{
-									add("0");
-								}
-							});
-				}
-				else
+								add("0");
+							}
+						});
+			}
+			else
+			{
+				// Get deals for user
+				String query = USER_DEAL_LOOKUP_HQL + sort + " " + sortOrder;
+				final List<Deal> onePageDeals = Deal.find(query, userId).from(startIndex).fetch(PAGE_SIZE);
+				final int allDealsCount = onePageDeals.size();
+				
+				if(onePageDeals != null && allDealsCount != 0)
 				{
-					final List<Deal> onePageDeals = allDeals.subList(startIndex, endIndex);
 					if(onePageDeals != null && onePageDeals.size() != 0)
 					{
 						response.put("numberOfResults", 
@@ -138,17 +142,23 @@ public class DealController extends Controller
 									}
 								});
 					}
+					
+					//Mark the deals as read
+					EntityManager em = JPA.em();
+					Query updateQuery = em.createQuery(BULK_MARK_DEAL_READ);
+					updateQuery.setParameter("deals", onePageDeals);
+					updateQuery.executeUpdate();
 				}
-			}
-			else
-			{
-				response.put("numberOfResults", 
-						new ArrayList<String>()
-						{
+				else
+				{
+					response.put("numberOfResults", 
+							new ArrayList<String>()
 							{
-								add("0");
-							}
-						});
+								{
+									add("0");
+								}
+							});
+				}
 			}
 		}
 		Long endTime = System.currentTimeMillis();
