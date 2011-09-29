@@ -1,6 +1,7 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +15,11 @@ import jsonModels.DealEmailResponse;
 import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
+import jsonModels.UserDealsResponse;
 import models.Account;
 import models.Deal;
 import models.ErrorCodes;
+import models.Retailers;
 import models.ServiceProvider;
 import models.SortFields;
 import models.SortOrder;
@@ -122,6 +125,12 @@ public class DealController extends Controller
 									}
 								});
 						final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
+						//Create the response object
+						List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
+						for (Deal deal : onePageDeals)
+						{
+							dealsResponse.add(new UserDealsResponse(deal)); 
+						}
 						response.put("numberOfPages", 
 								new ArrayList<String>()
 								{
@@ -130,7 +139,7 @@ public class DealController extends Controller
 										add(Integer.toString(pageCount));
 									}
 								});
-						response.put("deals", onePageDeals);
+						response.put("deals", dealsResponse);
 					}
 					else
 					{
@@ -444,6 +453,65 @@ public class DealController extends Controller
 			parameters.put("dealId", "null");
 		}
 		Request request = new Request(isValidRequest, "getDealUserEmail", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * End point to get all the details for a deal
+	 * @param dealIds: Id of the user deal.
+	 */
+	public static void getDealDetails(@Required(message="dealId is required")Long dealId)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
+			}
+		}
+		else
+		{
+			final Deal deal = Deal.find("id", dealId).first();
+			if(deal != null)
+			{
+				response.put("deal", 
+						new ArrayList<Deal>()
+						{
+							{
+								add(deal);
+							}
+						});
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching deal found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		if(dealId != null)
+		{
+			parameters.put("dealId", Long.toString(dealId));
+		}else
+		{
+			parameters.put("dealId", "null");
+		}
+		Request request = new Request(isValidRequest, "getDealDetails", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())
