@@ -9,6 +9,10 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.joda.time.Chronology;
+import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+
 import bl.Utility;
 
 import jsonModels.DealEmailResponse;
@@ -129,7 +133,19 @@ public class DealController extends Controller
 						List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
 						for (Deal deal : onePageDeals)
 						{
-							dealsResponse.add(new UserDealsResponse(deal)); 
+							boolean isExpired = true;
+							if(deal.expiryDate != null)
+							{
+								try
+								{
+									DateTime expiry = new DateTime(deal.expiryDate, ISOChronology.getInstanceUTC());
+									isExpired = expiry.isBeforeNow();
+								}catch(Exception ex)
+								{
+									Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate);
+								}
+							}
+							dealsResponse.add(new UserDealsResponse(deal, isExpired)); 
 						}
 						response.put("numberOfPages", 
 								new ArrayList<String>()

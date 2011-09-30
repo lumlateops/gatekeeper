@@ -2,6 +2,8 @@ package jsonModels;
 
 import java.util.Date;
 
+import play.Logger;
+
 import models.Deal;
 import models.Department;
 import models.Retailers;
@@ -40,22 +42,23 @@ public class UserDealsResponse
 	private Long id;
 	private UserDealRetailerResponse retailer;
 	private boolean freeShipping;
+	private boolean isExpired;
 	private float originalValue;
 	private float dealValue;
 	private String validTo;
 	
-	public UserDealsResponse(Deal deal)
+	public UserDealsResponse(Deal deal, boolean isExpired)
 	{
 		this(deal.title, deal.dealEmail.subject,
 				deal.discountPercentage, deal.expiryDate, deal.postDate, deal.url,
 				deal.id, new UserDealRetailerResponse(deal.subscription.department), deal.freeShipping, deal.originalValue,
-				deal.dealValue, deal.validTo);
+				deal.dealValue, deal.validTo, isExpired);
 	}
 	
 	public UserDealsResponse(String title, String description,
 			int discountPercentage, Date expiryDate, Date postDate, String url,
 			Long id, UserDealRetailerResponse retailer, boolean freeShipping, float originalValue,
-			float dealValue, String validTo)
+			float dealValue, String validTo, boolean isExpired)
 	{
 		this.title = title;
 		this.description = description;
@@ -69,5 +72,6 @@ public class UserDealsResponse
 		this.originalValue = originalValue;
 		this.dealValue = dealValue;
 		this.validTo = validTo;
+		this.isExpired = isExpired;
 	}
 }
