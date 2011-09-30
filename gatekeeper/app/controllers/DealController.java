@@ -34,7 +34,7 @@ import play.mvc.Controller;
 public class DealController extends Controller
 {
 	private static final int		PAGE_SIZE									= 20;
-	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? ORDER BY ";
+	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
