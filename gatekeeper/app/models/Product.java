@@ -19,26 +19,16 @@ public class Product extends Model
 	@Index(name = "index_product")
 	public String	name;
 	public String	vertical;
+	public String tags;
 	public Date		createdAt;
 	public Date		updatedAt;
 
-	public Product(String name, String vertical, Date createdAt, Date updatedAt)
+	public Product(String name, String vertical, String tags, Date createdAt, Date updatedAt)
 	{
 		this.name = name;
+		this.tags = tags;
 		this.vertical = vertical;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
-
-	/**
-	 * CREATE TABLE `Product` (
-			`id` int(11) NOT NULL AUTO_INCREMENT,
-			`name` varchar(255) COLLATE utf8_unicode_ci NOT NULL, 
-			`vertical` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			`createdAT` datetime DEFAULT NULL,
-			`updatedAT` datetime DEFAULT NULL,
-			PRIMARY KEY (`id`),
-			UNIQUE KEY `index_product` (`name`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-	 */
 }

@@ -3,6 +3,7 @@ package jsonModels;
 import java.util.Date;
 
 import models.Deal;
+import models.Department;
 import models.Retailers;
 
 /**
@@ -30,7 +31,6 @@ import models.Retailers;
  */
 public class UserDealsResponse
 {
-	private Long userId;
 	private String title;
 	private String description; // get from email subject
 	private int discountPercentage ;
@@ -38,7 +38,7 @@ public class UserDealsResponse
 	private Date postDate ;
 	private String url;
 	private Long id;
-	private Retailers retailer;
+	private UserDealRetailerResponse retailer;
 	private boolean freeShipping;
 	private float originalValue;
 	private float dealValue;
@@ -46,18 +46,17 @@ public class UserDealsResponse
 	
 	public UserDealsResponse(Deal deal)
 	{
-		this(deal.userInfo.id, deal.title, deal.dealEmail.subject,
+		this(deal.title, deal.dealEmail.subject,
 				deal.discountPercentage, deal.expiryDate, deal.postDate, deal.url,
-				deal.id, deal.subscription.department.retailer, deal.freeShipping, deal.originalValue,
+				deal.id, new UserDealRetailerResponse(deal.subscription.department), deal.freeShipping, deal.originalValue,
 				deal.dealValue, deal.validTo);
 	}
 	
-	public UserDealsResponse(Long userId, String title, String description,
+	public UserDealsResponse(String title, String description,
 			int discountPercentage, Date expiryDate, Date postDate, String url,
-			Long id, Retailers retailer, boolean freeShipping, float originalValue,
+			Long id, UserDealRetailerResponse retailer, boolean freeShipping, float originalValue,
 			float dealValue, String validTo)
 	{
-		this.userId = userId;
 		this.title = title;
 		this.description = description;
 		this.discountPercentage = discountPercentage;
