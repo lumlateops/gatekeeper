@@ -16,18 +16,17 @@ import play.db.jpa.Model;
 @Entity
 public class Product extends Model
 {
-	@Index(name = "index_product")
-	public String	name;
-	public String	vertical;
-	public String tags;
+	@Index(name = "index_product_item")
+	public String	item;
+	@Index(name = "index_product_category")
+	public String	category;
 	public Date		createdAt;
 	public Date		updatedAt;
 
-	public Product(String name, String vertical, String tags, Date createdAt, Date updatedAt)
+	public Product(String item, String category, Date createdAt, Date updatedAt)
 	{
-		this.name = name;
-		this.tags = tags;
-		this.vertical = vertical;
+		this.item = item;
+		this.category = category;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
