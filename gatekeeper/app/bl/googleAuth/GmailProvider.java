@@ -105,41 +105,6 @@ public class GmailProvider
 	}
 	
 	/**
-	 * Checks if the email address is duplicate or not.
-	 * @param email
-	 * @return
-	 */
-	public static boolean isDuplicateAccount(String email)
-	{
-		boolean isDuplicate = false;
-
-		//Check if we have the account already
-		List<Account> accounts = Account.find("email", email).fetch();
-		if(accounts != null && accounts.size() > 0)
-		{
-			for (Account account : accounts)
-			{
-				if(account.active && account.password != null)
-				{
-					isDuplicate = true;
-//					if(account.dllrAccessToken!=null && !account.dllrAccessToken.isEmpty() && account.dllrTokenSecret!=null)
-//					{
-//						isDuplicate = true;
-//					}
-//					// If an incomplete account exists then clean it up so a new one can be registered
-//					else
-//					{
-//						isDuplicate = false;
-//						account.delete();
-//					}
-					break;
-				}
-			}
-		}
-		return isDuplicate;
-	}
-	
-	/**
 	 * Gets a request token for this user
 	 * @param userId
 	 * @param email

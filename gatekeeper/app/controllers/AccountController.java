@@ -17,6 +17,7 @@ import bl.Utility;
 import bl.googleAuth.GmailProvider;
 
 import play.Logger;
+import play.Play;
 import play.data.validation.Email;
 import play.data.validation.Required;
 import play.data.validation.Validation;
@@ -27,7 +28,9 @@ import play.mvc.Controller;
 
 public class AccountController extends Controller
 {
+	private static final int MAX_USER_ACCOUNTS = Integer.parseInt((String)Play.configuration.get("max.user.accounts"));
 	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.provider IS ? ";
+	private static final String	ACTIVE_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 1";
 	
 	@Before
 	public static void logRequest()
@@ -42,14 +45,14 @@ public class AccountController extends Controller
 	}
 	
 	/**
-	 * Checks to see if the email address is authorized already.
-	 * If not it gets the request token for the address.
+	 * Registers an email account for the user.
+	 * Restricts number of accounts per user to {max.user.accounts}.
 	 * @param author
 	 */
 	public static void addEmail(@Required(message="UserId is required") Long userId,
-			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required")@Email String email,
-			@Required(message="Password is required") String password)
+															@Required(message="Email provider is required") String provider,
+															@Required(message="Email is required")@Email String email,
+															@Required(message="Password is required") String password)
 	{
 		Long startTime = System.currentTimeMillis();
 		
@@ -72,36 +75,47 @@ public class AccountController extends Controller
 			{
 				Logger.debug("AE: Provider is Gmail");
 
-				//Check if account exists and is still valid
-				boolean isDuplicate = GmailProvider.isDuplicateAccount(email);
-
-				Logger.debug("AE: isDuplicate: " + isDuplicate);
-
-				//Account not present or invalid, then get a new one and store it
-				if(!isDuplicate)
+				//Check if user has {max.user.accounts} accounts already
+				boolean maxAccountcountReached = isMaxAccountcountReached(userId);
+				
+				if(!maxAccountcountReached)
 				{
-					try
+					//Check if account exists and is still valid
+					boolean isDuplicate = isDuplicateAccount(email);
+	
+					Logger.debug("AE: isDuplicate: " + isDuplicate);
+	
+					//Account not present or invalid, then get a new one and store it
+					if(!isDuplicate)
 					{
-						GmailProvider.createAccount(userId, email, password);
-						response.put("status", 
-								new ArrayList<String>()
-								{
+						try
+						{
+							GmailProvider.createAccount(userId, email, password);
+							response.put("status", 
+									new ArrayList<String>()
 									{
-										add("ok");
-									}
-								});
+										{
+											add("ok");
+										}
+									});
+						}
+						catch (Exception e)
+						{
+							Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
+							serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
+																			 e.getMessage() + e.getCause());
+						}
 					}
-					catch (Exception e)
+					else
 					{
-						Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
-						serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
-																		 e.getMessage() + e.getCause());
+						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
+																		 "Account registered already");
 					}
 				}
 				else
 				{
-					serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
-																	 "Account registered already");
+					serviceResponse.addError(ErrorCodes.MAX_ACCOUNT_LIMIT_REACHED.toString(),
+																	 "Cannot register more than " + MAX_USER_ACCOUNTS + " emails");
 				}
 			}
 			else
@@ -456,5 +470,46 @@ public class AccountController extends Controller
 			serviceResponse.setResponse(response);
 		}
 		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
+	 * Checks if the email address is duplicate or not.
+	 * @param email
+	 * @return
+	 */
+	private static boolean isDuplicateAccount(String email)
+	{
+		boolean isDuplicate = false;
+
+		//Check if we have the account already
+		List<Account> accounts = Account.find("email", email).fetch();
+		if(accounts != null && accounts.size() > 0)
+		{
+			for (Account account : accounts)
+			{
+				if(account.active && account.password != null)
+				{
+					isDuplicate = true;
+					break;
+				}
+			}
+		}
+		return isDuplicate;
+	}
+	
+	/**
+	 * Checks if the user already has max allowed email accounts registered and active.
+	 * @param userId
+	 * @return
+	 */
+	private static boolean isMaxAccountcountReached(Long userId)
+	{
+		boolean maxAccountcountReached = false;
+		List<Account> accounts = Account.find(ACTIVE_ACCOUNT_LOOKUP_HQL, userId).fetch();
+		if(accounts != null && !accounts.isEmpty() && accounts.size() >= MAX_USER_ACCOUNTS)
+		{
+			maxAccountcountReached = true;
+		}
+		return maxAccountcountReached;
 	}
 }

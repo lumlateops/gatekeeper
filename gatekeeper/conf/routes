@@ -29,6 +29,7 @@ GET		/deal/detail/{dealId}												DealController.getDealDetails
 GET		/deals/wallet/{userId}/{page}/{sort}/{sortOrder}					WalletController.getWalletDeals
 POST	/deals/wallet/add													WalletController.addWalletDeals
 POST	/deals/wallet/remove												WalletController.removeWalletDeals
+POST	/deals/wallet/addAlert												WalletController.updateAlertTime
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404

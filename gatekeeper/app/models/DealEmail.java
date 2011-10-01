@@ -23,9 +23,9 @@ public class DealEmail extends Model
 	public String					senderIP;
 	public String					spfResult;
 	public String					domainKey;
-	@Column(length = 5000)
+	@Column(columnDefinition = "mediumtext", length = 5000)
 	public String					parsedContent;
-	@Column(length = 5000)
+	@Column(columnDefinition = "mediumtext", length = 5000)
 	public String					content;
 	@OneToOne
 	public EmailCategory	emailCategory;
