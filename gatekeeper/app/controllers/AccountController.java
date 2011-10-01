@@ -14,7 +14,7 @@ import models.ErrorCodes;
 import models.Providers;
 import models.ServiceProvider;
 import bl.Utility;
-import bl.googleAuth.GmailProvider;
+import bl.providers.GmailProvider;
 
 import play.Logger;
 import play.Play;
