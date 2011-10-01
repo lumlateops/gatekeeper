@@ -28,6 +28,7 @@ import models.ServiceProvider;
 import models.SortFields;
 import models.SortOrder;
 import play.Logger;
+import play.Play;
 import play.data.validation.Required;
 import play.data.validation.Validation;
 import play.db.jpa.JPA;
@@ -37,7 +38,7 @@ import play.mvc.Controller;
 
 public class DealController extends Controller
 {
-	private static final int		PAGE_SIZE									= 20;
+	private static final int		PAGE_SIZE									= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";

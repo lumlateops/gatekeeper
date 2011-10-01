@@ -19,6 +19,7 @@ public class Wallet extends Model
 {
 	@OneToOne
 	public Deal			deal;
+	@OneToOne
 	public UserInfo	userInfo;
 	public Boolean	isExpired;
 	public Date			alertTime;

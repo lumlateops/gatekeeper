@@ -2,60 +2,33 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
 # GET   /                                       							Application.index
-
-# List all providers
 GET 	/providers/all														Application.listAllProviders
-
-# List active providers
 GET 	/providers/active													Application.listActiveProviders
-
-# Add user 
 POST	/user/add															Application.addUser
-
-# Check username availability
 GET     /user/available/{username}						     				Application.checkUsernameAvailable
-
-# Check Authentication
 GET     /login/{username}/{password}						    			Application.login
-
-# Check Authentication
 GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 
-# Add account
-POST	/account/add						     							Application.addEmail
+POST	/account/add						     							AccountController.addEmail
+GET		/account/list/{userId}			     								AccountController.listAllUserEmails
+#POST	/account/upgradeEmailToken 											AccountController.upgradeToken
+GET 	/account/verify/{userId}/{provider}/{email}							AccountController.verifyAccount
+POST	/account/revoke/													AccountController.revokeAccess
+POST	/account/fb/update													AccountController.updateFBToken
 
-# List all registered accounts
-GET		/account/list/{userId}			     								Application.listAllUserEmails
+# Deal
+POST	/deal/mark/read														DealController.markDealsRead
+POST	/deal/mark/unread													DealController.markDealsUnRead
+GET 	/deal/unread/count/{userId}											DealController.getUnreadDealCount
+GET 	/deal/userEmail/{dealId}											DealController.getDealUserEmail
+GET		/deals/{userId}/{page}/{sort}/{sortOrder}							DealController.getUserDeals
+GET		/deal/detail/{dealId}												DealController.getDealDetails
 
-# Upgrade token
-#POST	/account/upgradeEmailToken 											Application.upgradeToken
-
-# Check if account is authorized
-GET 	/account/verify/{userId}/{provider}/{email}							Application.verifyAccount
-
-# Revoke access token
-POST	/account/revoke/													Application.revokeAccess
-
-# Update FB Token
-POST	/account/fb/update													Application.updateFBToken
-
-# Mark deal as read
-POST	/deal/mark/read														Application.markDealsRead
-
-# Mark deal as unread
-POST	/deal/mark/unread													Application.markDealsUnRead
-
-# Get unread deals count
-GET /deal/unread/count														Application.getUnreadDealCount
-
-# Get deals for a user
-GET		/deals/{userId}/{page}/{sort}/{sortOrder}							Application.getUserDeals
-
-# Deal Wallet
-GET		/deals/wallet/{userId}												Application.getWalletDeals
-POST	/deals/wallet/add													Application.addWalletDeals
+# Wallet
+GET		/deals/wallet/{userId}/{page}/{sort}/{sortOrder}					WalletController.getWalletDeals
+POST	/deals/wallet/add													WalletController.addWalletDeals
+POST	/deals/wallet/remove												WalletController.removeWalletDeals
 
 # Ignore favicon requests
 GET     /favicon.ico                            							404
