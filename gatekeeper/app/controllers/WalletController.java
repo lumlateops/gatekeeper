@@ -116,59 +116,56 @@ public class WalletController extends Controller
 				// Get deals for user
 				String query = USER_WALLET_LOOKUP_HQL + sort + " " + sortOrder;
 				final List<Wallet> onePageDeals = Wallet.find(query, userId).from(startIndex).fetch(PAGE_SIZE);
-				final int allDealsCount = onePageDeals.size();
+				final int onePageDealsCount = onePageDeals.size();
+				final long allDealsCount = onePageDeals.size();
 				
-				if(onePageDeals != null && allDealsCount != 0)
+				if(onePageDeals != null && onePageDealsCount != 0)
 				{
-					if(onePageDeals != null && onePageDeals.size() != 0)
-					{
-						response.put("numberOfResults", 
-								new ArrayList<String>()
-								{
-									{
-										add(Integer.toString(allDealsCount));
-									}
-								});
-						final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
-						//Create the response object
-						List<UserWalletResponse> walletResponse = new ArrayList<UserWalletResponse>();
-						for (Wallet wallet : onePageDeals)
-						{
-							boolean isExpired = true;
-							if(wallet.deal.expiryDate != null)
+					response.put("numberOfResults", 
+							new ArrayList<String>()
 							{
-								try
 								{
-									DateTime expiry = new DateTime(wallet.deal.expiryDate, ISOChronology.getInstanceUTC());
-									isExpired = expiry.isBeforeNow();
-								}catch(Exception ex)
-								{
-									Logger.error("Error trying to determine expiry time for expiry date: " + wallet.deal.expiryDate);
+									add(Integer.toString(onePageDealsCount));
 								}
-							}
-							UserWalletResponse userWalletResponse = new UserWalletResponse(wallet, isExpired);
-							walletResponse.add(userWalletResponse);
-						}
-						response.put("numberOfPages", 
-								new ArrayList<String>()
-								{
-									{
-										
-										add(Integer.toString(pageCount));
-									}
-								});
-						response.put("wallet", walletResponse);
-					}
-					else
+							});
+					
+					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
+					//Create the response object
+					List<UserWalletResponse> walletResponse = new ArrayList<UserWalletResponse>();
+					for (Wallet wallet : onePageDeals)
 					{
-						response.put("numberOfResults", 
-								new ArrayList<String>()
-								{
-									{
-										add("0");
-									}
-								});
+						boolean isExpired = true;
+						if(wallet.deal.expiryDate != null)
+						{
+							try
+							{
+								DateTime expiry = new DateTime(wallet.deal.expiryDate, ISOChronology.getInstanceUTC());
+								isExpired = expiry.isBeforeNow();
+							}catch(Exception ex)
+							{
+								Logger.error("Error trying to determine expiry time for expiry date: " + wallet.deal.expiryDate);
+							}
+						}
+						UserWalletResponse userWalletResponse = new UserWalletResponse(wallet, isExpired);
+						walletResponse.add(userWalletResponse);
 					}
+					response.put("numberOfPages", 
+							new ArrayList<String>()
+							{
+								{
+									
+									add(Long.toString(pageCount));
+								}
+							});
+					response.put("totalDealsCount", 
+							new ArrayList<String>()
+							{
+								{
+									
+									add(Long.toString(allDealsCount));
+								}
+							});
+					response.put("wallet", walletResponse);
 				}
 				else
 				{

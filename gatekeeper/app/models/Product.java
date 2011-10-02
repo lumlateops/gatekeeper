@@ -1,8 +1,10 @@
 package models;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Index;
 
@@ -19,14 +21,17 @@ public class Product extends Model
 	@Index(name = "index_product_item")
 	public String	item;
 	@Index(name = "index_product_category")
-	public String	category;
+	@ManyToOne
+	public DealCategory	category;
+	public String	categoryName;
 	public Date		createdAt;
 	public Date		updatedAt;
 
-	public Product(String item, String category, Date createdAt, Date updatedAt)
+	public Product(String item, DealCategory category, Date createdAt, Date updatedAt, String categoryName)
 	{
 		this.item = item;
 		this.category = category;
+		this.categoryName = categoryName;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}

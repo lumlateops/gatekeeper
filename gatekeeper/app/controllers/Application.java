@@ -34,7 +34,6 @@ import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
 import bl.Utility;
-import bl.googleAuth.GmailProvider;
 
 /**
  * The main controller for the application. This is the only controller in the

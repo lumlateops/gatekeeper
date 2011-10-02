@@ -40,6 +40,7 @@ public class DealController extends Controller
 {
 	private static final int		PAGE_SIZE									= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
+	private static final String	USER_DEAL_COUNT_HQL				= "SELECT count(d) FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1";
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
@@ -116,58 +117,54 @@ public class DealController extends Controller
 				// Get deals for user
 				String query = USER_DEAL_LOOKUP_HQL + sort + " " + sortOrder;
 				final List<Deal> onePageDeals = Deal.find(query, userId).from(startIndex).fetch(PAGE_SIZE);
-				final int allDealsCount = onePageDeals.size();
+				final int onePageDealsCount = onePageDeals.size();
+				final long allDealsCount = Deal.count(USER_DEAL_COUNT_HQL, userId);
 				
-				if(onePageDeals != null && allDealsCount != 0)
+				if(onePageDeals != null && onePageDealsCount != 0)
 				{
-					if(onePageDeals != null && onePageDeals.size() != 0)
-					{
-						response.put("numberOfResults", 
-								new ArrayList<String>()
-								{
-									{
-										add(Integer.toString(allDealsCount));
-									}
-								});
-						final int pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
-						//Create the response object
-						List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
-						for (Deal deal : onePageDeals)
-						{
-							boolean isExpired = true;
-							if(deal.expiryDate != null)
+					response.put("numberOfResults", 
+							new ArrayList<String>()
 							{
-								try
 								{
-									DateTime expiry = new DateTime(deal.expiryDate, ISOChronology.getInstanceUTC());
-									isExpired = expiry.isBeforeNow();
-								}catch(Exception ex)
-								{
-									Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate);
+									add(Integer.toString(onePageDealsCount));
 								}
-							}
-							dealsResponse.add(new UserDealsResponse(deal, isExpired)); 
-						}
-						response.put("numberOfPages", 
-								new ArrayList<String>()
-								{
-									{
-										
-										add(Integer.toString(pageCount));
-									}
-								});
-						response.put("deals", dealsResponse);
-					}
-					else
+							});
+					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
+					//Create the response object
+					List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
+					for (Deal deal : onePageDeals)
 					{
-						response.put("numberOfResults", 
-								new ArrayList<String>()
-								{
-									{
-										add("0");
-									}
-								});
+						boolean isExpired = true;
+						if(deal.expiryDate != null)
+						{
+							try
+							{
+								DateTime expiry = new DateTime(deal.expiryDate, ISOChronology.getInstanceUTC());
+								isExpired = expiry.isBeforeNow();
+							}catch(Exception ex)
+							{
+								Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate);
+							}
+						}
+						dealsResponse.add(new UserDealsResponse(deal, isExpired)); 
 					}
+					response.put("numberOfPages", 
+							new ArrayList<String>()
+							{
+								{
+									
+									add(Long.toString(pageCount));
+								}
+							});
+					response.put("totalDealsCount", 
+							new ArrayList<String>()
+							{
+								{
+									
+									add(Long.toString(allDealsCount));
+								}
+							});
+					response.put("deals", dealsResponse);
 					
 					//Mark the deals as read
 					EntityManager em = JPA.em();

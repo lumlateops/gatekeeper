@@ -1,4 +1,4 @@
-package bl.googleAuth;
+package bl.providers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,14 +38,13 @@ import models.Providers;
 import models.ServiceProvider;
 import models.UserInfo;
 
-public class GmailProvider
+public class GmailProvider extends BaseProvider
 {
 	//TODO Add scope to the DB as well
 	private static final String	SCOPE	= "https://mail.google.com/";
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
-	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f as f FROM FetchHistory f WHERE userId IS ? and fetchStatus='complete' and fetchEndTime > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 	
 	// Initialize tokens
 	static
@@ -56,82 +55,15 @@ public class GmailProvider
 	}
 	
 	/**
-	 * Checks to see if the account already exists and is authorized
-	 * @param userId
-	 * @param email
-	 * @return
-	 */
-	public static Map<String, List<?>> isAccountAuthorized(Long userId, String email,
-																												 Service serviceResponse)
-	{
-		String returnMessage = "false";
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
-
-		//Check if we have the account already
-		List<Account> accounts = Account.find("email", email).fetch();
-		if(accounts != null && accounts.size() == 1)
-		{
-			Account account = accounts.get(0);
-			
-			// Make sure userId matches
-			if(account.userInfo.id == userId)
-			{
-				if(account.active && account.password != null)
-				{
-					returnMessage = "true";
-				}
-			}
-			else
-			{
-				serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
-																 "Email address already registered to a different user.");
-			}
-		}
-		else if(accounts != null && accounts.size() > 1)
-		{
-			serviceResponse.addError(ErrorCodes.MULTIPLE_ACCOUNTS_WITH_SAME_EMAIL.toString(), 
-															 "Multiple accounts found with this email address.");
-		}
-		else
-		{
-			serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), 
-															 "No matching account found");
-		}
-		
-		List<String> message = new ArrayList<String>();
-		message.add(returnMessage);
-		response.put("isAccountAuthorized", message);
-		return response;
-	}
-	
-	/**
 	 * Gets a request token for this user
 	 * @param userId
 	 * @param email
 	 * @return
-	 * @throws OAuthException
+	 * @throws Exception
 	 */
 	public static void createAccount(Long userId, String email, String password) throws Exception
 	{
-		// Make sure the user exists
-		UserInfo user = UserInfo.find("id", userId).first();
-		
-		if(user != null)
-		{
-			// Store the information, leaving the access token blank
-			password = Utility.encrypt(password);
-			Date currentDate = new Date(System.currentTimeMillis());
-			Account newAccount = new Account(user, email, password, null, null, null, 
-									Boolean.TRUE, Boolean.TRUE, "", currentDate, currentDate, 
-									currentDate, currentDate, gmailProvider).save();
-			
-			// Add new email address to queue
-			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(newAccount.id, newAccount.email, newAccount.password, newAccount.provider.name));
-		}
-		else
-		{
-			throw new Exception("No matching user found");
-		}
+		createAccount(userId, email, password, gmailProvider);
 	}
 	
 	/**
@@ -141,6 +73,7 @@ public class GmailProvider
 	 * @param queryString
 	 * @return
 	 */
+	@Deprecated
 	public static Map<String, List<?>> upgradeToken(Long userId, String email, 
 																									String queryString, Service serviceResponse)
 	{
@@ -169,18 +102,6 @@ public class GmailProvider
 					account.dllrAccessToken = token;
 					Logger.debug("Access Token: "+token);
 					account.save();
-					
-					// Add new email address to queue if no fetch happened within the last 60 mins
-//					FetchHistory lastFetch = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
-//					if(lastFetch==null)
-					{
-//						NewAccountMessage message = new NewAccountMessage(userId, email, token, 
-//																															account.dllrTokenSecret,
-//																															Providers.GMAIL.toString(),	
-//																															gmailProvider.consumerKey, 
-//																															gmailProvider.consumerSecret);
-//						RMQProducer.publishNewEmailAccountMessage(message);
-					}
 				}
 				else
 				{
@@ -199,8 +120,7 @@ public class GmailProvider
 		}
 		catch (OAuthException e)
 		{
-			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
-															 e.getCause() + e.getMessage());
+			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), e.getCause() + e.getMessage());
 		}
 
 		return response;
@@ -211,6 +131,7 @@ public class GmailProvider
 	 * @param email
 	 * @return
 	 */
+	@Deprecated
 	public static Map<String, List<?>> revokeAccess(Long userId, String password,
 																						 String email, Service serviceResponse)
 	{
@@ -218,7 +139,6 @@ public class GmailProvider
 		
 		try
 		{
-			// TODO: Check user credentials
 			boolean isAuthenticated = true;
 			
 			if(isAuthenticated)

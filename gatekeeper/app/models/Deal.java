@@ -44,12 +44,15 @@ public class Deal extends Model
 	@ManyToOne
 	public DealEmail			dealEmail;
 	public String					tags;
+	@ManyToMany
+	public List<DealCategory>	category;
 	
 	public Deal(UserInfo userInfo, Subscription subscription, int locationId,
 			List<Product> products, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
-			String title, String url, boolean dealRead, DealEmail dealEmail, String tags)
+			String title, String url, boolean dealRead, DealEmail dealEmail, 
+			String tags, List<DealCategory>	category)
 	{
 		this.userInfo = userInfo;
 		this.subscription = subscription;
@@ -69,5 +72,6 @@ public class Deal extends Model
 		this.dealRead = dealRead;
 		this.dealEmail = dealEmail;
 		this.tags = tags;
+		this.category = category;
 	}
 }

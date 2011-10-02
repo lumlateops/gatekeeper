@@ -76,7 +76,7 @@ public class AccountController extends Controller
 				Logger.debug("AE: Provider is Gmail");
 
 				//Check if user has {max.user.accounts} accounts already
-				boolean maxAccountcountReached = isMaxAccountcountReached(userId);
+				boolean maxAccountcountReached = isMaxAccountCountReached(userId);
 				
 				if(!maxAccountcountReached)
 				{
@@ -215,6 +215,7 @@ public class AccountController extends Controller
 	 * @param email
 	 * @param requestToken
 	 */
+	@Deprecated
 	public static void upgradeToken(@Required(message="userId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
 			@Required(message="Email is required")@Email String email,
@@ -277,6 +278,7 @@ public class AccountController extends Controller
 	 * @param provider
 	 * @param email
 	 */
+	@Deprecated
 	public static void revokeAccess(@Required(message="UserId is required") Long userId,
 			@Required(message="UserId is required") String password,
 			@Required(message="Email provider is required") String provider,
@@ -502,7 +504,7 @@ public class AccountController extends Controller
 	 * @param userId
 	 * @return
 	 */
-	private static boolean isMaxAccountcountReached(Long userId)
+	private static boolean isMaxAccountCountReached(Long userId)
 	{
 		boolean maxAccountcountReached = false;
 		List<Account> accounts = Account.find(ACTIVE_ACCOUNT_LOOKUP_HQL, userId).fetch();
