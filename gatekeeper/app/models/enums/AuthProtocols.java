@@ -1,4 +1,4 @@
-package models;
+package models.enums;
 
 public enum AuthProtocols {
 	OAUTH,

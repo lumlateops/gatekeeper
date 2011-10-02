@@ -10,21 +10,21 @@ import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.Account;
-import models.ErrorCodes;
-import models.Providers;
 import models.ServiceProvider;
-import bl.Utility;
-import bl.providers.GmailProvider;
-
+import models.enums.ErrorCodes;
+import models.enums.Providers;
 import play.Logger;
 import play.Play;
 import play.data.validation.Email;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.libs.Codec;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
+import bl.Utility;
+import bl.providers.BaseProvider;
+import bl.providers.GmailProvider;
+import bl.providers.YahooProvider;
 
 public class AccountController extends Controller
 {
@@ -71,9 +71,13 @@ public class AccountController extends Controller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+			if(provider != null && 
+				 (Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()) || 
+				  Providers.YAHOO.toString().equalsIgnoreCase(provider.trim())
+				 )
+				)
 			{
-				Logger.debug("AE: Provider is Gmail");
+				Logger.debug("AE: Registering a " + provider + " email account.");
 
 				//Check if user has {max.user.accounts} accounts already
 				boolean maxAccountcountReached = isMaxAccountCountReached(userId);
@@ -90,7 +94,14 @@ public class AccountController extends Controller
 					{
 						try
 						{
-							GmailProvider.createAccount(userId, email, password);
+							if(Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+							{
+									GmailProvider.createAccount(userId, email, password);
+							}
+							else if(Providers.YAHOO.toString().equalsIgnoreCase(provider.trim()))
+							{
+								YahooProvider.createAccount(userId, email, password);
+							}
 							response.put("status", 
 									new ArrayList<String>()
 									{
@@ -364,7 +375,7 @@ public class AccountController extends Controller
 			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
-				response = GmailProvider.isAccountAuthorized(userId, email, serviceResponse);
+				response = BaseProvider.isAccountAuthorized(userId, email, serviceResponse);
 			}
 			else
 			{

@@ -22,11 +22,11 @@ import jsonModels.Service;
 import jsonModels.UserDealsResponse;
 import models.Account;
 import models.Deal;
-import models.ErrorCodes;
+import models.enums.ErrorCodes;
 import models.Retailers;
 import models.ServiceProvider;
-import models.SortFields;
-import models.SortOrder;
+import models.enums.SortFields;
+import models.enums.SortOrder;
 import play.Logger;
 import play.Play;
 import play.data.validation.Required;
@@ -122,13 +122,6 @@ public class DealController extends Controller
 				
 				if(onePageDeals != null && onePageDealsCount != 0)
 				{
-					response.put("numberOfResults", 
-							new ArrayList<String>()
-							{
-								{
-									add(Integer.toString(onePageDealsCount));
-								}
-							});
 					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
 					//Create the response object
 					List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
@@ -148,6 +141,13 @@ public class DealController extends Controller
 						}
 						dealsResponse.add(new UserDealsResponse(deal, isExpired)); 
 					}
+					response.put("numberOfResults", 
+							new ArrayList<String>()
+							{
+								{
+									add(Integer.toString(onePageDealsCount));
+								}
+							});
 					response.put("numberOfPages", 
 							new ArrayList<String>()
 							{
@@ -174,6 +174,8 @@ public class DealController extends Controller
 				}
 				else
 				{
+					//Get fetch history
+					
 					response.put("numberOfResults", 
 							new ArrayList<String>()
 							{

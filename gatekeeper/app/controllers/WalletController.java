@@ -1,40 +1,33 @@
 package controllers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jsonModels.Message;
+import jsonModels.Request;
+import jsonModels.Service;
+import jsonModels.UserWalletResponse;
+import models.Deal;
+import models.UserInfo;
+import models.Wallet;
+import models.enums.ErrorCodes;
+import models.enums.SortFields;
+import models.enums.SortOrder;
 
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
 
-import bl.Utility;
-
-import jsonModels.Message;
-import jsonModels.Request;
-import jsonModels.Service;
-import jsonModels.UserDealsResponse;
-import jsonModels.UserWalletResponse;
-import models.Deal;
-import models.ErrorCodes;
-import models.ServiceProvider;
-import models.SortFields;
-import models.SortOrder;
-import models.UserInfo;
-import models.Wallet;
 import play.Logger;
 import play.Play;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.db.jpa.JPA;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
+import bl.Utility;
 
 public class WalletController extends Controller
 {

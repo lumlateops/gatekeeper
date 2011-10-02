@@ -1,42 +1,19 @@
 package bl.providers;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jsonModels.Error;
-import jsonModels.Errors;
-import jsonModels.Response;
 import jsonModels.Service;
-import jsonModels.ServiceResponse;
-
-import bl.RMQProducer;
-import bl.Utility;
-
-import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
-import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
-import com.google.gdata.client.authn.oauth.OAuthException;
-import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
-import com.google.gdata.client.authn.oauth.OAuthSigner;
-import com.google.gdata.client.authn.oauth.OAuthParameters.OAuthType;
-
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.MessageProperties;
-
+import models.Account;
+import models.ServiceProvider;
+import models.enums.ErrorCodes;
+import models.enums.Providers;
 import play.Logger;
 
-import models.Account;
-import models.ErrorCodes;
-import models.FetchHistory;
-import models.NewAccountMessage;
-import models.Providers;
-import models.ServiceProvider;
-import models.UserInfo;
+import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
+import com.google.gdata.client.authn.oauth.OAuthParameters.OAuthType;
 
 public class GmailProvider extends BaseProvider
 {
@@ -55,7 +32,7 @@ public class GmailProvider extends BaseProvider
 	}
 	
 	/**
-	 * Gets a request token for this user
+	 * Add a gmail account
 	 * @param userId
 	 * @param email
 	 * @return
@@ -81,47 +58,47 @@ public class GmailProvider extends BaseProvider
 		String returnMessage = "Successfully upgraded token";
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
-		try
-		{
-			List<Account> accounts =  Account.find("email", email).fetch();
-			if(accounts != null && accounts.size() == 1)
-			{
-				Account account = accounts.get(0);
-				
-				// Make sure userId matches
-				if(account.userInfo.id == userId)
-				{
-					GoogleOAuthParameters oauthParameters = getAuthParams();
-					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
-
-					GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-					oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
-
-					String token = oauthHelper.getAccessToken(oauthParameters);
-					
-					account.dllrAccessToken = token;
-					Logger.debug("Access Token: "+token);
-					account.save();
-				}
-				else
-				{
-					returnMessage = "No matching account found";
-					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
-				}
-			}
-			else
-			{
-				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
-			}
-			
-			List<String> message = new ArrayList<String>();
-			message.add(returnMessage);
-			response.put("Message", message);
-		}
-		catch (OAuthException e)
-		{
-			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), e.getCause() + e.getMessage());
-		}
+//		try
+//		{
+//			List<Account> accounts =  Account.find("email", email).fetch();
+//			if(accounts != null && accounts.size() == 1)
+//			{
+//				Account account = accounts.get(0);
+//				
+//				// Make sure userId matches
+//				if(account.userInfo.id == userId)
+//				{
+//					GoogleOAuthParameters oauthParameters = getAuthParams();
+//					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+//
+//					GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+//					oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
+//
+//					String token = oauthHelper.getAccessToken(oauthParameters);
+//					
+//					account.dllrAccessToken = token;
+//					Logger.debug("Access Token: "+token);
+//					account.save();
+//				}
+//				else
+//				{
+//					returnMessage = "No matching account found";
+//					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+//				}
+//			}
+//			else
+//			{
+//				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+//			}
+//			
+//			List<String> message = new ArrayList<String>();
+//			message.add(returnMessage);
+//			response.put("Message", message);
+//		}
+//		catch (OAuthException e)
+//		{
+//			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), e.getCause() + e.getMessage());
+//		}
 
 		return response;
 	}
@@ -137,8 +114,8 @@ public class GmailProvider extends BaseProvider
 	{
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
-		try
-		{
+//		try
+//		{
 			boolean isAuthenticated = true;
 			
 			if(isAuthenticated)
@@ -151,12 +128,12 @@ public class GmailProvider extends BaseProvider
 					// Make sure userId matches
 					if(account.userInfo.id == userId)
 					{
-						// Revoke token
-						GoogleOAuthParameters oauthParameters = getAuthParams();
-						oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
-						oauthParameters.setOAuthToken(account.dllrAccessToken);
-						GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-						oauthHelper.revokeToken(oauthParameters);
+//						// Revoke token
+//						GoogleOAuthParameters oauthParameters = getAuthParams();
+//						oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+//						oauthParameters.setOAuthToken(account.dllrAccessToken);
+//						GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
+//						oauthHelper.revokeToken(oauthParameters);
 						
 						// Clean up database
 						account.active = false;
@@ -181,12 +158,12 @@ public class GmailProvider extends BaseProvider
 				serviceResponse.addError(ErrorCodes.AUTHENTICATION_FAILED.toString(), 
 																 "Incorrect login");
 			}
-		}
-		catch (OAuthException e)
-		{
-			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
-															 e.getCause() + e.getMessage());
-		}
+//		}
+//		catch (OAuthException e)
+//		{
+//			serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), 
+//															 e.getCause() + e.getMessage());
+//		}
 		
 		return response;
 	}
