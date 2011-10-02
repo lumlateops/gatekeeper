@@ -1,19 +1,12 @@
 package controllers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-
-import bl.Utility;
 
 import jsonModels.DealEmailResponse;
 import jsonModels.Message;
@@ -22,11 +15,14 @@ import jsonModels.Service;
 import jsonModels.UserDealsResponse;
 import models.Account;
 import models.Deal;
+import models.FetchHistory;
 import models.enums.ErrorCodes;
-import models.Retailers;
-import models.ServiceProvider;
 import models.enums.SortFields;
 import models.enums.SortOrder;
+
+import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+
 import play.Logger;
 import play.Play;
 import play.data.validation.Required;
@@ -35,6 +31,7 @@ import play.db.jpa.JPA;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
+import bl.Utility;
 
 public class DealController extends Controller
 {
@@ -44,6 +41,7 @@ public class DealController extends Controller
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
+	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f AS f FROM FetchHistory f WHERE f.userInfo.id IS ? ORDER BY fetchStartTime";
 	
 	@Before
 	public static void logRequest()
@@ -175,14 +173,28 @@ public class DealController extends Controller
 				else
 				{
 					//Get fetch history
-					
-					response.put("numberOfResults", 
-							new ArrayList<String>()
-							{
+					final FetchHistory fh = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+					if(fh != null)
+					{
+						response.put("numberOfResults", 
+								new ArrayList<String>()
 								{
-									add("0");
-								}
-							});
+									{
+										add("0");
+									}
+								});
+						response.put("fetchStatus", 
+								new ArrayList<String>()
+								{
+									{
+										add(fh.fetchStatus);
+									}
+								});
+					}
+					else
+					{
+						serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), "Could not get email account reading status.");
+					}
 				}
 			}
 		}

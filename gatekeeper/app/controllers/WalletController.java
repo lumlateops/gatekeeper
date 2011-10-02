@@ -114,16 +114,8 @@ public class WalletController extends Controller
 				
 				if(onePageDeals != null && onePageDealsCount != 0)
 				{
-					response.put("numberOfResults", 
-							new ArrayList<String>()
-							{
-								{
-									add(Integer.toString(onePageDealsCount));
-								}
-							});
-					
-					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
 					//Create the response object
+					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
 					List<UserWalletResponse> walletResponse = new ArrayList<UserWalletResponse>();
 					for (Wallet wallet : onePageDeals)
 					{
@@ -142,6 +134,13 @@ public class WalletController extends Controller
 						UserWalletResponse userWalletResponse = new UserWalletResponse(wallet, isExpired);
 						walletResponse.add(userWalletResponse);
 					}
+					response.put("numberOfResults", 
+							new ArrayList<String>()
+							{
+								{
+									add(Integer.toString(onePageDealsCount));
+								}
+							});
 					response.put("numberOfPages", 
 							new ArrayList<String>()
 							{
