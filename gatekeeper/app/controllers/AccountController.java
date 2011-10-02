@@ -31,6 +31,7 @@ public class AccountController extends Controller
 	private static final int MAX_USER_ACCOUNTS = Integer.parseInt((String)Play.configuration.get("max.user.accounts"));
 	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.provider IS ? ";
 	private static final String	ACTIVE_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 1";
+	private static final String	DEALLR_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 0";
 	
 	@Before
 	public static void logRequest()
@@ -454,7 +455,7 @@ public class AccountController extends Controller
 			}
 			else
 			{
-				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching user found.");
+				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching provider found.");
 			}
 		}
 		Long endTime = System.currentTimeMillis();
@@ -476,6 +477,64 @@ public class AccountController extends Controller
 		}
 		parameters.put("fbAuthToken", fbAuthToken);
 		Request request = new Request(isValidRequest, "updateFBToken", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
+	 * Returns the user's deallr email address
+	 * @param userId
+	 */
+	public static void getDeallrEmail(@Required(message="User Id is required") Long userId)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
+			}
+		}
+		else
+		{
+			final Account account = Account.find(DEALLR_ACCOUNT_LOOKUP_HQL, userId).first();
+			if(account != null)
+			{
+				response.put("email", 
+						new ArrayList<String>()
+						{
+							{
+								add(account.email);
+							}
+						});
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching user account found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();			
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}else
+		{
+			parameters.put("userId", "null");
+		}
+		Request request = new Request(isValidRequest, "getDeallrEmail", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
 		if(isValidRequest && !response.isEmpty())
