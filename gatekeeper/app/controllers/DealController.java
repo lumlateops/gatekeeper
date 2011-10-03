@@ -12,10 +12,14 @@ import jsonModels.DealEmailResponse;
 import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
+import jsonModels.UserDealCategoryResponse;
+import jsonModels.UserDealProductResponse;
 import jsonModels.UserDealsResponse;
 import models.Account;
 import models.Deal;
+import models.DealCategory;
 import models.FetchHistory;
+import models.Product;
 import models.enums.ErrorCodes;
 import models.enums.SortFields;
 import models.enums.SortOrder;
@@ -137,7 +141,25 @@ public class DealController extends Controller
 								Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate);
 							}
 						}
-						dealsResponse.add(new UserDealsResponse(deal, isExpired)); 
+						//Get products
+						List<UserDealProductResponse> products = new ArrayList<UserDealProductResponse>();
+						if(deal.products != null)
+						{
+							for (Product product : deal.products)
+							{
+								products.add(new UserDealProductResponse(product));
+							}
+						}
+						//Get categories
+						List<UserDealCategoryResponse> categories = new ArrayList<UserDealCategoryResponse>();
+						if(deal.category != null)
+						{
+							for (DealCategory category : deal.category)
+							{
+								categories.add(new UserDealCategoryResponse(category));
+							}
+						}
+						dealsResponse.add(new UserDealsResponse(deal, isExpired, products, categories)); 
 					}
 					response.put("numberOfResults", 
 							new ArrayList<String>()

@@ -9,8 +9,12 @@ import java.util.Map;
 import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
+import jsonModels.UserDealCategoryResponse;
+import jsonModels.UserDealProductResponse;
 import jsonModels.UserWalletResponse;
 import models.Deal;
+import models.DealCategory;
+import models.Product;
 import models.UserInfo;
 import models.Wallet;
 import models.enums.ErrorCodes;
@@ -131,7 +135,25 @@ public class WalletController extends Controller
 								Logger.error("Error trying to determine expiry time for expiry date: " + wallet.deal.expiryDate);
 							}
 						}
-						UserWalletResponse userWalletResponse = new UserWalletResponse(wallet, isExpired);
+						//Get products
+						List<UserDealProductResponse> products = new ArrayList<UserDealProductResponse>();
+						if(wallet.deal.products != null)
+						{
+							for (Product product : wallet.deal.products)
+							{
+								products.add(new UserDealProductResponse(product));
+							}
+						}
+						//Get categories
+						List<UserDealCategoryResponse> categories = new ArrayList<UserDealCategoryResponse>();
+						if(wallet.deal.category != null)
+						{
+							for (DealCategory category : wallet.deal.category)
+							{
+								categories.add(new UserDealCategoryResponse(category));
+							}
+						}
+						UserWalletResponse userWalletResponse = new UserWalletResponse(wallet, isExpired, products, categories);
 						walletResponse.add(userWalletResponse);
 					}
 					response.put("numberOfResults", 

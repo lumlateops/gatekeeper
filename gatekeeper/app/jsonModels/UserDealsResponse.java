@@ -1,64 +1,49 @@
 package jsonModels;
 
 import java.util.Date;
-
-import play.Logger;
+import java.util.List;
 
 import models.Deal;
-import models.Department;
-import models.Retailers;
 
 /**
- * 
- * "deals":[
-            {
-               "userId":2,
-               "title":"Discount clothes",
-               "description":"40% off all apparel",
-               "discountPercentage":"40%",
-               "expiryDate":"Jun 13, 2012 5:00:00 PM",
-               "postDate":"Jun 13, 2009 5:00:00 PM",
-               "url":"http://mydeal.com",
-               "retailer":{
-                  "domain":"target.com",
-                  "name":"Target",
-                  "image":"http://th209.photobucket.com/albums/bb175/clayandcrystal/th_target_logo.jpg",
-                  "id":2
-               },
-               "id":1
-            }
-         ]
+ * Wrapper class to represent the user deal response
  * @author prachi
  *
  */
 public class UserDealsResponse
 {
-	private String title;
-	private String description; // get from email subject
-	private int discountPercentage ;
-	private Date expiryDate ;
-	private Date postDate ;
-	private String url;
 	private Long id;
-	private UserDealRetailerResponse retailer;
-	private boolean freeShipping;
-	private boolean isExpired;
-	private float originalValue;
-	private float dealValue;
+	private String url;
+	private String tags;
+	private String title;
+	private Date postDate ;
 	private String validTo;
+	private Date expiryDate;
+	private float dealValue;
+	private boolean isExpired;
+	private String description; // get from email subject
+	private float originalValue;
+	private boolean freeShipping;
+	private int discountPercentage ;
+	private List<UserDealProductResponse> products;
+	private UserDealRetailerResponse retailer;
+	private List<UserDealCategoryResponse> categories;
 	
-	public UserDealsResponse(Deal deal, boolean isExpired)
+	public UserDealsResponse(Deal deal, boolean isExpired, 
+													 List<UserDealProductResponse> products, 
+													 List<UserDealCategoryResponse> categories)
 	{
 		this(deal.title, deal.dealEmail.subject,
 				deal.discountPercentage, deal.expiryDate, deal.postDate, deal.url,
 				deal.id, new UserDealRetailerResponse(deal.subscription.department), deal.freeShipping, deal.originalValue,
-				deal.dealValue, deal.validTo, isExpired);
+				deal.dealValue, deal.validTo, isExpired, deal.tags, products, categories);
 	}
 	
 	public UserDealsResponse(String title, String description,
 			int discountPercentage, Date expiryDate, Date postDate, String url,
 			Long id, UserDealRetailerResponse retailer, boolean freeShipping, float originalValue,
-			float dealValue, String validTo, boolean isExpired)
+			float dealValue, String validTo, boolean isExpired, String tags, 
+			List<UserDealProductResponse> products, List<UserDealCategoryResponse> categories)
 	{
 		this.title = title;
 		this.description = description;
@@ -73,5 +58,8 @@ public class UserDealsResponse
 		this.dealValue = dealValue;
 		this.validTo = validTo;
 		this.isExpired = isExpired;
+		this.tags = tags;
+		this.products = products;
+		this.categories = categories;
 	}
 }
