@@ -22,15 +22,15 @@ public class Utility
 	private static final char[]	PASSWORD	= ((String)Play.configuration.get("application.secret")).toCharArray();
 	private static final byte[]	SALT			= ((String)Play.configuration.get("application.key")).getBytes();
 
-//	public static void main(String[] args) throws Exception
-//	{
-//		String originalPassword = "secret";
-//		System.out.println("Original password: " + originalPassword);
-//		String encryptedPassword = encrypt(originalPassword);
-//		System.out.println("Encrypted password: " + encryptedPassword);
-//		String decryptedPassword = decrypt(encryptedPassword);
-//		System.out.println("Decrypted password: " + decryptedPassword);
-//	}
+	public static void main(String[] args) throws Exception
+	{
+		String originalPassword = "secret";
+		System.out.println("Original password: " + originalPassword);
+		String encryptedPassword = encrypt(originalPassword);
+		System.out.println("Encrypted password: " + encryptedPassword);
+		String decryptedPassword = decrypt(encryptedPassword);
+		System.out.println("Decrypted password: " + decryptedPassword);
+	}
 
 	public static String encrypt(String property) throws GeneralSecurityException
 	{

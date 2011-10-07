@@ -2,6 +2,8 @@ package models;
 
 import java.io.Serializable;
 
+import com.google.gson.Gson;
+
 /**
  * POJO for RMQ message
  * @author prachi
@@ -66,8 +68,10 @@ public class NewAccountMessage implements Serializable
 	@Override
 	public String toString()
 	{
-		return "NewAccountMessage [email=" + email + ", password=" + password
-				+ ", serviceProviderName=" + serviceProviderName + ", userId=" + userId
-				+ "]";
+		return new Gson().toJson(this);
+		
+//		return "NewAccountMessage [email=" + email + ", password=" + password
+//				+ ", serviceProviderName=" + serviceProviderName + ", userId=" + userId
+//				+ "]";
 	}
 }
