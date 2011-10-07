@@ -24,7 +24,7 @@ import play.mvc.Controller;
 import bl.Utility;
 import bl.providers.BaseProvider;
 import bl.providers.GmailProvider;
-import bl.providers.YahooProvider;
+import bl.providers.MSNProvider;
 
 public class AccountController extends Controller
 {
@@ -74,7 +74,7 @@ public class AccountController extends Controller
 			// Go to correct provider
 			if(provider != null && 
 				 (Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()) || 
-				  Providers.YAHOO.toString().equalsIgnoreCase(provider.trim())
+				  Providers.MSN.toString().equalsIgnoreCase(provider.trim())
 				 )
 				)
 			{
@@ -99,9 +99,9 @@ public class AccountController extends Controller
 							{
 									GmailProvider.createAccount(userId, email, password);
 							}
-							else if(Providers.YAHOO.toString().equalsIgnoreCase(provider.trim()))
+							else if(Providers.MSN.toString().equalsIgnoreCase(provider.trim()))
 							{
-								YahooProvider.createAccount(userId, email, password);
+								MSNProvider.createAccount(userId, email, password);
 							}
 							response.put("status", 
 									new ArrayList<String>()
