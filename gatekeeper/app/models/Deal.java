@@ -7,13 +7,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.ForeignKey;
-
-import play.Logger;
-import play.data.validation.Email;
 import play.db.jpa.Model;
 
 /**
@@ -41,6 +36,7 @@ public class Deal extends Model
 	public String					title;
 	public String					url;
 	public boolean				dealRead;
+	public boolean				dealInWallet;
 	@ManyToOne
 	public DealEmail			dealEmail;
 	public String					tags;
@@ -51,7 +47,7 @@ public class Deal extends Model
 			List<Product> products, Date createdAt, Date updatedAt,
 			int discountPercentage, float originalValue, float dealValue,
 			Date expiryDate, Date postDate, String validTo, Boolean freeShipping,
-			String title, String url, boolean dealRead, DealEmail dealEmail, 
+			String title, String url, boolean dealRead, boolean dealInWallet, DealEmail dealEmail, 
 			String tags, List<DealCategory>	category)
 	{
 		this.userInfo = userInfo;
@@ -70,6 +66,7 @@ public class Deal extends Model
 		this.title = title;
 		this.url = url;
 		this.dealRead = dealRead;
+		this.dealInWallet = dealInWallet;
 		this.dealEmail = dealEmail;
 		this.tags = tags;
 		this.category = category;

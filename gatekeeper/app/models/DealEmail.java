@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import play.db.jpa.Model;
 
 /**
@@ -47,7 +49,7 @@ public class DealEmail extends Model
 		this.spfResult = spfResult;
 		this.domainKey = domainKey;
 		this.parsedContent = parsedContent;
-		this.content = content;
+		this.content = new StringEscapeUtils().unescapeHtml(content);
 		this.emailCategory = emailCategory;
 	}
 }

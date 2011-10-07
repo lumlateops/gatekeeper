@@ -260,6 +260,9 @@ public class WalletController extends Controller
 								add("ok");
 							}
 						});
+				//Mark deal is in wallet
+				deal.dealInWallet = true;
+				deal.save();
 			}
 			else
 			{
@@ -329,6 +332,10 @@ public class WalletController extends Controller
 			Wallet wallet = Wallet.find(WALLET_ENTRY_LOOKUP_HQL, userId, dealId).first();
 			if(wallet != null)
 			{
+				//Mark deal is in wallet
+				wallet.deal.dealInWallet = false;
+				wallet.deal.save();
+				//Remove wallet entry
 				wallet.delete();
 				response.put("status", 
 						new ArrayList<String>()

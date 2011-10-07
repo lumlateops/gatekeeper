@@ -11,11 +11,12 @@ GET     /login/{username}/{password}						    			Application.login
 GET     /login/{fbUserId}									   	 			Application.fbIdlogin
 
 POST	/account/add						     							AccountController.addEmail
-GET		/account/list/{userId}			     								AccountController.listAllUserEmails
 #POST	/account/upgradeEmailToken 											AccountController.upgradeToken
-GET 	/account/verify/{userId}/{provider}/{email}							AccountController.verifyAccount
 POST	/account/revoke/													AccountController.revokeAccess
 POST	/account/fb/update													AccountController.updateFBToken
+GET		/account/list/{userId}			     								AccountController.listAllUserEmails
+GET		/account/deallr/{userId}											AccountController.getDeallrEmail
+GET 	/account/verify/{userId}/{provider}/{email}							AccountController.verifyAccount
 
 # Deal
 POST	/deal/mark/read														DealController.markDealsRead
