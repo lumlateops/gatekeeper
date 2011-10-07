@@ -16,12 +16,12 @@ import play.db.jpa.Model;
 public class LoginHistory extends Model
 {
 	@OneToOne
-	public UserInfo userinfo;
+	public UserInfo userInfo;
 	public Date lastLoginTime;
 	
-	public LoginHistory(UserInfo userinfo, Date lastLoginTime)
+	public LoginHistory(UserInfo userInfo, Date lastLoginTime)
 	{
-		this.userinfo = userinfo;
+		this.userInfo = userInfo;
 		this.lastLoginTime = lastLoginTime;
 	}
 }

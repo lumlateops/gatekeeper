@@ -19,6 +19,7 @@ import models.Account;
 import models.Deal;
 import models.DealCategory;
 import models.FetchHistory;
+import models.LoginHistory;
 import models.Product;
 import models.enums.ErrorCodes;
 import models.enums.SortFields;
@@ -43,6 +44,7 @@ public class DealController extends Controller
 	private static final int		PAGE_SIZE									= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
 	private static final String	USER_DEAL_COUNT_HQL				= "SELECT count(d) FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1";
+	private static final String	UNREAD_DEAL_COUNT_HQL			= "SELECT count(d) FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 AND d.createdAt > ?";
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
@@ -412,21 +414,21 @@ public class DealController extends Controller
 		}
 		else
 		{
-			List<Deal> deals = Deal.find(UNREAD_DEAL_LOOKUP_HQL, userId).fetch();
-			final int count;
-			if(deals != null && !deals.isEmpty())
+			final long unreadDealsCount;
+			LoginHistory loginHistory = LoginHistory.find("userInfo.id", userId).first();
+			if(loginHistory != null)
 			{
-				count = deals.size();
+				unreadDealsCount = Deal.count(UNREAD_DEAL_COUNT_HQL, userId, loginHistory.lastLoginTime);
 			}
 			else
 			{
-				count = 0;
+				unreadDealsCount = 0;
 			}
 			response.put("count", 
 					new ArrayList<String>()
 					{
 						{
-							add(Integer.toString(count));
+							add(Long.toString(unreadDealsCount));
 						}
 					});
 		}

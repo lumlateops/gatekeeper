@@ -250,7 +250,7 @@ public class Application extends Controller
 				}
 				//Record the login time
 				DateTime loginTime = new DateTime(System.currentTimeMillis(), ISOChronology.getInstanceUTC());
-				LoginHistory loginHistory = LoginHistory.find("userinfo", userInfo).first();
+				LoginHistory loginHistory = LoginHistory.find("userInfo", userInfo).first();
 				if(loginHistory != null)
 				{
 					loginHistory.lastLoginTime = loginTime.toDate();
