@@ -33,7 +33,7 @@ public class UserDealsResponse
 													 List<UserDealProductResponse> products, 
 													 List<UserDealCategoryResponse> categories)
 	{
-		this(deal.title, deal.dealEmail.subject,
+		this(deal.title, deal.dealEmail.parsedContent,
 				deal.discountPercentage, deal.expiryDate, deal.postDate, deal.url,
 				deal.id, new UserDealRetailerResponse(deal.subscription.department), deal.freeShipping, deal.originalValue,
 				deal.dealValue, deal.validTo, isExpired, deal.tags, products, categories);

@@ -16,7 +16,7 @@ ServiceProvider(YAHOO):
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
     logoUrl:          http://l.yimg.com/a/i/us/pim/dclient/cg570/img/md5/509840ceb0dd52f5f024dba77099b4b0_1.gif
-    active:           true
+    active:           false
     website:          http://mail.yahoo.com
     protocol:         OAUTH
     createdAt:       2009-06-14
@@ -38,7 +38,7 @@ ServiceProvider(MSN):
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
     logoUrl:          https://secure.shared.live.com/~Live.SiteContent.ID.HMCustomization/~1.0.24/~/~/~/~/mai/images/hotmail.png
-    active:           false
+    active:           true
     website:          http://mail.live.com
     protocol:         DELEGATEDAUTH
     createdAt:       2009-06-14
@@ -49,7 +49,7 @@ ServiceProvider(FACEBOOK):
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
     logoUrl:          
-    active:           true
+    active:           false
     website:          http://facebook.com
     protocol:         OAUTH2Long id, 
     createdAt:       2009-06-14
