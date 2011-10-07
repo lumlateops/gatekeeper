@@ -1,7 +1,5 @@
 package controllers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,20 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jsonModels.DealEmailResponse;
 import jsonModels.LoginResponse;
 import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.Account;
-import models.Deal;
-import models.enums.ErrorCodes;
-import models.FetchHistory;
-import models.enums.Providers;
+import models.LoginHistory;
 import models.ServiceProvider;
-import models.enums.SortFields;
-import models.enums.SortOrder;
 import models.UserInfo;
+import models.enums.ErrorCodes;
+import models.enums.Providers;
+
+import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+
 import play.Logger;
 import play.data.validation.Email;
 import play.data.validation.MaxSize;
@@ -250,7 +248,18 @@ public class Application extends Controller
 						fbAuthToken = account.dllrAccessToken;
 					}
 				}
-				//Find the user's FB account
+				//Record the login time
+				DateTime loginTime = new DateTime(System.currentTimeMillis(), ISOChronology.getInstanceUTC());
+				LoginHistory loginHistory = LoginHistory.find("userinfo", userInfo).first();
+				if(loginHistory != null)
+				{
+					loginHistory.lastLoginTime = loginTime.toDate();
+				}
+				else
+				{
+					loginHistory = new LoginHistory(userInfo, loginTime.toDate());
+				}
+				loginHistory.save();
 				List<LoginResponse> message = new ArrayList<LoginResponse>();
 				message.add(new LoginResponse(Long.toString(userInfo.id),
 																			userInfo.username, userInfo.fbFullName,
