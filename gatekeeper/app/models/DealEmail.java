@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -16,6 +18,8 @@ import play.db.jpa.Model;
  *
  */
 @Entity
+@Table(uniqueConstraints = { 
+    @UniqueConstraint(name="uniqueDealEmail", columnNames = {"dateReceived", "fromEmail", "subject", "toName"})}) 
 public class DealEmail extends Model
 {
 	public String					fromName;
