@@ -25,7 +25,6 @@ import models.enums.ErrorCodes;
 import models.enums.SortFields;
 import models.enums.SortOrder;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
 
@@ -541,7 +540,6 @@ public class DealController extends Controller
 			final Deal deal = Deal.find("id", dealId).first();
 			if(deal != null)
 			{
-				Logger.info("Deal Content: ", new StringEscapeUtils().unescapeHtml(deal.dealEmail.content));
 				response.put("deal", 
 						new ArrayList<Deal>()
 						{

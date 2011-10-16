@@ -29,6 +29,7 @@ public class UserWalletResponse
 	private float originalValue;
 	private float dealValue;
 	private String validTo;
+	private String shareUrl;
 	private List<UserDealProductResponse> products;
 	private List<UserDealCategoryResponse> categories;
 	
@@ -42,7 +43,7 @@ public class UserWalletResponse
 				wallet.deal.postDate, wallet.deal.url, 
 				new UserDealRetailerResponse(wallet.deal.subscription.department), 
 				wallet.deal.freeShipping, isExpired, wallet.deal.originalValue, 
-				wallet.deal.dealValue, wallet.deal.validTo, products, categories);
+				wallet.deal.dealValue, wallet.deal.validTo, products, categories, wallet.deal.shareUrl);
 	}
 	
 	public UserWalletResponse(Long walletId, Long dealId, Long userId,
@@ -50,7 +51,8 @@ public class UserWalletResponse
 			int discountPercentage, Date expiryDate, Date postDate, String url,
 			UserDealRetailerResponse retailer, boolean freeShipping,
 			boolean isExpired, float originalValue, float dealValue, String validTo,
-			List<UserDealProductResponse> products, List<UserDealCategoryResponse> categories)
+			List<UserDealProductResponse> products, 
+			List<UserDealCategoryResponse> categories, String shareUrl)
 	{
 		this.walletId = walletId;
 		this.dealId = dealId;
@@ -71,5 +73,6 @@ public class UserWalletResponse
 		this.validTo = validTo;
 		this.products = products;
 		this.categories = categories;
+		this.shareUrl = shareUrl;
 	}
 }

@@ -18,6 +18,7 @@ public class UserDealsResponse
 	private String title;
 	private Date postDate ;
 	private String validTo;
+	private String shareUrl;
 	private Date expiryDate;
 	private float dealValue;
 	private boolean isExpired;
@@ -37,14 +38,15 @@ public class UserDealsResponse
 		this(deal.title, deal.dealEmail.parsedContent,
 				deal.discountPercentage, deal.expiryDate, deal.postDate, deal.url,
 				deal.id, new UserDealRetailerResponse(deal.subscription.department), deal.freeShipping, deal.originalValue,
-				deal.dealValue, deal.validTo, isExpired, deal.tags, products, categories, deal.dealInWallet);
+				deal.dealValue, deal.validTo, isExpired, deal.tags, products, categories, deal.dealInWallet, deal.shareUrl);
 	}
 	
 	public UserDealsResponse(String title, String description,
 			int discountPercentage, Date expiryDate, Date postDate, String url,
 			Long id, UserDealRetailerResponse retailer, boolean freeShipping, float originalValue,
 			float dealValue, String validTo, boolean isExpired, String tags, 
-			List<UserDealProductResponse> products, List<UserDealCategoryResponse> categories, boolean isInWallet)
+			List<UserDealProductResponse> products, List<UserDealCategoryResponse> categories, 
+			boolean isInWallet, String shareUrl)
 	{
 		this.title = title;
 		this.description = description;
@@ -63,5 +65,6 @@ public class UserDealsResponse
 		this.products = products;
 		this.categories = categories;
 		this.isInWallet = isInWallet;
+		this.shareUrl = shareUrl;
 	}
 }
