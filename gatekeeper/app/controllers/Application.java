@@ -408,19 +408,26 @@ public class Application extends Controller
 				try
 				{
 					Date currentDate = new Date(System.currentTimeMillis());
+					Logger.debug("a");
 					// Create new user
-					String encryptedPassword = Utility.encrypt(password);
+					String encryptedPassword = password;
+					if(password != null)
+					{
+						encryptedPassword = Utility.encrypt(password);
+					}
+					Logger.debug("b");
 					UserInfo newUser = new UserInfo(username, encryptedPassword, Boolean.TRUE, Boolean.FALSE, 
 							fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
 						  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
+					Logger.debug("c");
 					newUser.save();
-					
+					Logger.debug("1");
 					// Save FB auth token
 					ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
 				  new Account(newUser, newUser.emailAddress, encryptedPassword, null, null, fbAuthToken, 
 				  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
 											currentDate, provider).save();
-
+				 	Logger.debug("2");
 				  // construct service response
 				  List<UserInfo> message = new ArrayList<UserInfo>();
 				  UserInfo recentUser = new UserInfo();
@@ -429,10 +436,12 @@ public class Application extends Controller
 				  recentUser.emailAddress = newUser.emailAddress;
 				  message.add(recentUser);
 				  response.put("user", message);
+				  Logger.debug("3");
 				}
 				catch (Exception e)
 				{
-					Logger.debug("Error adding user: " + e.getCause() + e.getMessage());
+					Logger.error(e.toString());
+					Logger.error("Error adding user: " + e.getCause() + e.getMessage(), e);
 					serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
 																	 e.getMessage() + e.getCause());
 				}

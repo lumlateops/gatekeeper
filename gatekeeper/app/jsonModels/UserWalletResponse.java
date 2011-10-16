@@ -37,7 +37,7 @@ public class UserWalletResponse
 														List<UserDealCategoryResponse> categories)
 	{
 		this(wallet.id, wallet.deal.id, wallet.userInfo.id, wallet.alertTime,
-				wallet.createdAt, wallet.deal.title, wallet.deal.dealEmail.subject,
+				wallet.createdAt, wallet.deal.title, wallet.deal.dealEmail.parsedContent,
 				wallet.deal.discountPercentage, wallet.deal.expiryDate,
 				wallet.deal.postDate, wallet.deal.url, 
 				new UserDealRetailerResponse(wallet.deal.subscription.department), 
