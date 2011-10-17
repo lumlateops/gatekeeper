@@ -572,4 +572,57 @@ public class DealController extends Controller
 		}
 		renderJSON(new Message(serviceResponse));	
 	}
+	
+	/**
+	 * End point to get all the details for a deal by shareurl
+	 * @param shareUrl
+	 */
+	public static void getDealDetailsByShareUrl(@Required(message="share url is required")String shareUrl)
+	{
+		Long startTime = System.currentTimeMillis();
+		Boolean isValidRequest = Boolean.TRUE;
+		
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>(); 
+		
+		// Validate input
+		if(Validation.hasErrors())
+		{
+			isValidRequest = false;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
+			}
+		}
+		else
+		{
+			final Deal deal = Deal.find("shareUrl", shareUrl).first();
+			if(deal != null)
+			{
+				response.put("deal", 
+						new ArrayList<Deal>()
+						{
+							{
+								add(deal);
+							}
+						});
+			}
+			else
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), "No matching deal found.");
+			}
+		}
+		Long endTime = System.currentTimeMillis();
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("shareUrl", shareUrl);
+		Request request = new Request(isValidRequest, "getDealDetailsByShareurl", endTime - startTime, parameters);
+
+		serviceResponse.setRequest(request);
+		if(isValidRequest && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		renderJSON(new Message(serviceResponse));	
+	}
 }

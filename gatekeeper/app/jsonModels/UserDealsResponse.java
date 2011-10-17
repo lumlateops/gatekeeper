@@ -16,7 +16,7 @@ public class UserDealsResponse
 	private String url;
 	private String tags;
 	private String title;
-	private Date postDate ;
+	private Date postDate;
 	private String validTo;
 	private String shareUrl;
 	private Date expiryDate;
