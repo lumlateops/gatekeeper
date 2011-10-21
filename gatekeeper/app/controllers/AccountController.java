@@ -74,7 +74,7 @@ public class AccountController extends Controller
 			// Go to correct provider
 			if(provider != null && 
 				 (Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()) || 
-				  Providers.MSN.toString().equalsIgnoreCase(provider.trim())
+				  Providers.HOTMAIL.toString().equalsIgnoreCase(provider.trim())
 				 )
 				)
 			{
@@ -99,7 +99,7 @@ public class AccountController extends Controller
 							{
 									GmailProvider.createAccount(userId, email, password);
 							}
-							else if(Providers.MSN.toString().equalsIgnoreCase(provider.trim()))
+							else if(Providers.HOTMAIL.toString().equalsIgnoreCase(provider.trim()))
 							{
 								MSNProvider.createAccount(userId, email, password);
 							}

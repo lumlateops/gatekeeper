@@ -10,7 +10,7 @@ public class MSNProvider extends BaseProvider
 	//Initialize tokens
 	static
 	{
-		msnProvider = ServiceProvider.find("name", Providers.MSN.toString()).first();
+		msnProvider = ServiceProvider.find("name", Providers.HOTMAIL.toString()).first();
 	}
 	
 	/**

@@ -33,8 +33,8 @@ ServiceProvider(AOL):
     createdAt:       2009-06-14
     updatedAt:       2009-06-14    
     
-ServiceProvider(MSN):
-    name:             MSN
+ServiceProvider(HOTMAIL):
+    name:             HOTMAIL
     consumerKey:      deallr.com
     consumerSecret:   f_yk4d2GkQljJ38JQrcRJBPr
     logoUrl:          https://secure.shared.live.com/~Live.SiteContent.ID.HMCustomization/~1.0.24/~/~/~/~/mai/images/hotmail.png

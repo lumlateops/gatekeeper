@@ -3,7 +3,7 @@ package models.enums;
 public enum Providers {
 	GMAIL,
 	AOL,
-	MSN,
+	HOTMAIL,
 	YAHOO,
 	FACEBOOK,
 	TWITTER,
