@@ -17,6 +17,7 @@ import sun.misc.BASE64Encoder;
 
 public class Utility
 {
+	private static final String	CIPHER		= (String)Play.configuration.get("application.cipher");
 	private static final char[]	PASSWORD	= ((String)Play.configuration.get("application.secret")).toCharArray();
 	private static final byte[]	SALT			= ((String)Play.configuration.get("application.key")).getBytes();
 
@@ -32,18 +33,18 @@ public class Utility
 
 	public static String encrypt(String property) throws GeneralSecurityException
 	{
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(CIPHER);
 		SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
-		Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+		Cipher pbeCipher = Cipher.getInstance(CIPHER);
 		pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
 		return base64Encode(pbeCipher.doFinal(property.getBytes()));
 	}
 
 	public static String decrypt(String property) throws GeneralSecurityException, IOException
 	{
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(CIPHER);
 		SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
-		Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+		Cipher pbeCipher = Cipher.getInstance(CIPHER);
 		pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
 		return new String(pbeCipher.doFinal(base64Decode(property)));
 	}
@@ -56,12 +57,15 @@ public class Utility
 		Map<String, String[]> requestParams = currentRequest.params.all();
 		for (String key : requestParams.keySet())
 		{
-			String value = requestParams.get(key)[0];
-			if(key.equalsIgnoreCase("password"))
+			if(!key.equalsIgnoreCase("body"))
 			{
-				value = "******";
+				String value = requestParams.get(key)[0];
+				if(key.equalsIgnoreCase("password"))
+				{
+					value = "******";
+				}
+				Logger.debug(key + ": '"+ value + "'");
 			}
-			Logger.debug(key + ": '"+ value + "'");
 		}
 	}
 	
