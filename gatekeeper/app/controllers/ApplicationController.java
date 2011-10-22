@@ -28,9 +28,6 @@ import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.mvc.After;
-import play.mvc.Before;
-import play.mvc.Controller;
 import bl.utilities.Utility;
 
 /**
@@ -39,23 +36,11 @@ import bl.utilities.Utility;
  * 
  * @author prachi
  */
-public class Application extends Controller
+public class ApplicationController extends BaseContoller
 {
 	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND active IS ? AND registeredEmail IS ?";
 //	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f FROM FetchHistory f WHERE f.userInfo.id IS ? and f.fetchStatus='complete'";// and f.fetchEndTime<=currentTime-60";
 
-	@Before
-	public static void logRequest()
-	{
-		Utility.logRequest();
-	}
-	
-	@After
-	public static void logResponse()
-	{
-		Utility.logResponse();
-	}
-	
 	public static void index()
 	{
 		List<ServiceProvider> providers = ServiceProvider.findAll();
@@ -119,9 +104,6 @@ public class Application extends Controller
 	public static void login(@Required(message = "Username or email is required") String username,
 			@Required(message = "Password is required") @Password String password)
 	{
-		String authenticityToken = session.getAuthenticityToken();
-		Logger.debug(authenticityToken);
-		
 		Long startTime = System.currentTimeMillis();
 
 		Boolean isValidRequest = Boolean.TRUE;

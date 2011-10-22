@@ -18,32 +18,16 @@ import play.Play;
 import play.data.validation.Email;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.mvc.After;
-import play.mvc.Before;
-import play.mvc.Controller;
 import bl.providers.BaseProvider;
 import bl.providers.GmailProvider;
 import bl.providers.MSNProvider;
-import bl.utilities.Utility;
 
-public class AccountController extends Controller
+public class AccountController extends BaseContoller
 {
 	private static final int MAX_USER_ACCOUNTS = Integer.parseInt((String)Play.configuration.get("max.user.accounts"));
 	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.provider IS ? ";
 	private static final String	ACTIVE_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 1";
 	private static final String	DEALLR_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 0";
-	
-	@Before
-	public static void logRequest()
-	{
-		Utility.logRequest();
-	}
-	
-	@After
-	public static void logResponse()
-	{
-		Utility.logResponse();
-	}
 	
 	/**
 	 * Registers an email account for the user.

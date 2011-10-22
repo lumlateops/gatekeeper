@@ -28,28 +28,12 @@ import play.Logger;
 import play.Play;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.mvc.After;
-import play.mvc.Before;
-import play.mvc.Controller;
-import bl.utilities.Utility;
 
-public class WalletController extends Controller
+public class WalletController extends BaseContoller
 {
 	private static final int PAGE_SIZE	= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
 	private static final String	USER_WALLET_LOOKUP_HQL = "SELECT w AS w FROM Wallet w WHERE w.userInfo.id IS ? ORDER BY w.deal.";
 	private static final String	WALLET_ENTRY_LOOKUP_HQL = "SELECT w AS w FROM Wallet w WHERE w.userInfo.id IS ? AND w.deal.id IS ?";
-	
-	@Before
-	public static void logRequest()
-	{
-		Utility.logRequest();
-	}
-	
-	@After
-	public static void logResponse()
-	{
-		Utility.logResponse();
-	}
 	
 	/**
 	 * End point to get the deals for a user's wallet

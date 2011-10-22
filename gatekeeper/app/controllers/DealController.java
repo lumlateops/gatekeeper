@@ -33,12 +33,8 @@ import play.Play;
 import play.data.validation.Required;
 import play.data.validation.Validation;
 import play.db.jpa.JPA;
-import play.mvc.After;
-import play.mvc.Before;
-import play.mvc.Controller;
-import bl.utilities.Utility;
 
-public class DealController extends Controller
+public class DealController extends BaseContoller
 {
 	private static final int		PAGE_SIZE									= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
 	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
@@ -48,18 +44,6 @@ public class DealController extends Controller
 	private static final String	DEAL_LOOKUP_HQL						= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.id IN ";
 	private static final String	UNREAD_DEAL_LOOKUP_HQL		= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealRead='false' ";
 	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f AS f FROM FetchHistory f WHERE f.userInfo.id IS ? ORDER BY fetchStartTime";
-	
-	@Before
-	public static void logRequest()
-	{
-		Utility.logRequest();
-	}
-	
-	@After
-	public static void logResponse()
-	{
-		Utility.logResponse();
-	}
 	
 	/**
 	 * End point to get the deals for a user
