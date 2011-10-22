@@ -21,10 +21,10 @@ import play.data.validation.Validation;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
-import bl.Utility;
 import bl.providers.BaseProvider;
 import bl.providers.GmailProvider;
 import bl.providers.MSNProvider;
+import bl.utilities.Utility;
 
 public class AccountController extends Controller
 {

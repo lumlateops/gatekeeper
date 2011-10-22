@@ -13,7 +13,7 @@ import models.ServiceProvider;
 import models.UserInfo;
 import models.enums.ErrorCodes;
 import bl.RMQProducer;
-import bl.Utility;
+import bl.utilities.Utility;
 
 public class BaseProvider
 {

@@ -31,7 +31,7 @@ import play.data.validation.Validation;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
-import bl.Utility;
+import bl.utilities.Utility;
 
 /**
  * The main controller for the application. This is the only controller in the

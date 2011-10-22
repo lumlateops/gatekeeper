@@ -36,7 +36,7 @@ import play.db.jpa.JPA;
 import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
-import bl.Utility;
+import bl.utilities.Utility;
 
 public class DealController extends Controller
 {
