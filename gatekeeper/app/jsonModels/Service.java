@@ -31,11 +31,19 @@ public class Service
 {
 	private String version = "1.1";
 	private Request request;
-//	private Response response;
 	private Map<String, List<?>> response;
-	
 	private List<Error> errors;
 
+	public Service()
+	{
+	}
+	
+	public Service(Request request, Map<String, List<?>> response)
+	{
+		this.request = request;
+		this.response = response;
+	}
+	
 	public void addError(final String code, final String message)
 	{
 		if(this.errors == null)
@@ -55,13 +63,8 @@ public class Service
 		this.response = response;
 	}
 	
-	public Service()
+	public boolean hasErrors()
 	{
-	}
-	
-	public Service(Request request, Map<String, List<?>> response)
-	{
-		this.request = request;
-		this.response = response;
+		return this.errors == null || !this.errors.isEmpty();
 	}
 }

@@ -88,7 +88,13 @@ public class BaseProvider
 																			 currentDate, currentDate, currentDate, provider).save();
 			
 			// Add new email address to queue
-			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(newAccount.id, newAccount.email, newAccount.password, newAccount.provider.name));
+			RMQProducer.publishNewEmailAccountMessage(new NewAccountMessage(
+																										newAccount.id, 
+																										newAccount.email, 
+																										newAccount.password,
+																										newAccount.dllrAccessToken, 
+																										newAccount.dllrTokenSecret,
+																										newAccount.provider.name));
 		}
 		else
 		{

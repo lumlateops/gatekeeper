@@ -12,16 +12,20 @@ public class NewAccountMessage implements Serializable
   private Long userId;
   private String email;
   private String password;
+  private String accessToken;
+  private String tokenSecret;
   private String serviceProviderName;
   
-	public NewAccountMessage(Long userId, String email, String password,
-			String serviceProviderName)
-	{
-		this.userId = userId;
-		this.email = email;
-		this.password = password;
-		this.serviceProviderName = serviceProviderName;
-	}
+  public NewAccountMessage(Long userId, String email, String password,
+  		String accessToken, String tokenSecret, String serviceProviderName)
+  {
+  	this.userId = userId;
+  	this.email = email;
+  	this.password = password;
+  	this.accessToken = accessToken;
+  	this.tokenSecret = tokenSecret;
+  	this.serviceProviderName = serviceProviderName;
+  }
 
 	public Long getUserId()
 	{
@@ -53,6 +57,26 @@ public class NewAccountMessage implements Serializable
 		this.password = password;
 	}
 
+	public String getAccessToken()
+	{
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken)
+	{
+		this.accessToken = accessToken;
+	}
+
+	public String getTokenSecret()
+	{
+		return tokenSecret;
+	}
+
+	public void setTokenSecret(String tokenSecret)
+	{
+		this.tokenSecret = tokenSecret;
+	}
+
 	public String getServiceProviderName()
 	{
 		return serviceProviderName;
@@ -68,7 +92,8 @@ public class NewAccountMessage implements Serializable
 	{
 //		return new Gson().toJson(this);
 		
-		return "NewAccountMessage [email=" + email + ", password=" + password
+		return "NewAccountMessage [email=" + email + ", password=" + password 
+				+ ", accessToken=" + accessToken + "tokenSecret=" + tokenSecret
 				+ ", serviceProviderName=" + serviceProviderName + ", userId=" + userId
 				+ "]";
 	}

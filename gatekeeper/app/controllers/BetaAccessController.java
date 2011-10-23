@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.BetaToken;
@@ -37,36 +36,17 @@ public class BetaAccessController extends BaseContoller
 		}
 		else
 		{
-			// Look up by token
-			BetaToken matchingToken = BetaToken.find("token", token).first();
-			if(matchingToken == null)
+			serviceResponse = verifyToken(token);
+			if(!serviceResponse.hasErrors())
 			{
-				//No matching token
-				serviceResponse.addError(ErrorCodes.INALID_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errors.");
-			}
-			else
-			{
-				if(!matchingToken.isActive)
-				{
-					//In active token
-					serviceResponse.addError(ErrorCodes.INACTIVE_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errrs.");
-				}
-				else if(matchingToken.isUsed)
-				{
-					//Already used token
-					serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Code already used for signing up.");
-				}
-				else
-				{
-					//Token is valid
-					response.put("tokenValid", 
-							new ArrayList<String>()
+				//Token is valid
+				response.put("tokenValid", 
+						new ArrayList<String>()
+						{
 							{
-								{
-									add(Boolean.TRUE.toString());
-								}
-							});
-				}
+								add(Boolean.TRUE.toString());
+							}
+						});
 			}
 		}
 		Long endTime = System.currentTimeMillis();
@@ -80,7 +60,37 @@ public class BetaAccessController extends BaseContoller
 		{
 			serviceResponse.setResponse(response);
 		}
+	}
+	
+	/**
+	 * Checks token validity
+	 * @param token
+	 * @return
+	 */
+	public static Service verifyToken(String token)
+	{
+		Service serviceResponse = new Service();
 		
-		renderJSON(new Message(serviceResponse));
+		// Look up by token
+		BetaToken matchingToken = BetaToken.find("token", token).first();
+		if(matchingToken == null)
+		{
+			//No matching token
+			serviceResponse.addError(ErrorCodes.INVALID_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errors.");
+		}
+		else
+		{
+			if(!matchingToken.isActive)
+			{
+				//In active token
+				serviceResponse.addError(ErrorCodes.INACTIVE_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errrs.");
+			}
+			else if(matchingToken.isUsed)
+			{
+				//Already used token
+				serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Code already used for signing up.");
+			}
+		}
+		return serviceResponse;
 	}
 }

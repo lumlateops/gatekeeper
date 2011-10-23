@@ -12,6 +12,7 @@ import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.Account;
+import models.BetaToken;
 import models.LoginHistory;
 import models.ServiceProvider;
 import models.UserInfo;
@@ -353,7 +354,8 @@ public class ApplicationController extends BaseContoller
 														 @Required(message="Facebook Id is required") @MinSize(5) Long fbUserId,
 														 String fbLocationName,
 														 Long fbLocationId,
-														 @Required(message="Facebook auth token is required")String fbAuthToken)
+														 @Required(message="Facebook auth token is required")String fbAuthToken,
+														 String betaToken)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -371,61 +373,81 @@ public class ApplicationController extends BaseContoller
 		}
 		else
 		{
-			List<UserInfo> userInfo = Collections.emptyList();
-			if(username != null && password != null)
+			//If a beta token was part of request then verify its valid
+			if(betaToken != null)
 			{
-				userInfo = UserInfo.find("userName", username).fetch();
-			}
-			else
-			{
-				userInfo = UserInfo.find("fbUserId", fbUserId).fetch();
+				serviceResponse = BetaAccessController.verifyToken(betaToken);
 			}
 			
-			if(userInfo != null && userInfo.size() > 0)
+			if(!serviceResponse.hasErrors())
 			{
-				serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
-			}
-			else
-			{
-				try
+				List<UserInfo> userInfo = Collections.emptyList();
+				if(username != null && password != null)
 				{
-					Date currentDate = new Date(System.currentTimeMillis());
-					Logger.debug("a");
-					// Create new user
-					String encryptedPassword = password;
-					if(password != null)
-					{
-						encryptedPassword = Utility.encrypt(password);
-					}
-					Logger.debug("b");
-					UserInfo newUser = new UserInfo(username, encryptedPassword, Boolean.TRUE, Boolean.FALSE, 
-							fbEmailAddress, fbUserId, fbFullName, fbLocationName, fbLocationId,
-						  gender, currentDate, currentDate, getUniqueDeallrEmailAddress(username, fbEmailAddress));
-					Logger.debug("c");
-					newUser.save();
-					Logger.debug("1");
-					// Save FB auth token
-					ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
-				  new Account(newUser, newUser.emailAddress, encryptedPassword, null, null, fbAuthToken, 
-				  						Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
-											currentDate, provider).save();
-				 	Logger.debug("2");
-				  // construct service response
-				  List<UserInfo> message = new ArrayList<UserInfo>();
-				  UserInfo recentUser = new UserInfo();
-				  recentUser.id = newUser.id;
-				  recentUser.username = newUser.username;
-				  recentUser.emailAddress = newUser.emailAddress;
-				  message.add(recentUser);
-				  response.put("user", message);
-				  Logger.debug("3");
+					userInfo = UserInfo.find("userName", username).fetch();
 				}
-				catch (Exception e)
+				else
 				{
-					Logger.error(e.toString());
-					Logger.error("Error adding user: " + e.getCause() + e.getMessage(), e);
-					serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
-																	 e.getMessage() + e.getCause());
+					userInfo = UserInfo.find("fbUserId", fbUserId).fetch();
+				}
+				
+				if(userInfo != null && userInfo.size() > 0)
+				{
+					serviceResponse.addError(ErrorCodes.DUPLICATE_USER.toString(), "This username is already registered.");
+				}
+				else
+				{
+					try
+					{
+						// Create new user
+						String encryptedPassword = password;
+						if(password != null)
+						{
+							encryptedPassword = Utility.encrypt(password);
+						}
+						
+						Date currentDate = new Date(System.currentTimeMillis());
+						UserInfo newUser = new UserInfo(username, encryptedPassword,
+								Boolean.TRUE, Boolean.FALSE, 
+								fbEmailAddress, fbUserId,
+								fbFullName, fbLocationName, 
+								fbLocationId, gender, currentDate,
+								currentDate,
+								getUniqueDeallrEmailAddress(username, fbEmailAddress));	
+						newUser.save();
+						
+						// Save FB auth token
+						ServiceProvider provider = ServiceProvider.find("name", Providers.FACEBOOK.toString()).first();
+						new Account(newUser, newUser.emailAddress, encryptedPassword, null, null, fbAuthToken, 
+								Boolean.FALSE, Boolean.TRUE, "", currentDate, currentDate, currentDate,
+								currentDate, provider).save();
+						
+						//If a beta token was part of request then mark it as used
+						if(betaToken != null)
+						{
+							BetaToken matchingToken = BetaToken.find("token", betaToken).first();
+							if(matchingToken != null)
+							{
+								matchingToken.isUsed = Boolean.TRUE;
+								matchingToken.save();
+							}
+						}
+						
+						// construct service response
+						List<UserInfo> message = new ArrayList<UserInfo>();
+						UserInfo recentUser = new UserInfo();
+						recentUser.id = newUser.id;
+						recentUser.username = newUser.username;
+						recentUser.emailAddress = newUser.emailAddress;
+						message.add(recentUser);
+						response.put("user", message);
+					}
+					catch (Exception e)
+					{
+						Logger.error("Error adding user: " + e.getCause() + e.getMessage(), e);
+						serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
+								e.getMessage() + e.getCause());
+					}
 				}
 			}
 		}
@@ -453,6 +475,7 @@ public class ApplicationController extends BaseContoller
 			parameters.put("fbLocationId", "null");			
 		}
 		parameters.put("fbAuthToken", fbAuthToken);
+		parameters.put("betaToken", betaToken);
 		Request request = new Request(isValidRequest, "addUser", endTime - startTime, parameters);
 
 		serviceResponse.setRequest(request);
