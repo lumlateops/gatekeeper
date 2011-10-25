@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.BetaToken;
@@ -60,6 +61,7 @@ public class BetaAccessController extends BaseContoller
 		{
 			serviceResponse.setResponse(response);
 		}
+		renderJSON(new Message(serviceResponse));
 	}
 	
 	/**

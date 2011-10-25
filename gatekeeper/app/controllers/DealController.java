@@ -111,42 +111,10 @@ public class DealController extends BaseContoller
 				if(onePageDeals != null && onePageDealsCount != 0)
 				{
 					final long pageCount = (allDealsCount/PAGE_SIZE) > 0 ? (allDealsCount/PAGE_SIZE) : 1;
-					//Create the response object
 					List<UserDealsResponse> dealsResponse = new ArrayList<UserDealsResponse>();
-					for (Deal deal : onePageDeals)
-					{
-						boolean isExpired = true;
-						if(deal.expiryDate != null)
-						{
-							try
-							{
-								DateTime expiry = new DateTime(deal.expiryDate, ISOChronology.getInstanceUTC());
-								isExpired = expiry.isBeforeNow();
-							}catch(Exception ex)
-							{
-								Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate);
-							}
-						}
-						//Get products
-						List<UserDealProductResponse> products = new ArrayList<UserDealProductResponse>();
-						if(deal.products != null)
-						{
-							for (Product product : deal.products)
-							{
-								products.add(new UserDealProductResponse(product));
-							}
-						}
-						//Get categories
-						List<UserDealCategoryResponse> categories = new ArrayList<UserDealCategoryResponse>();
-						if(deal.category != null)
-						{
-							for (DealCategory category : deal.category)
-							{
-								categories.add(new UserDealCategoryResponse(category));
-							}
-						}
-						dealsResponse.add(new UserDealsResponse(deal, isExpired, products, categories)); 
-					}
+					constructDealResponse(onePageDeals, dealsResponse);
+					
+					//Create the response object
 					response.put("numberOfResults", 
 							new ArrayList<String>()
 							{
@@ -228,7 +196,7 @@ public class DealController extends BaseContoller
 		}
 		renderJSON(new Message(serviceResponse));	
 	}
-	
+
 	/**
 	 * End point to mark deals as read.
 	 * @param userId: Id of the user we want to get deals for.
@@ -499,10 +467,12 @@ public class DealController extends BaseContoller
 	}
 	
 	/**
+	 * TODO: Take flag to know if details are for user or shareurl. Strip email id from email content if for details
 	 * End point to get all the details for a deal
 	 * @param dealIds: Id of the user deal.
 	 */
-	public static void getDealDetails(@Required(message="dealId is required")Long dealId)
+	public static void getDealDetails(@Required(message="dealId is required")Long dealId,
+																		Boolean isShareDetail)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -524,6 +494,11 @@ public class DealController extends BaseContoller
 			final Deal deal = Deal.find("id", dealId).first();
 			if(deal != null)
 			{
+				//Strip user email from content if share detail
+				if(isShareDetail != null && isShareDetail)
+				{
+					
+				}
 				response.put("deal", 
 						new ArrayList<Deal>()
 						{
@@ -561,7 +536,7 @@ public class DealController extends BaseContoller
 	 * End point to get all the details for a deal by shareurl
 	 * @param shareUrl
 	 */
-	public static void getDealDetailsByShareUrl(@Required(message="share url is required")String shareUrl)
+	public static void getDealDetailsByShareUrl(@Required(message="Share url is required")String shareUrl)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -583,13 +558,11 @@ public class DealController extends BaseContoller
 			final Deal deal = Deal.find("shareUrl", shareUrl).first();
 			if(deal != null)
 			{
-				response.put("deal", 
-						new ArrayList<Deal>()
-						{
-							{
-								add(deal);
-							}
-						});
+				ArrayList<UserDealsResponse> dealResponse = new ArrayList<UserDealsResponse>();
+				List<Deal> deals = new ArrayList<Deal>();
+				deals.add(deal);
+				constructDealResponse(deals, dealResponse);
+				response.put("deal", dealResponse);
 			}
 			else
 			{
@@ -608,5 +581,52 @@ public class DealController extends BaseContoller
 			serviceResponse.setResponse(response);
 		}
 		renderJSON(new Message(serviceResponse));	
+	}
+	
+	/**
+	 * Constructs and populates the deals response for incoming deals.
+	 * @param dealsToParse
+	 * @param dealsResponse
+	 */
+	private static void constructDealResponse(List<Deal> dealsToParse, 
+																						List<UserDealsResponse> dealsResponse)
+	{
+		if(dealsToParse != null)
+		{
+			for (Deal deal : dealsToParse)
+			{
+				boolean isExpired = false;
+				if(deal.expiryDate != null)
+				{
+					try
+					{
+						DateTime expiry = new DateTime(deal.expiryDate, ISOChronology.getInstanceUTC());
+						isExpired = expiry.isBeforeNow();
+					}catch(Exception ex)
+					{
+						Logger.error("Error trying to determine expiry time for expiry date: " + deal.expiryDate + ". Assuming not expired.");
+					}
+				}
+				//Get products
+				List<UserDealProductResponse> products = new ArrayList<UserDealProductResponse>();
+				if(deal.products != null)
+				{
+					for (Product product : deal.products)
+					{
+						products.add(new UserDealProductResponse(product));
+					}
+				}
+				//Get categories
+				List<UserDealCategoryResponse> categories = new ArrayList<UserDealCategoryResponse>();
+				if(deal.category != null)
+				{
+					for (DealCategory category : deal.category)
+					{
+						categories.add(new UserDealCategoryResponse(category));
+					}
+				}
+				dealsResponse.add(new UserDealsResponse(deal, isExpired, products, categories)); 
+			}
+		}
 	}
 }

@@ -20,18 +20,18 @@ public class BetaToken extends Model
 	public Boolean	isUsed;
 	//User who uses this token to register
 	@OneToOne
-	public UserInfo	userId;
+	public UserInfo	userInfo;
 	//The email address this token was sent to for invitation.
 	@Email
 	public String		emailSentTo;
 	
 	public BetaToken(String token, Boolean isActive, Boolean isUsed,
-			UserInfo userId, String emailSentTo)
+			UserInfo userInfo, String emailSentTo)
 	{
 		this.token = token;
 		this.isActive = isActive;
 		this.isUsed = isUsed;
-		this.userId = userId;
+		this.userInfo = userInfo;
 		this.emailSentTo = emailSentTo;
 	}
 }
