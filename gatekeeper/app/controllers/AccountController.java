@@ -18,9 +18,9 @@ import play.Play;
 import play.data.validation.Email;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import bl.providers.BaseProvider;
 import bl.providers.GmailProvider;
-import bl.providers.MSNProvider;
+
+import com.google.gdata.client.authn.oauth.OAuthException;
 
 public class AccountController extends BaseContoller
 {
@@ -36,13 +36,13 @@ public class AccountController extends BaseContoller
 	 */
 	public static void addEmail(@Required(message="UserId is required") Long userId,
 															@Required(message="Email provider is required") String provider,
-															@Required(message="Email is required")@Email String email,
-															@Required(message="Password is required") String password)
+															@Email String email, String password)
 	{
 		Long startTime = System.currentTimeMillis();
 		
 		Boolean isValidRequest = Boolean.TRUE;
 		Service serviceResponse = new Service();
+		List<String> authMessage = new ArrayList<String>();
 		Map<String, List<?>> response = new HashMap<String, List<?>>();
 		
 		if(Validation.hasErrors())
@@ -56,11 +56,7 @@ public class AccountController extends BaseContoller
 		else
 		{
 			// Go to correct provider
-			if(provider != null && 
-				 (Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()) || 
-				  Providers.HOTMAIL.toString().equalsIgnoreCase(provider.trim())
-				 )
-				)
+			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				Logger.debug("AE: Registering a " + provider + " email account.");
 
@@ -70,43 +66,65 @@ public class AccountController extends BaseContoller
 				if(!maxAccountcountReached)
 				{
 					//Check if account exists and is still valid
-					boolean isDuplicate = isDuplicateAccount(email);
+					boolean isAuthorized = GmailProvider.isAccountAuthorized(userId, email);
 	
-					Logger.debug("AE: isDuplicate: " + isDuplicate);
+					Logger.debug("AE: isAuthorized: " + isAuthorized);
 	
 					//Account not present or invalid, then get a new one and store it
-					if(!isDuplicate)
+					if(!isAuthorized)
 					{
 						try
 						{
-							if(Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
-							{
-									GmailProvider.createAccount(userId, email, password);
-							}
-							else if(Providers.HOTMAIL.toString().equalsIgnoreCase(provider.trim()))
-							{
-								MSNProvider.createAccount(userId, email, password);
-							}
-							response.put("status", 
-									new ArrayList<String>()
-									{
-										{
-											add("ok");
-										}
-									});
+							String authUrl = GmailProvider.authorizeAccount(userId, email);
+							Logger.debug("Auth url: "+authUrl);
+							authMessage.add(authUrl);
+							response.put("AuthUrl", authMessage);
 						}
-						catch (Exception e)
+						catch (OAuthException e)
 						{
 							Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
 							serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
-																			 e.getMessage() + e.getCause());
+																		 	 e.getMessage() + e.getCause());
 						}
 					}
 					else
 					{
-						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
-																		 "Account registered already");
+						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), "Account registered already");
 					}
+//					//Check if account exists and is still valid
+//					boolean isDuplicate = isDuplicateAccount(email);
+//	
+//					Logger.debug("AE: isDuplicate: " + isDuplicate);
+//	
+//					//Account not present or invalid, then get a new one and store it
+//					if(!isDuplicate)
+//					{
+//						try
+//						{
+//							if(Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
+//							{
+//									GmailProvider.createAccount(userId, email, password);
+//							}
+//							response.put("status", 
+//									new ArrayList<String>()
+//									{
+//										{
+//											add("ok");
+//										}
+//									});
+//						}
+//						catch (Exception e)
+//						{
+//							Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
+//							serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
+//																			 e.getMessage() + e.getCause());
+//						}
+//					}
+//					else
+//					{
+//						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
+//																		 "Account registered already");
+//					}
 				}
 				else
 				{
@@ -211,10 +229,9 @@ public class AccountController extends BaseContoller
 	 * @param email
 	 * @param requestToken
 	 */
-	@Deprecated
 	public static void upgradeToken(@Required(message="userId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Email is required")@Email String email,
+			@Required(message="Account id is required") Long accountId,
 			@Required(message="Query string needed for upgrading")String queryString)
 	{
 		Long startTime = System.currentTimeMillis();
@@ -237,7 +254,7 @@ public class AccountController extends BaseContoller
 			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
-				response = GmailProvider.upgradeToken(userId, email, queryString, serviceResponse);
+				response = GmailProvider.upgradeToken(userId, accountId, queryString, serviceResponse);
 			}
 			else
 			{
@@ -255,7 +272,14 @@ public class AccountController extends BaseContoller
 			parameters.put("userId", "null");
 		}
 		parameters.put("provider", provider);
-		parameters.put("email", email);
+		if(accountId != null)
+		{
+			parameters.put("accountId", accountId.toString());
+		}
+		else
+		{
+			parameters.put("accountId", "null");
+		}
 		parameters.put("queryString", queryString);
 		Request request = new Request(isValidRequest, "upgradeToken", endTime-startTime, parameters);
 		
@@ -274,7 +298,6 @@ public class AccountController extends BaseContoller
 	 * @param provider
 	 * @param email
 	 */
-	@Deprecated
 	public static void revokeAccess(@Required(message="UserId is required") Long userId,
 			@Required(message="UserId is required") String password,
 			@Required(message="Email provider is required") String provider,
@@ -360,7 +383,7 @@ public class AccountController extends BaseContoller
 			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
-				response = BaseProvider.isAccountAuthorized(userId, email, serviceResponse);
+				response = GmailProvider.isAccountAuthorized(userId, email, serviceResponse);
 			}
 			else
 			{

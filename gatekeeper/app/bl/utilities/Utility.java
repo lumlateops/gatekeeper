@@ -51,9 +51,9 @@ public class Utility
 	
 	public static void logRequest()
 	{
-		Logger.debug("-----------------BEGIN REQUEST INFO-----------------");
+		Logger.info("-----------------BEGIN REQUEST INFO-----------------");
 		play.mvc.Http.Request currentRequest = play.mvc.Http.Request.current();
-		Logger.debug("Request end point: " + currentRequest.action);
+		Logger.info("Request end point: " + currentRequest.action);
 		Map<String, String[]> requestParams = currentRequest.params.all();
 		for (String key : requestParams.keySet())
 		{
@@ -64,7 +64,7 @@ public class Utility
 				{
 					value = "******";
 				}
-				Logger.debug(key + ": '"+ value + "'");
+				Logger.info(key + ": '"+ value + "'");
 			}
 		}
 	}
@@ -72,7 +72,7 @@ public class Utility
 	public static void logResponse()
 	{
 		play.mvc.Http.Response currentResponse = play.mvc.Http.Response.current();
-		Logger.debug("Response status: " + currentResponse.status);
+		Logger.info("Response status: " + currentResponse.status);
 	}
 	
 	private static String base64Encode(byte[] bytes)

@@ -411,8 +411,7 @@ public class ApplicationController extends BaseContoller
 								Boolean.TRUE, Boolean.FALSE, 
 								fbEmailAddress, fbUserId,
 								fbFullName, fbLocationName, 
-								fbLocationId, gender, currentDate,
-								currentDate,
+								fbLocationId, gender, currentDate, currentDate,
 								getUniqueDeallrEmailAddress(username, fbEmailAddress));	
 						newUser.save();
 						
