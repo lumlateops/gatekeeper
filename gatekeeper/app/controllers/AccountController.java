@@ -35,8 +35,7 @@ public class AccountController extends BaseContoller
 	 * @param author
 	 */
 	public static void addEmail(@Required(message="UserId is required") Long userId,
-															@Required(message="Email provider is required") String provider,
-															@Email String email, String password)
+															@Required(message="Email provider is required") String provider)
 	{
 		Long startTime = System.currentTimeMillis();
 		
@@ -66,7 +65,7 @@ public class AccountController extends BaseContoller
 				if(!maxAccountcountReached)
 				{
 					//Check if account exists and is still valid
-					boolean isAuthorized = GmailProvider.isAccountAuthorized(userId, email);
+					boolean isAuthorized = GmailProvider.isAccountAuthorized(userId, "");
 	
 					Logger.debug("AE: isAuthorized: " + isAuthorized);
 	
@@ -75,7 +74,7 @@ public class AccountController extends BaseContoller
 					{
 						try
 						{
-							String authUrl = GmailProvider.authorizeAccount(userId, email);
+							String authUrl = GmailProvider.authorizeAccount(userId, "");
 							Logger.debug("Auth url: "+authUrl);
 							authMessage.add(authUrl);
 							response.put("AuthUrl", authMessage);
@@ -149,8 +148,6 @@ public class AccountController extends BaseContoller
 			parameters.put("userId", "null");
 		}
 		parameters.put("provider", provider);
-		parameters.put("email", email);
-		parameters.put("password", password);
 		Request request = new Request(isValidRequest, "addEmail", endTime-startTime, parameters);
 		
 		serviceResponse.setRequest(request);

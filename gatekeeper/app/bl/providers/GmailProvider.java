@@ -14,16 +14,14 @@ import models.enums.ErrorCodes;
 import models.enums.Providers;
 import play.Logger;
 import play.libs.WS;
-import play.libs.OAuth.ServiceInfo;
-import play.libs.OAuth.TokenPair;
 import play.libs.WS.HttpResponse;
-import play.libs.WS.WSRequest;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer;
 import com.google.gdata.client.authn.oauth.OAuthParameters.OAuthType;
+import com.google.gson.JsonElement;
 
 public class GmailProvider extends BaseProvider
 {
@@ -33,6 +31,8 @@ public class GmailProvider extends BaseProvider
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
 	private static final GoogleOAuthHelper oauthHelper;
+	
+	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.id IS ? AND u.userInfo.id IS ?";
 	
 	// Initialize tokens
 	static
@@ -90,7 +90,7 @@ public class GmailProvider extends BaseProvider
 	public static String authorizeAccount(Long userId, String email) throws OAuthException
 	{
 		GoogleOAuthParameters oauthParameters = getAuthParams();
-		oauthParameters.setOAuthCallback("http://gatekeeper.deallr.com:9000/account/upgradeEmailToken/" + userId + "/gmail/");
+		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/");
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
 
@@ -98,7 +98,7 @@ public class GmailProvider extends BaseProvider
 		Date current = new Date(System.currentTimeMillis());
 		String tokenSecret = oauthParameters.getOAuthTokenSecret();
 		UserInfo userInfo = UserInfo.find("id", userId).first();
-		new Account(userInfo, email, null, null, tokenSecret, null, true, true, null, 
+		new Account(userInfo, null, null, null, tokenSecret, null, true, true, null, 
 							  current, null, current, current, gmailProvider).save();
 		return requestUrl;
 	}
@@ -118,62 +118,60 @@ public class GmailProvider extends BaseProvider
 		
 		try
 		{
-			List<Account> accounts =  Account.find("id", accountId).fetch();
-			if(accounts != null && accounts.size() == 1)
+			// Make sure userId matches
+			Account account =  Account.find(ACCOUNT_LOOKUP_HQL, accountId, userId).first();
+			if(account != null)
 			{
-				Account account = accounts.get(0);
+				//Get access token
+				GoogleOAuthParameters oauthParameters = getAuthParams();
+				oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+				oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
+				String token = oauthHelper.getAccessToken(oauthParameters);
+				oauthParameters.setOAuthToken(token);
+				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_END_POINT, "GET", oauthParameters);
 				
-				// Make sure userId matches
-				if(account.userInfo.id == userId)
+				//Get authorized email account
+				String email = "";
+				try
 				{
-					//Get access token
-					GoogleOAuthParameters oauthParameters = getAuthParams();
-					oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
-					oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
-					String token = oauthHelper.getAccessToken(oauthParameters);
-					
-					//Get authorized email account
-					String email = "";
-					ServiceInfo oauthInfo = new ServiceInfo(oauthHelper.getRequestTokenUrl(), 
-																									oauthHelper.getAccessTokenUrl(), 
-																									null, CONSUMER_KEY, CONSUMER_SECRET);
-					TokenPair oauthTokens = new TokenPair(token, account.dllrTokenSecret);
-					try
+					HttpResponse httpResponse = WS.url(GOOGLE_EMAIL_END_POINT).setHeader("Authorization", header).get();
+					if(httpResponse.getStatus() != 200)
 					{
-						Map<String, Object> parameters = new HashMap<String, Object>();
-						parameters.put("oauth_version", "1.0");
-						parameters.put("oauth_nonce", oauthParameters.getOAuthNonce());
-						parameters.put("oauth_timestamp", oauthParameters.getOAuthTimestamp());
-						parameters.put("oauth_consumer_key", oauthParameters.getOAuthConsumerKey());
-						parameters.put("oauth_token", oauthParameters.getOAuthToken());
-						parameters.put("oauth_signature_method", oauthParameters.getOAuthSignatureMethod());
-						parameters.put("oauth_signature", oauthParameters.getOAuthSignature());
-						parameters.put("v", "2");
-						
-						WSRequest url = WS.url(GOOGLE_EMAIL_END_POINT).params(parameters);
-						HttpResponse httpResponse = url.get();
-						Logger.debug("Response status: " + httpResponse.getStatus());
-						String json = httpResponse.getString();
-						Logger.debug(""+json);
+						returnMessage = "Couldn't get email address for account.";
+						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Couldn't get email address for account");
 					}
-					catch(Exception ex)
+					else
 					{
-						Logger.error(ex, returnMessage);
+						// {"data":{"email": "praachee@gmail.com","isVerified": true}}
+						JsonElement json = httpResponse.getJson();
+						JsonElement data = json.getAsJsonObject().get("data");
+						boolean isVerified = data.getAsJsonObject().get("isVerified").getAsBoolean();
+						if(isVerified)
+						{
+							email = data.getAsJsonObject().get("email").getAsString();
+						}
+						else
+						{
+							returnMessage = "Email account being upgraded is not verified.";
+							serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Email account being upgraded is not verified");
+						}
 					}
-					
-					//Update account details
-					account.dllrAccessToken = token;
-//					account.email = email;
-					account.save();
 				}
-				else
+				catch(Exception ex)
 				{
-					returnMessage = "No matching account found";
-					serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+					Logger.error(ex.getMessage() + " :: " + ex.getCause(), ex);
+					returnMessage = "Error upgrading token.";
+					serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Error upgrading google access token.");
 				}
+				
+				//Update account details
+				account.dllrAccessToken = token;
+				account.email = email;
+				account.save();
 			}
 			else
 			{
+				returnMessage = "No matching account found";
 				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
 			}
 			
