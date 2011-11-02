@@ -355,7 +355,7 @@ public class ApplicationController extends BaseContoller
 														 String fbLocationName,
 														 Long fbLocationId,
 														 @Required(message="Facebook auth token is required")String fbAuthToken,
-														 String betaToken)
+														 @Required(message="Beta invite code missing")String betaToken)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
