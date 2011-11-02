@@ -3,3 +3,4 @@
 require:
     - play
     - play -> rabbitmq 0.0.9
+    - play -> betterlogs 1.0
