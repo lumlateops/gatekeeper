@@ -7,8 +7,17 @@ public class UniqueTokenGenerator
 {
 	private SecureRandom random = new SecureRandom();
 
-  public String nextSessionId()
+  public String nextToken()
   {
-    return new BigInteger(130, random).toString(32);
+    return new BigInteger(30, random).toString(32);
   }
+  
+  public static void main(String[] args)
+	{
+  	UniqueTokenGenerator tgen = new UniqueTokenGenerator();
+  	for(int ctr=0; ctr<150; ctr++)
+  	{
+  		System.out.println(tgen.nextToken());
+  	}
+	}
 }
