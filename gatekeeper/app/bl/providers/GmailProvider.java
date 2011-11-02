@@ -164,9 +164,10 @@ public class GmailProvider extends BaseProvider
 							email = data.getAsJsonObject().get("email").getAsString();
 							
 							//Add new email address to queue
-							NewAccountMessage message = new NewAccountMessage(account.id, account.email, 
-																																account.password, account.dllrAccessToken, 
-																																account.dllrTokenSecret,account.provider.name);
+							NewAccountMessage message = new NewAccountMessage(account.id, email, 
+																																account.password, token, 
+																																account.dllrTokenSecret,
+																																account.provider.name);
 							RMQProducer.publishNewEmailAccountMessage(message);
 							
 							//Add email address to response
