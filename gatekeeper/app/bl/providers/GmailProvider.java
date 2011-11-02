@@ -92,18 +92,25 @@ public class GmailProvider extends BaseProvider
 	 */
 	public static String authorizeAccount(Long userId, String email) throws OAuthException
 	{
-		String callbackUrl = CALLBACK_URL_BEGIN + userId + CALLBACK_URL_END;
+		// Store the information, leaving the access token blank
 		GoogleOAuthParameters oauthParameters = getAuthParams();
+		Date current = new Date(System.currentTimeMillis());
+		UserInfo userInfo = UserInfo.find("id", userId).first();
+		Account account = new Account(userInfo, null, null, null, null, null, true, true, null, 
+							  									current, null, current, current, gmailProvider);
+		account.save();
+		
+		//Create the request url
+		String callbackUrl = CALLBACK_URL_BEGIN + userId + "/" + account.id + CALLBACK_URL_END;
 		oauthParameters.setOAuthCallback(callbackUrl);
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
-
-		// Store the information, leaving the access token blank
-		Date current = new Date(System.currentTimeMillis());
+		
+		//Update token secret
 		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		UserInfo userInfo = UserInfo.find("id", userId).first();
-		new Account(userInfo, null, null, null, tokenSecret, null, true, true, null, 
-							  current, null, current, current, gmailProvider).save();
+		account.dllrTokenSecret = tokenSecret;
+		account.save();
+		
 		return requestUrl;
 	}
 	
