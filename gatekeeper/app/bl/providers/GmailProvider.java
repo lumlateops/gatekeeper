@@ -13,6 +13,7 @@ import models.UserInfo;
 import models.enums.ErrorCodes;
 import models.enums.Providers;
 import play.Logger;
+import play.Play;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 
@@ -25,8 +26,10 @@ import com.google.gson.JsonElement;
 
 public class GmailProvider extends BaseProvider
 {
-	private static final String	GOOGLE_EMAIL_END_POINT	= "https://www.googleapis.com/userinfo/email?alt=json";
-	private static final String	SCOPE	= "https://mail.google.com/ https://www.googleapis.com/auth/userinfo.email";
+	private static final String	GOOGLE_EMAIL_INFO_SCOPE	= (String)Play.configuration.get("google.email.info.scope"); //"https://www.googleapis.com/userinfo/email?alt=json";
+	private static final String	GOOGLE_MAIL_SCOPE	= (String)Play.configuration.get("google.mail.scope"); //"https://mail.google.com/ https://www.googleapis.com/auth/userinfo.email";
+	private static final String	CALLBACK_URL_BEGIN	= (String)Play.configuration.get("google.callback.url.begin"); //"http://dev.deallr.com/account/upgradeEmailToken/"
+	private static final String	CALLBACK_URL_END	= (String)Play.configuration.get("google.callback.url.end"); //"/gmail/"
 	private static final String CONSUMER_KEY;
 	private static final String CONSUMER_SECRET;
 	private static final ServiceProvider gmailProvider;
@@ -89,8 +92,9 @@ public class GmailProvider extends BaseProvider
 	 */
 	public static String authorizeAccount(Long userId, String email) throws OAuthException
 	{
+		String callbackUrl = CALLBACK_URL_BEGIN + userId + CALLBACK_URL_END;
 		GoogleOAuthParameters oauthParameters = getAuthParams();
-		oauthParameters.setOAuthCallback("http://dev.deallr.com/account/upgradeEmailToken/" + userId + "/gmail/");
+		oauthParameters.setOAuthCallback(callbackUrl);
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
 		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
 
@@ -128,17 +132,17 @@ public class GmailProvider extends BaseProvider
 				oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
 				String token = oauthHelper.getAccessToken(oauthParameters);
 				oauthParameters.setOAuthToken(token);
-				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_END_POINT, "GET", oauthParameters);
+				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_INFO_SCOPE, "GET", oauthParameters);
 				
 				//Get authorized email account
 				String email = "";
 				try
 				{
-					HttpResponse httpResponse = WS.url(GOOGLE_EMAIL_END_POINT).setHeader("Authorization", header).get();
+					HttpResponse httpResponse = WS.url(GOOGLE_EMAIL_INFO_SCOPE).setHeader("Authorization", header).get();
 					if(httpResponse.getStatus() != 200)
 					{
 						returnMessage = "Couldn't get email address for account.";
-						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Couldn't get email address for account");
+						serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Couldn't get email address for account.");
 					}
 					else
 					{
@@ -149,11 +153,15 @@ public class GmailProvider extends BaseProvider
 						if(isVerified)
 						{
 							email = data.getAsJsonObject().get("email").getAsString();
+							
+							List<String> emailMessage = new ArrayList<String>();
+							emailMessage.add(email);
+							response.put("email", emailMessage);
 						}
 						else
 						{
 							returnMessage = "Email account being upgraded is not verified.";
-							serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Email account being upgraded is not verified");
+							serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Email account being added is not verified.");
 						}
 					}
 				}
@@ -161,7 +169,7 @@ public class GmailProvider extends BaseProvider
 				{
 					Logger.error(ex.getMessage() + " :: " + ex.getCause(), ex);
 					returnMessage = "Error upgrading token.";
-					serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Error upgrading google access token.");
+					serviceResponse.addError(ErrorCodes.OAUTH_EXCEPTION.toString(), "Error getting access to Gmail account.");
 				}
 				
 				//Update account details
@@ -258,7 +266,7 @@ public class GmailProvider extends BaseProvider
 	private static GoogleOAuthParameters getAuthParams()
 	{
 		GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
-		oauthParameters.setScope(SCOPE);
+		oauthParameters.setScope(GOOGLE_MAIL_SCOPE);
 		oauthParameters.setOAuthConsumerKey(CONSUMER_KEY);
 		oauthParameters.setOAuthConsumerSecret(CONSUMER_SECRET);
 		oauthParameters.setOAuthType(OAuthType.THREE_LEGGED_OAUTH);
