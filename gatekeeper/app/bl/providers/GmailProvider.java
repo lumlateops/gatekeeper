@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jsonModels.Service;
 import models.Account;
+import models.NewAccountMessage;
 import models.ServiceProvider;
 import models.UserInfo;
 import models.enums.ErrorCodes;
@@ -16,6 +17,7 @@ import play.Logger;
 import play.Play;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
+import bl.RMQProducer;
 
 import com.google.gdata.client.authn.oauth.GoogleOAuthHelper;
 import com.google.gdata.client.authn.oauth.GoogleOAuthParameters;
@@ -161,6 +163,13 @@ public class GmailProvider extends BaseProvider
 						{
 							email = data.getAsJsonObject().get("email").getAsString();
 							
+							//Add new email address to queue
+							NewAccountMessage message = new NewAccountMessage(account.id, account.email, 
+																																account.password, account.dllrAccessToken, 
+																																account.dllrTokenSecret,account.provider.name);
+							RMQProducer.publishNewEmailAccountMessage(message);
+							
+							//Add email address to response
 							List<String> emailMessage = new ArrayList<String>();
 							emailMessage.add(email);
 							response.put("email", emailMessage);
