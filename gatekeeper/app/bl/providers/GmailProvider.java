@@ -164,7 +164,7 @@ public class GmailProvider extends BaseProvider
 							email = data.getAsJsonObject().get("email").getAsString();
 							
 							//Add new email address to queue
-							NewAccountMessage message = new NewAccountMessage(account.id, email, 
+							NewAccountMessage message = new NewAccountMessage(userId, email, 
 																																account.password, token, 
 																																account.dllrTokenSecret,
 																																account.provider.name);
