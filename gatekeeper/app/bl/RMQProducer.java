@@ -1,12 +1,8 @@
 package bl;
 
-import java.io.IOException;
-
+import models.NewAccountMessage;
 import play.Logger;
 import play.Play;
-import play.modules.rabbitmq.producer.RabbitMQPublisher;
-
-import models.NewAccountMessage;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -42,7 +38,7 @@ public class RMQProducer
 			if(channel != null)
 			{
 				channel.queueDeclare(queueName, true, false, false, null);
-				Logger.debug("Posting the following to queue: " + message.toString());
+				Logger.info("Posting the following to queue: " + message.toString());
 				channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message.toString().getBytes());
 			}
 			else
