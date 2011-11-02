@@ -26,7 +26,7 @@ public class AccountController extends BaseContoller
 {
 	private static final int MAX_USER_ACCOUNTS = Integer.parseInt((String)Play.configuration.get("max.user.accounts"));
 	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.provider IS ? ";
-	private static final String	ACTIVE_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 1";
+	private static final String	ACTIVE_REGISTERED_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 1";
 	private static final String	DEALLR_ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND u.active IS 1 AND u.registeredEmail IS 0";
 	
 	/**
@@ -580,9 +580,23 @@ public class AccountController extends BaseContoller
 	 */
 	private static boolean isMaxAccountCountReached(Long userId)
 	{
+		int accountCount = 0;
 		boolean maxAccountcountReached = false;
-		List<Account> accounts = Account.find(ACTIVE_ACCOUNT_LOOKUP_HQL, userId).fetch();
-		if(accounts != null && !accounts.isEmpty() && accounts.size() >= MAX_USER_ACCOUNTS)
+		List<Account> accounts = Account.find(ACTIVE_REGISTERED_ACCOUNT_LOOKUP_HQL, userId).fetch();
+		if(accounts != null && accounts.size() >= MAX_USER_ACCOUNTS)
+		{
+			for (Account account : accounts)
+			{
+				if(account.dllrAccessToken != null && 
+					 !account.dllrAccessToken.isEmpty() && 
+					 account.dllrTokenSecret != null && 
+					 !account.dllrTokenSecret.isEmpty())
+				{
+					accountCount++;
+				}
+			}
+		}
+		if(accountCount >= MAX_USER_ACCOUNTS)
 		{
 			maxAccountcountReached = true;
 		}
