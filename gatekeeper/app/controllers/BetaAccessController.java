@@ -78,19 +78,19 @@ public class BetaAccessController extends BaseContoller
 		if(matchingToken == null)
 		{
 			//No matching token
-			serviceResponse.addError(ErrorCodes.INVALID_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errors.");
+			serviceResponse.addError(ErrorCodes.INVALID_BETA_TOKEN.toString(), "Invalid beta invite code.");
 		}
 		else
 		{
 			if(!matchingToken.isActive)
 			{
 				//In active token
-				serviceResponse.addError(ErrorCodes.INACTIVE_BETA_TOKEN.toString(), "Invalid sign up code. Please make sure there are no typing errrs.");
+				serviceResponse.addError(ErrorCodes.INACTIVE_BETA_TOKEN.toString(), "Invalid beta invite code.");
 			}
 			else if(matchingToken.isUsed)
 			{
 				//Already used token
-				serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Code already used for signing up.");
+				serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Sorry, this invite code has already been used.");
 			}
 		}
 		return serviceResponse;

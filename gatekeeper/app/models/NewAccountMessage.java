@@ -93,7 +93,7 @@ public class NewAccountMessage implements Serializable
 //		return new Gson().toJson(this);
 		
 		return "NewAccountMessage [email=" + email + ", password=" + password 
-				+ ", accessToken=" + accessToken + ", tokenSecret=" + tokenSecret
+				+ ", dllrAccessToken=" + accessToken + ", dllrTokenSecret=" + tokenSecret
 				+ ", serviceProviderName=" + serviceProviderName + ", userId=" + userId
 				+ "]";
 	}
