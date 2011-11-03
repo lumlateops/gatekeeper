@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
 
 public class GmailProvider extends BaseProvider
 {
-	private static final String	GOOGLE_EMAIL_INFO_SCOPE	= (String)Play.configuration.get("google.email.info.scope"); //"https://www.googleapis.com/userinfo/email?alt=json";
+	private static final String	GOOGLE_EMAIL_INFO_URL	= (String)Play.configuration.get("google.email.info.url"); //"https://www.googleapis.com/userinfo/email?alt=json";
 	private static final String	GOOGLE_MAIL_SCOPE	= (String)Play.configuration.get("google.mail.scope"); //"https://mail.google.com/ https://www.googleapis.com/auth/userinfo.email";
 	private static final String	CALLBACK_URL_BEGIN	= (String)Play.configuration.get("google.callback.url.begin"); //"http://dev.deallr.com/account/upgradeEmailToken/"
 	private static final String	CALLBACK_URL_END	= (String)Play.configuration.get("google.callback.url.end"); //"/gmail/"
@@ -140,14 +140,15 @@ public class GmailProvider extends BaseProvider
 				oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
 				oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
 				String token = oauthHelper.getAccessToken(oauthParameters);
+				String tokenSecret = oauthParameters.getOAuthTokenSecret();
 				oauthParameters.setOAuthToken(token);
-				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_INFO_SCOPE, "GET", oauthParameters);
+				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_INFO_URL, "GET", oauthParameters);
 				
 				//Get authorized email account
 				String email = "";
 				try
 				{
-					HttpResponse httpResponse = WS.url(GOOGLE_EMAIL_INFO_SCOPE).setHeader("Authorization", header).get();
+					HttpResponse httpResponse = WS.url(GOOGLE_EMAIL_INFO_URL).setHeader("Authorization", header).get();
 					if(httpResponse.getStatus() != 200)
 					{
 						returnMessage = "Couldn't get email address for account.";
@@ -165,8 +166,8 @@ public class GmailProvider extends BaseProvider
 							
 							//Add new email address to queue
 							NewAccountMessage message = new NewAccountMessage(userId, email, 
-																																account.password, token, 
-																																account.dllrTokenSecret,
+																																account.password, 
+																																token, tokenSecret,
 																																account.provider.name);
 							RMQProducer.publishNewEmailAccountMessage(message);
 							
@@ -191,6 +192,7 @@ public class GmailProvider extends BaseProvider
 				
 				//Update account details
 				account.dllrAccessToken = token;
+				account.dllrTokenSecret = tokenSecret;
 				account.email = email;
 				account.save();
 			}
