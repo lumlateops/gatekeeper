@@ -87,11 +87,11 @@ public class BetaAccessController extends BaseContoller
 				//In active token
 				serviceResponse.addError(ErrorCodes.INACTIVE_BETA_TOKEN.toString(), "Invalid beta invite code.");
 			}
-			else if(matchingToken.isUsed)
-			{
-				//Already used token
-				serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Sorry, this invite code has already been used.");
-			}
+//			else if(matchingToken.isUsed)
+//			{
+//				//Already used token
+//				serviceResponse.addError(ErrorCodes.USED_BETA_TOKEN.toString(), "Sorry, this invite code has already been used.");
+//			}
 		}
 		return serviceResponse;
 	}

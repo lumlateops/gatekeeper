@@ -12,7 +12,6 @@ import jsonModels.Message;
 import jsonModels.Request;
 import jsonModels.Service;
 import models.Account;
-import models.BetaToken;
 import models.LoginHistory;
 import models.ServiceProvider;
 import models.UserInfo;
@@ -422,15 +421,15 @@ public class ApplicationController extends BaseContoller
 								currentDate, provider).save();
 						
 						//If a beta token was part of request then mark it as used
-						if(betaToken != null)
-						{
-							BetaToken matchingToken = BetaToken.find("token", betaToken).first();
-							if(matchingToken != null)
-							{
-								matchingToken.isUsed = Boolean.TRUE;
-								matchingToken.save();
-							}
-						}
+//						if(betaToken != null)
+//						{
+//							BetaToken matchingToken = BetaToken.find("token", betaToken).first();
+//							if(matchingToken != null)
+//							{
+//								matchingToken.isUsed = Boolean.TRUE;
+//								matchingToken.save();
+//							}
+//						}
 						
 						// construct service response
 						List<UserInfo> message = new ArrayList<UserInfo>();
