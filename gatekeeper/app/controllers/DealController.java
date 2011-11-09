@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -472,7 +473,7 @@ public class DealController extends BaseContoller
 	 * @param dealIds: Id of the user deal.
 	 */
 	public static void getDealDetails(@Required(message="dealId is required")Long dealId,
-																		Boolean isShareDetail)
+																		@Required(message="isShareDetail is required")Boolean isShareDetail)
 	{
 		Long startTime = System.currentTimeMillis();
 		Boolean isValidRequest = Boolean.TRUE;
@@ -494,10 +495,21 @@ public class DealController extends BaseContoller
 			final Deal deal = Deal.find("id", dealId).first();
 			if(deal != null)
 			{
-				//Strip user email from content if share detail
-				if(isShareDetail != null && isShareDetail)
+				//Strip subscription links from content if share detail
+				String content = deal.dealEmail.content;
+				if(isShareDetail != null && isShareDetail.booleanValue() == true)
 				{
-					
+					String links = deal.dealEmail.unsubscribeLinks;
+					if(links != null)
+					{
+						String strippedContent = content;
+						StringTokenizer tokenizer = new StringTokenizer(links, ",");
+						while(tokenizer.hasMoreTokens())
+						{
+							strippedContent = strippedContent.replaceAll(tokenizer.nextToken(), "");
+						}
+						deal.dealEmail.content = strippedContent;
+					}
 				}
 				response.put("deal", 
 						new ArrayList<Deal>()
@@ -506,6 +518,7 @@ public class DealController extends BaseContoller
 								add(deal);
 							}
 						});
+				deal.dealEmail.content = content;
 			}
 			else
 			{
