@@ -8,8 +8,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import play.db.jpa.Model;
 
 /**
@@ -18,42 +16,45 @@ import play.db.jpa.Model;
  *
  */
 @Entity
-@Table(uniqueConstraints = { 
-    @UniqueConstraint(name="uniqueDealEmail", columnNames = {"dateReceived", "fromEmail", "subject", "toName"})}) 
+@Table(uniqueConstraints = {
+    @UniqueConstraint(name="uniqueDealEmail", columnNames = {"dateReceived", "fromEmail", "subject", "toName"})})
 public class DealEmail extends Model
 {
-	public String					fromName;
-	public String					fromEmail;
-	public String					toName;
-	public String					subject;
-	public String					senderIP;
-	public String					spfResult;
-	public String					domainKey;
-	@Column(columnDefinition = "mediumtext", length = 5000)
-	public String					parsedContent;
-	@Column(columnDefinition = "mediumtext", length = 5000)
-	public String					content;
-	@OneToOne
-	public EmailCategory	emailCategory;
-	public Date						sentDate;
-	public Date						dateReceived;
-	
-	public DealEmail(String fromName, String fromEmail, String toName,
-			Date dateReceived, Date sentDate, String subject, String senderIP,
-			String spfResult, String domainKey, String parsedContent, String content,
-			EmailCategory emailCategory)
-	{
-		this.fromName = fromName;
-		this.fromEmail = fromEmail;
-		this.toName = toName;
-		this.dateReceived = dateReceived;
-		this.sentDate = sentDate;
-		this.subject = subject;
-		this.senderIP = senderIP;
-		this.spfResult = spfResult;
-		this.domainKey = domainKey;
-		this.parsedContent = parsedContent;
-		this.content = new StringEscapeUtils().unescapeHtml(content);
-		this.emailCategory = emailCategory;
-	}
+    public String        fromName;
+    public String        fromEmail;
+    public String        toName;
+    public String        subject;
+    public String        senderIP;
+    public String        spfResult;
+    public String        domainKey;
+    public Date          sentDate;
+    public Date          dateReceived;
+    @OneToOne
+    public EmailCategory emailCategory;
+    @Column(columnDefinition = "mediumtext", length = 5000)
+    public String        parsedContent;
+    @Column(columnDefinition = "mediumtext", length = 5000)
+    public String        content;
+    @Column(columnDefinition = "mediumtext", length = 5000)
+    public String       unsubscribeLinks;
+    
+		public DealEmail(String fromName, String fromEmail, String toName,
+				String subject, String senderIP, String spfResult, String domainKey,
+				Date sentDate, Date dateReceived, EmailCategory emailCategory,
+				String parsedContent, String content, String unsubscribeLinks)
+		{
+			this.fromName = fromName;
+			this.fromEmail = fromEmail;
+			this.toName = toName;
+			this.subject = subject;
+			this.senderIP = senderIP;
+			this.spfResult = spfResult;
+			this.domainKey = domainKey;
+			this.sentDate = sentDate;
+			this.dateReceived = dateReceived;
+			this.emailCategory = emailCategory;
+			this.parsedContent = parsedContent;
+			this.content = content;
+			this.unsubscribeLinks = unsubscribeLinks;
+		}
 }
