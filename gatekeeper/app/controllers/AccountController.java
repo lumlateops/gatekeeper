@@ -57,8 +57,6 @@ public class AccountController extends BaseContoller
 			// Go to correct provider
 			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
-				Logger.debug("AE: Registering a " + provider + " email account.");
-
 				//Check if user has {max.user.accounts} accounts already
 				boolean maxAccountcountReached = isMaxAccountCountReached(userId);
 				
@@ -67,21 +65,18 @@ public class AccountController extends BaseContoller
 					//Check if account exists and is still valid
 					boolean isAuthorized = GmailProvider.isAccountAuthorized(userId, "");
 	
-					Logger.debug("AE: isAuthorized: " + isAuthorized);
-	
 					//Account not present or invalid, then get a new one and store it
 					if(!isAuthorized)
 					{
 						try
 						{
-							String authUrl = GmailProvider.authorizeAccount(userId, "");
-							Logger.debug("Auth url: "+authUrl);
-							authMessage.add(authUrl);
-							response.put("AuthUrl", authMessage);
+							response = GmailProvider.authorizeAccount(userId, "");
+//							authMessage.add(authUrl);
+//							response.put("AuthUrl", authMessage);
 						}
 						catch (OAuthException e)
 						{
-							Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
+							Logger.error("Error adding account: " + e.getCause() + e.getMessage());
 							serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
 																		 	 e.getMessage() + e.getCause());
 						}
@@ -90,40 +85,6 @@ public class AccountController extends BaseContoller
 					{
 						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), "Account registered already");
 					}
-//					//Check if account exists and is still valid
-//					boolean isDuplicate = isDuplicateAccount(email);
-//	
-//					Logger.debug("AE: isDuplicate: " + isDuplicate);
-//	
-//					//Account not present or invalid, then get a new one and store it
-//					if(!isDuplicate)
-//					{
-//						try
-//						{
-//							if(Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
-//							{
-//									GmailProvider.createAccount(userId, email, password);
-//							}
-//							response.put("status", 
-//									new ArrayList<String>()
-//									{
-//										{
-//											add("ok");
-//										}
-//									});
-//						}
-//						catch (Exception e)
-//						{
-//							Logger.debug("Error adding account: " + e.getCause() + e.getMessage());
-//							serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), 
-//																			 e.getMessage() + e.getCause());
-//						}
-//					}
-//					else
-//					{
-//						serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), 
-//																		 "Account registered already");
-//					}
 				}
 				else
 				{
@@ -160,66 +121,6 @@ public class AccountController extends BaseContoller
 	}
 	
 	/**
-	 * Returns a list of all the registered email accounts for this user
-	 * @param userId
-	 */
-	public static void listAllUserEmails(@Required(message="userId is required") Long userId)
-	{
-		Long startTime = System.currentTimeMillis();
-		
-		Logger.debug("**" + userId);
-
-		Boolean isValidRequest = Boolean.TRUE;
-		Service serviceResponse = new Service();
-		Map<String, List<?>> response = new HashMap<String, List<?>>();
-		
-		if(Validation.hasErrors() || userId == null)
-		{
-			isValidRequest = Boolean.FALSE;
-			for (play.data.validation.Error validationError : Validation.errors())
-			{
-				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
-			}
-		}
-		else
-		{
-			List<Account> accounts = Account.find("userInfo_id", userId).fetch();
-			List<EmailAccountResponse> activeAccounts = new ArrayList<EmailAccountResponse>();
-			if(accounts != null && accounts.size() > 0)
-			{
-				for (Account account : accounts)
-				{
-					if(account.registeredEmail && account.active)
-					{
-						activeAccounts.add(new EmailAccountResponse(account.email, account.provider.name));
-					}
-				}
-			}
-			response.put("Accounts", activeAccounts);
-		}
-		Long endTime = System.currentTimeMillis();
-
-		Map<String, String>	parameters = new HashMap<String, String>();
-		if(userId != null)
-		{
-			parameters.put("userId", Long.toString(userId));
-		}
-		else
-		{
-			parameters.put("userId", "null");
-		}
-		Request request = new Request(isValidRequest, "listAllUserEmails", endTime-startTime, parameters);
-		
-		serviceResponse.setRequest(request);
-		if(isValidRequest && response != null && !response.isEmpty())
-		{
-			serviceResponse.setResponse(response);
-		}
-		
-		renderJSON(new Message(serviceResponse));
-	}
-	
-	/**
 	 * Upgrades a request token to an access token
 	 * @param userId
 	 * @param provider
@@ -228,7 +129,7 @@ public class AccountController extends BaseContoller
 	 */
 	public static void upgradeToken(@Required(message="userId is required") Long userId,
 			@Required(message="Email provider is required") String provider,
-			@Required(message="Account id is required") Long accountId,
+			@Required(message="Token secret is required") String tokenSecret,
 			@Required(message="Query string needed for upgrading")String queryString)
 	{
 		Long startTime = System.currentTimeMillis();
@@ -251,7 +152,7 @@ public class AccountController extends BaseContoller
 			if(provider != null && Providers.GMAIL.toString().equalsIgnoreCase(provider.trim()))
 			{
 				//Upgrade to access token and store the account
-				response = GmailProvider.upgradeToken(userId, accountId, queryString, serviceResponse);
+				response = GmailProvider.upgradeToken(userId, tokenSecret, queryString, serviceResponse);
 			}
 			else
 			{
@@ -269,14 +170,7 @@ public class AccountController extends BaseContoller
 			parameters.put("userId", "null");
 		}
 		parameters.put("provider", provider);
-		if(accountId != null)
-		{
-			parameters.put("accountId", accountId.toString());
-		}
-		else
-		{
-			parameters.put("accountId", "null");
-		}
+		parameters.put("tokenSecret", tokenSecret);
 		parameters.put("queryString", queryString);
 		Request request = new Request(isValidRequest, "upgradeToken", endTime-startTime, parameters);
 		
@@ -491,6 +385,66 @@ public class AccountController extends BaseContoller
 	}
 	
 	/**
+	 * Returns a list of all the registered email accounts for this user
+	 * @param userId
+	 */
+	public static void listAllUserEmails(@Required(message="userId is required") Long userId)
+	{
+		Long startTime = System.currentTimeMillis();
+		
+		Logger.debug("**" + userId);
+
+		Boolean isValidRequest = Boolean.TRUE;
+		Service serviceResponse = new Service();
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
+		if(Validation.hasErrors() || userId == null)
+		{
+			isValidRequest = Boolean.FALSE;
+			for (play.data.validation.Error validationError : Validation.errors())
+			{
+				serviceResponse.addError(ErrorCodes.INVALID_REQUEST.toString(), validationError.message());
+			}
+		}
+		else
+		{
+			List<Account> accounts = Account.find("userInfo_id", userId).fetch();
+			List<EmailAccountResponse> activeAccounts = new ArrayList<EmailAccountResponse>();
+			if(accounts != null && accounts.size() > 0)
+			{
+				for (Account account : accounts)
+				{
+					if(account.registeredEmail && account.active)
+					{
+						activeAccounts.add(new EmailAccountResponse(account.email, account.provider.name));
+					}
+				}
+			}
+			response.put("Accounts", activeAccounts);
+		}
+		Long endTime = System.currentTimeMillis();
+
+		Map<String, String>	parameters = new HashMap<String, String>();
+		if(userId != null)
+		{
+			parameters.put("userId", Long.toString(userId));
+		}
+		else
+		{
+			parameters.put("userId", "null");
+		}
+		Request request = new Request(isValidRequest, "listAllUserEmails", endTime-startTime, parameters);
+		
+		serviceResponse.setRequest(request);
+		if(isValidRequest && response != null && !response.isEmpty())
+		{
+			serviceResponse.setResponse(response);
+		}
+		
+		renderJSON(new Message(serviceResponse));
+	}
+	
+	/**
 	 * Returns the user's deallr email address
 	 * @param userId
 	 */
@@ -563,7 +517,7 @@ public class AccountController extends BaseContoller
 		{
 			for (Account account : accounts)
 			{
-				if(account.active && account.password != null)
+				if(account.active)
 				{
 					isDuplicate = true;
 					break;

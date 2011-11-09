@@ -37,7 +37,8 @@ public class GmailProvider extends BaseProvider
 	private static final ServiceProvider gmailProvider;
 	private static final GoogleOAuthHelper oauthHelper;
 	
-	private static final String	ACCOUNT_LOOKUP_HQL = "SELECT u FROM Account u WHERE u.id IS ? AND u.userInfo.id IS ?";
+	private static final String	MATCHING_ACCOUNT_SAME_USER_HQL = "SELECT u FROM Account u WHERE u.userInfo.id IS ? and u.email IS ? and u.registeredEmail=1 and u.dllrAccessToken IS NOT NULL and u.dllrTokenSecret IS NOT NULL";
+	private static final String	MATCHING_ACCOUNT_DIFFERENT_USER_HQL = "SELECT u FROM Account u WHERE u.email IS ? and u.registeredEmail=1 and u.dllrAccessToken IS NOT NULL and u.dllrTokenSecret IS NOT NULL";
 	
 	// Initialize tokens
 	static
@@ -92,28 +93,45 @@ public class GmailProvider extends BaseProvider
 	 * @return
 	 * @throws OAuthException
 	 */
-	public static String authorizeAccount(Long userId, String email) throws OAuthException
+	public static Map<String, List<?>> authorizeAccount(Long userId, String email) throws OAuthException
 	{
+		Map<String, List<?>> response = new HashMap<String, List<?>>();
+		
 		// Store the information, leaving the access token blank
 		GoogleOAuthParameters oauthParameters = getAuthParams();
-		Date current = new Date(System.currentTimeMillis());
-		UserInfo userInfo = UserInfo.find("id", userId).first();
-		Account account = new Account(userInfo, null, null, null, null, null, true, true, null, 
-							  									current, null, current, current, gmailProvider);
-		account.save();
+//		Date current = new Date(System.currentTimeMillis());
+//		UserInfo userInfo = UserInfo.find("id", userId).first();
+//		Account account = new Account(userInfo, null, null, null, null, null, true, true, null, 
+//							  									current, null, current, current, gmailProvider);
+//		account.save();
 		
 		//Create the request url
-		String callbackUrl = CALLBACK_URL_BEGIN + userId + "/" + account.id + CALLBACK_URL_END;
+		String callbackUrl = CALLBACK_URL_BEGIN + userId + CALLBACK_URL_END;
 		oauthParameters.setOAuthCallback(callbackUrl);
 		oauthHelper.getUnauthorizedRequestToken(oauthParameters);
-		String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
+		final String requestUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
+		Logger.info(requestUrl);
 		
 		//Update token secret
-		String tokenSecret = oauthParameters.getOAuthTokenSecret();
-		account.dllrTokenSecret = tokenSecret;
-		account.save();
+		final String tokenSecret = oauthParameters.getOAuthTokenSecret();
+//		account.dllrTokenSecret = tokenSecret;
+//		account.save();
 		
-		return requestUrl;
+		response.put("AuthUrl", 
+				new ArrayList<String>()
+				{
+					{
+						add(requestUrl);
+					}
+				});
+		response.put("tokenSecret", 
+				new ArrayList<String>()
+				{
+					{
+						add(tokenSecret);
+					}
+				});
+		return response;
 	}
 	
 	/**
@@ -123,7 +141,7 @@ public class GmailProvider extends BaseProvider
 	 * @param queryString
 	 * @return
 	 */
-	public static Map<String, List<?>> upgradeToken(Long userId, Long accountId, 
+	public static Map<String, List<?>> upgradeToken(Long userId, String tokenSecret, 
 																									String queryString, Service serviceResponse)
 	{
 		String returnMessage = "Successfully upgraded token";
@@ -132,15 +150,15 @@ public class GmailProvider extends BaseProvider
 		try
 		{
 			// Make sure userId matches
-			Account account =  Account.find(ACCOUNT_LOOKUP_HQL, accountId, userId).first();
-			if(account != null)
+//			Account account =  Account.find(ACCOUNT_LOOKUP_HQL, userId).first();
+//			if(account != null)
 			{
 				//Get access token
 				GoogleOAuthParameters oauthParameters = getAuthParams();
-				oauthParameters.setOAuthTokenSecret(account.dllrTokenSecret);
+				oauthParameters.setOAuthTokenSecret(tokenSecret);
 				oauthHelper.getOAuthParametersFromCallback(queryString, oauthParameters);
 				String token = oauthHelper.getAccessToken(oauthParameters);
-				String tokenSecret = oauthParameters.getOAuthTokenSecret();
+				String updatedTokenSecret = oauthParameters.getOAuthTokenSecret();
 				oauthParameters.setOAuthToken(token);
 				String header = oauthHelper.getAuthorizationHeader(GOOGLE_EMAIL_INFO_URL, "GET", oauthParameters);
 				
@@ -164,17 +182,43 @@ public class GmailProvider extends BaseProvider
 						{
 							email = data.getAsJsonObject().get("email").getAsString();
 							
-							//Add new email address to queue
-							NewAccountMessage message = new NewAccountMessage(userId, email, 
-																																account.password, 
-																																token, tokenSecret,
-																																account.provider.name);
-							RMQProducer.publishNewEmailAccountMessage(message);
-							
-							//Add email address to response
-							List<String> emailMessage = new ArrayList<String>();
-							emailMessage.add(email);
-							response.put("email", emailMessage);
+							//Check for duplicate entry and create new if required
+							Account matchingAccount =  Account.find(MATCHING_ACCOUNT_SAME_USER_HQL, userId, email).first();
+							if(matchingAccount == null)
+							{
+								matchingAccount =  Account.find(MATCHING_ACCOUNT_DIFFERENT_USER_HQL, email).first();
+								if(matchingAccount == null)
+								{
+									//Create new Account
+									Date current = new Date(System.currentTimeMillis());
+									UserInfo userInfo = UserInfo.find("id", userId).first();
+									Account account = new Account(userInfo, email, null, token, updatedTokenSecret, null, true, true, null, 
+														  									current, null, current, current, gmailProvider);
+									account.save();
+									
+									//Add new email address to queue
+									NewAccountMessage message = new NewAccountMessage(userId, email, 
+																																		account.password, 
+																																		token, updatedTokenSecret,
+																																		account.provider.name);
+									RMQProducer.publishNewEmailAccountMessage(message);
+									
+									//Add email address to response
+									List<String> emailMessage = new ArrayList<String>();
+									emailMessage.add(email);
+									response.put("email", emailMessage);
+								}
+								else
+								{
+									returnMessage = "Account already registered";
+									serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), "Account already registered");
+								}
+							}
+							else
+							{
+								returnMessage = "Account already registered";
+								serviceResponse.addError(ErrorCodes.DUPLICATE_ACCOUNT.toString(), "Account already registered");
+							}
 						}
 						else
 						{
@@ -191,16 +235,16 @@ public class GmailProvider extends BaseProvider
 				}
 				
 				//Update account details
-				account.dllrAccessToken = token;
-				account.dllrTokenSecret = tokenSecret;
-				account.email = email;
-				account.save();
+//				account.dllrAccessToken = token;
+//				account.dllrTokenSecret = updatedTokenSecret;
+//				account.email = email;
+//				account.save();
 			}
-			else
-			{
-				returnMessage = "No matching account found";
-				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
-			}
+//			else
+//			{
+//				returnMessage = "No matching account found";
+//				serviceResponse.addError(ErrorCodes.ACCOUNT_NOT_FOUND.toString(), "No matching account found");
+//			}
 			
 			List<String> message = new ArrayList<String>();
 			message.add(returnMessage);
