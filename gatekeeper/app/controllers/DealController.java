@@ -497,7 +497,7 @@ public class DealController extends BaseContoller
 			{
 				//Strip subscription links from content if share detail
 				String content = deal.dealEmail.content;
-				if(isShareDetail != null && isShareDetail.booleanValue() == true)
+				if(isShareDetail != null && isShareDetail)
 				{
 					String links = deal.dealEmail.unsubscribeLinks;
 					if(links != null)
@@ -506,7 +506,11 @@ public class DealController extends BaseContoller
 						StringTokenizer tokenizer = new StringTokenizer(links, ",");
 						while(tokenizer.hasMoreTokens())
 						{
-							strippedContent = strippedContent.replaceAll(tokenizer.nextToken(), "");
+							String nextToken = tokenizer.nextToken();
+							while(strippedContent.contains(nextToken))
+							{
+								strippedContent = strippedContent.replace(nextToken, "");
+							}
 						}
 						deal.dealEmail.content = strippedContent;
 					}
