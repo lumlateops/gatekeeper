@@ -509,7 +509,7 @@ public class DealController extends BaseContoller
 							String nextToken = tokenizer.nextToken();
 							while(strippedContent.contains(nextToken))
 							{
-								strippedContent = strippedContent.replace(nextToken, "");
+								strippedContent = strippedContent.replace(nextToken, "#");
 							}
 						}
 						deal.dealEmail.content = strippedContent;
@@ -522,7 +522,7 @@ public class DealController extends BaseContoller
 								add(deal);
 							}
 						});
-				deal.dealEmail.content = content;
+//				deal.dealEmail.content = content;
 			}
 			else
 			{
