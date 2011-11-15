@@ -38,7 +38,7 @@ import play.db.jpa.JPA;
 public class DealController extends BaseContoller
 {
 	private static final int		PAGE_SIZE									= Integer.parseInt((String)Play.configuration.get("deal.page.size"));
-	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IS 1 ORDER BY ";
+	private static final String	USER_DEAL_LOOKUP_HQL			= "SELECT d AS d FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IN (1, 5) ORDER BY ";
 	private static final String	USER_DEAL_COUNT_HQL				= "SELECT count(d) FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IN (1, 5)";
 	private static final String	UNREAD_DEAL_COUNT_HQL			= "SELECT count(d) FROM Deal d WHERE d.userInfo.id IS ? AND d.dealEmail.emailCategory.id IN (1, 5) AND d.createdAt > ?";
 	private static final String BULK_MARK_DEAL_READ				= "UPDATE Deal d SET d.dealRead = true WHERE d IN (:deals)"; 
