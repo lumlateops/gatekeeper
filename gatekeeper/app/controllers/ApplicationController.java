@@ -29,6 +29,7 @@ import play.data.validation.MinSize;
 import play.data.validation.Password;
 import play.data.validation.Required;
 import play.data.validation.Validation;
+import bl.notifiers.Mails;
 import bl.utilities.Utility;
 
 /**
@@ -512,6 +513,16 @@ public class ApplicationController extends BaseContoller
 		//Insert email address into user table for the imap server
 		new Users(newEmail, "").save();
 		
+		//Send welcome email
+		Mails.welcome(username, fbEmailAddress);
+		
 		return newEmail;
+	}
+	
+	public static void sendMails()
+	{
+		UserInfo user = UserInfo.find("id", 1L).first();
+		Mails.welcome(user.username, user.fbEmailAddress);
+		Mails.deals(user);
 	}
 }
