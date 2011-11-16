@@ -15,6 +15,7 @@ import models.Account;
 import models.LoginHistory;
 import models.ServiceProvider;
 import models.UserInfo;
+import models.Users;
 import models.enums.ErrorCodes;
 import models.enums.Providers;
 
@@ -39,7 +40,6 @@ import bl.utilities.Utility;
 public class ApplicationController extends BaseContoller
 {
 	private static final String	EMAIL_LOOKUP_HQL					= "SELECT u FROM Account u WHERE u.userInfo.id IS ? AND active IS ? AND registeredEmail IS ?";
-//	private static final String	FETCH_HISTORY_LOOKUP_HQL	= "SELECT f FROM FetchHistory f WHERE f.userInfo.id IS ? and f.fetchStatus='complete'";// and f.fetchEndTime<=currentTime-60";
 
 	public static void index()
 	{
@@ -375,7 +375,7 @@ public class ApplicationController extends BaseContoller
 			//If a beta token was part of request then verify its valid
 			if(betaToken != null)
 			{
-				serviceResponse = BetaAccessController.verifyToken(betaToken);
+//				serviceResponse = BetaAccessController.verifyToken(betaToken);
 			}
 			
 			if(!serviceResponse.hasErrors())
@@ -508,6 +508,9 @@ public class ApplicationController extends BaseContoller
 				duplicate = Account.find("email", newEmail).first();
 			}while(duplicate != null);
 		}
+		
+		//Insert email address into user table for the imap server
+		new Users(newEmail, "").save();
 		
 		return newEmail;
 	}
