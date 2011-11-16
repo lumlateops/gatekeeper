@@ -376,7 +376,7 @@ public class ApplicationController extends BaseContoller
 			//If a beta token was part of request then verify its valid
 			if(betaToken != null)
 			{
-//				serviceResponse = BetaAccessController.verifyToken(betaToken);
+				serviceResponse = BetaAccessController.verifyToken(betaToken);
 			}
 			
 			if(!serviceResponse.hasErrors())
