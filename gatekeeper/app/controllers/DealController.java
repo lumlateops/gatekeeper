@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import jsonModels.DealEmailResponse;
 import jsonModels.Message;
 import jsonModels.Request;
@@ -33,7 +30,6 @@ import play.Logger;
 import play.Play;
 import play.data.validation.Required;
 import play.data.validation.Validation;
-import play.db.jpa.JPA;
 
 public class DealController extends BaseContoller
 {
@@ -140,41 +136,43 @@ public class DealController extends BaseContoller
 								}
 							});
 					response.put("deals", dealsResponse);
-					
-					//Mark the deals as read
-					EntityManager em = JPA.em();
-					Query updateQuery = em.createQuery(BULK_MARK_DEAL_READ);
-					updateQuery.setParameter("deals", onePageDeals);
-					updateQuery.executeUpdate();
 				}
 				else
 				{
-					//Get fetch history
-					final FetchHistory fh = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
-					if(fh != null)
-					{
-						response.put("numberOfResults", 
-								new ArrayList<String>()
+					response.put("numberOfResults", 
+							new ArrayList<String>()
+							{
 								{
-									{
-										add("0");
-									}
-								});
-						response.put("fetchStatus", 
-								new ArrayList<String>()
+									add(Integer.toString(0));
+								}
+							});
+				}
+				
+				//Get fetch history
+				final FetchHistory fh = FetchHistory.find(FETCH_HISTORY_LOOKUP_HQL, userId).first();
+				if(fh != null)
+				{
+					response.put("fetchStatus", 
+							new ArrayList<String>()
+							{
 								{
-									{
-										add(fh.fetchStatus);
-									}
-								});
-					}
-					else
-					{
-						serviceResponse.addError(ErrorCodes.SERVER_EXCEPTION.toString(), "Could not get email account reading status.");
-					}
+									add(fh.fetchStatus);
+								}
+							});
+				}
+				else
+				{
+					response.put("fetchStatus", 
+							new ArrayList<String>()
+							{
+								{
+									add("none");
+								}
+							});
 				}
 			}
 		}
+		
 		Long endTime = System.currentTimeMillis();
 		
 		Map<String, String> parameters = new HashMap<String, String>();
